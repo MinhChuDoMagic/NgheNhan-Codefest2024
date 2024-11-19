@@ -1,5 +1,6 @@
 package org.codefest2024.nghenhan.controller;
 
+import com.google.gson.Gson;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import javafx.event.ActionEvent;
@@ -9,9 +10,13 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
+import org.codefest2024.nghenhan.service.caculator.AStarFinder;
+import org.codefest2024.nghenhan.service.caculator.DirectionFinder;
 import org.codefest2024.nghenhan.service.socket.ClientConfig;
 import org.codefest2024.nghenhan.service.socket.data.Dir;
 import org.codefest2024.nghenhan.service.socket.data.Game;
+import org.codefest2024.nghenhan.service.socket.data.GameInfo;
 import org.codefest2024.nghenhan.utils.SocketUtils;
 import org.codefest2024.nghenhan.utils.TextUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
@@ -21,7 +26,7 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-@Log
+@Slf4j
 public class SocketController implements Initializable {
     @FXML
     javafx.scene.control.TextField edtGameId;
@@ -49,24 +54,35 @@ public class SocketController implements Initializable {
     private String mGameId;
 
     private Socket mSocket;
+    private static GameInfo gameInfo;
 
-    private final Emitter.Listener mOnTickTackListener = new Emitter.Listener() {
-        @Override
-        public void call(Object... objects) {
+    private DirectionFinder directionFinder = new AStarFinder();
 
+    private final Emitter.Listener mOnTickTackListener = objects -> {
+        if(objects != null && objects.length != 0){
+            long startTime = System.currentTimeMillis();
+            String data = objects[0].toString();
+
+            if (!TextUtils.isEmpty(data)) {
+                gameInfo = new Gson().fromJson(data, GameInfo.class);
+                log.info("Parse time: {}", System.currentTimeMillis() - startTime);
+
+//                if (gameInfo != null) {
+//                    Dir dir = directionFinder.find(gameInfo);
+//                    movePlayer(dir);
+//                }
+            }
         }
     };
 
     private final Emitter.Listener mOnDriveStateListener = objects -> {
         String response = objects[0].toString();
-        log.info("ClientConfig.PLAYER.INCOMMING.DRIVE_PLAYER: " + response);
+        log.info("ClientConfig.PLAYER.INCOMMING.DRIVE_PLAYER: {}", response);
     };
-    private Emitter.Listener mOnJoinGameListener = new Emitter.Listener() {
-        @Override
-        public void call(Object... objects) {
-            String response = objects[0].toString();
-            log.info("ClientConfig.PLAYER.INCOMMING.JOIN_GAME: " + response);
-        }
+
+    private Emitter.Listener mOnJoinGameListener = objects -> {
+        String response = objects[0].toString();
+        log.info("ClientConfig.PLAYER.INCOMMING.JOIN_GAME: {}", response);
     };
 
     @Override
@@ -112,16 +128,18 @@ public class SocketController implements Initializable {
     }
 
     private void movePlayer(String step) {
+        movePlayer(new Dir(step.trim().substring(0,1)));
+    }
+
+    private void movePlayer(Dir dir){
         if (mSocket != null) {
-            Dir dir = new Dir(step.trim().substring(0,1));
-            log.info("Dir = " + dir);
+            log.info("Dir = {}", dir);
             try {
                 mSocket.emit(ClientConfig.PLAYER.OUTGOING.DRIVE_PLAYER, new JSONObject(dir.toString()));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void connectToServer() {
@@ -132,7 +150,7 @@ public class SocketController implements Initializable {
 
         mSocket = SocketUtils.init(editTextURL.getText(), cbFProxy.isSelected());
         if (mSocket == null) {
-            log.warning("Socket null - can't connect");
+            log.warn("Socket null - can't connect");
             return;
         }
         mSocket.on(ClientConfig.PLAYER.INCOMMING.JOIN_GAME, mOnJoinGameListener);
@@ -141,15 +159,15 @@ public class SocketController implements Initializable {
         mSocket.on(Socket.EVENT_CONNECT, objects -> {
             log.info("Connected");
             String gameParams = new Game(mGameId, mPlayerId).toString();
-            log.info("Game params = " + gameParams);
+            log.info("Game params = {}", gameParams);
             try {
                 mSocket.emit(ClientConfig.PLAYER.OUTGOING.JOIN_GAME, new JSONObject(gameParams));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         });
-        mSocket.on(Socket.EVENT_CONNECT_ERROR, objects -> log.warning("Connect Failed"));
-        mSocket.on(Socket.EVENT_DISCONNECT, objects -> log.warning("Disconnected"));
+        mSocket.on(Socket.EVENT_CONNECT_ERROR, objects -> log.warn("Connect Failed"));
+        mSocket.on(Socket.EVENT_DISCONNECT, objects -> log.warn("Disconnected"));
         mSocket.connect();
         btnStop.setDisable(false);
         txtMessage.setText("Running!!!");

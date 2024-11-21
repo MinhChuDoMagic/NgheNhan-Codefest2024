@@ -6,17 +6,15 @@ import io.socket.emitter.Emitter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
-
-import lombok.extern.java.Log;
+import javafx.scene.control.TextField;
 import lombok.extern.slf4j.Slf4j;
-import org.codefest2024.nghenhan.service.caculator.AStarFinder;
-import org.codefest2024.nghenhan.service.caculator.DirectionFinder;
+import org.codefest2024.nghenhan.service.caculator.FarmStrategy;
+import org.codefest2024.nghenhan.service.caculator.Strategy;
 import org.codefest2024.nghenhan.service.socket.ClientConfig;
-import org.codefest2024.nghenhan.service.socket.data.Dir;
-import org.codefest2024.nghenhan.service.socket.data.Game;
-import org.codefest2024.nghenhan.service.socket.data.GameInfo;
+import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.SocketUtils;
 import org.codefest2024.nghenhan.utils.TextUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
@@ -24,24 +22,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 @Slf4j
 public class SocketController implements Initializable {
     @FXML
-    javafx.scene.control.TextField edtGameId;
+    TextField edtGameId;
     @FXML
-    javafx.scene.control.TextField edtPlayerId;
+    TextField edtPlayerId;
 
     @FXML
-    javafx.scene.control.TextField editTextURL;
+    TextField editTextURL;
 
     @FXML
-    javafx.scene.control.Button btnStart;
+    Button btnStart;
     @FXML
-    javafx.scene.control.Button btnStop;
+    Button btnStop;
     @FXML
-    javafx.scene.control.TextField editTextAction;
+    TextField editTextAction;
     @FXML
     TextArea txtController;
     @FXML
@@ -56,24 +55,60 @@ public class SocketController implements Initializable {
     private Socket mSocket;
     private static GameInfo gameInfo;
 
-    private DirectionFinder directionFinder = new AStarFinder();
+    private Strategy strategy = new FarmStrategy();
 
     private final Emitter.Listener mOnTickTackListener = objects -> {
-        if(objects != null && objects.length != 0){
+        if (objects != null && objects.length != 0) {
             long startTime = System.currentTimeMillis();
             String data = objects[0].toString();
 
             if (!TextUtils.isEmpty(data)) {
                 gameInfo = new Gson().fromJson(data, GameInfo.class);
-                log.info("Parse time: {}", System.currentTimeMillis() - startTime);
 
-//                if (gameInfo != null) {
-//                    Dir dir = directionFinder.find(gameInfo);
-//                    movePlayer(dir);
-//                }
+                if (gameInfo != null) {
+                    List<Order> orders = strategy.find(gameInfo);
+                    log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
+                    orders.forEach(this::handleOrder);
+                }
             }
+
+            log.info("Process time: {}", System.currentTimeMillis() - startTime);
         }
     };
+
+    private void handleOrder(Order order) {
+        if (order instanceof Action action) {
+            handleAction(action);
+        } else if (order instanceof Dir dir) {
+            movePlayer(dir);
+        }
+    }
+
+    private void movePlayer(String step) {
+        movePlayer(new Dir(step.trim().substring(0, 1)));
+    }
+
+    private void movePlayer(Dir dir) {
+        if (mSocket != null) {
+            log.info("Dir = {}", dir);
+            try {
+                mSocket.emit(ClientConfig.PLAYER.OUTGOING.DRIVE_PLAYER, new JSONObject(dir.toString()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void handleAction(Action action) {
+        if (mSocket != null) {
+            log.info("Action = {}", action);
+            try {
+                mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, new JSONObject(action.toString()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private final Emitter.Listener mOnDriveStateListener = objects -> {
         String response = objects[0].toString();
@@ -125,21 +160,6 @@ public class SocketController implements Initializable {
     public void btnSend(ActionEvent actionEvent) {
         String step = editTextAction.getText().trim();
         movePlayer(step);
-    }
-
-    private void movePlayer(String step) {
-        movePlayer(new Dir(step.trim().substring(0,1)));
-    }
-
-    private void movePlayer(Dir dir){
-        if (mSocket != null) {
-            log.info("Dir = {}", dir);
-            try {
-                mSocket.emit(ClientConfig.PLAYER.OUTGOING.DRIVE_PLAYER, new JSONObject(dir.toString()));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void connectToServer() {

@@ -7,7 +7,6 @@ module org.codefest.nghenhan {
     requires engine.io.client;
     requires json;
     requires static lombok;
-    requires java.logging;
     requires java.desktop;
 
     opens org.codefest2024.nghenhan to javafx.fxml;

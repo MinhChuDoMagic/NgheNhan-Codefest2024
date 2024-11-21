@@ -7,7 +7,7 @@ import java.util.List;
 public class MapInfo {
     public MapSize size;
     public List<Player> players;
-    public List<int[]> map;
+    public int[][] map;
     public List<Bomb> bombs;
     public List<Spoil> spoils;
     public List<WeaponHammers> weaponHammers;

@@ -6,7 +6,7 @@ import javafx.scene.input.KeyCode;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Dir {
+public final class Dir extends Order {
     public static final String LEFT = "1";
     public static final String RIGHT = "2";
     public static final String UP = "3";

@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 @Slf4j
@@ -34,6 +35,9 @@ public class SocketController implements Initializable {
 
     @FXML
     TextField editTextURL;
+
+    @FXML
+    javafx.scene.control.TextField edtPowerType;
 
     @FXML
     Button btnStart;
@@ -120,6 +124,13 @@ public class SocketController implements Initializable {
         log.info("ClientConfig.PLAYER.INCOMMING.JOIN_GAME: {}", response);
     };
 
+    private final Emitter.Listener mOnRegisterPowerResponse = objects -> {
+        if (objects != null && objects.length > 0) {
+            String response = objects[0].toString();
+            log.info("ClientConfig.PLAYER.INCOMMING.REGISTER_POWER: {}", response);
+        }
+    };
+
     @Override
     @SuppressWarnings("unknown enum constant DeprecationLevel.ERROR")
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -134,6 +145,11 @@ public class SocketController implements Initializable {
             String step = Dir.KEY_TO_STEP.get(key);
             if (!TextUtils.isEmpty(step)) {
                 movePlayer(step);
+            } else {
+                String action = Dir.KEY_TO_ACTION.get(event.getCode().ordinal());
+                if (action != null) {
+                    sendAction(action);
+                }
             }
         });
     }
@@ -154,12 +170,70 @@ public class SocketController implements Initializable {
     public void onButtonRegisterClicked(ActionEvent actionEvent) {
         mPlayerId = edtPlayerId.getText().trim();
         mGameId = edtGameId.getText().trim();
+        String powerType = edtPowerType.getText().trim();
         connectToServer();
+        if (!powerType.isEmpty()) {
+            try {
+                JSONObject params = new JSONObject();
+                params.put("gameId", mGameId);
+                params.put("type", powerType);
+
+                mSocket.emit("register character power", params);
+                txtMessage.setText("Registered character power with type: " + powerType + "\n");
+            } catch (JSONException | NumberFormatException e) {
+                e.printStackTrace();
+                txtMessage.setText("Failed to register character power: " + e.getMessage() + "\n");
+            }
+        } else {
+            txtMessage.appendText("Power Type is empty. Skipping registration.\n");
+        }
     }
 
     public void btnSend(ActionEvent actionEvent) {
         String step = editTextAction.getText().trim();
+//        String action = editTextAction.getText().trim();
         movePlayer(step);
+//        sendAction(action);
+    }
+
+    private void movePlayer(String step) {
+        movePlayer(new Dir(step.trim().substring(0,1)));
+    }
+
+    private void movePlayer(Dir dir){
+        if (mSocket != null) {
+            log.info("Dir = {}", dir);
+            try {
+                mSocket.emit(ClientConfig.PLAYER.OUTGOING.DRIVE_PLAYER, new JSONObject(dir.toString()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void sendAction(String action) {
+        sendAction(action, null, null);
+    }
+
+    private void sendAction(String action, String characterType, Map<String, Integer> payload) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("action", action);
+
+            if (characterType != null) {
+                json.put("characterType", characterType);
+            }
+            if (payload != null) {
+                json.put("payload", new JSONObject(payload));
+            }
+
+            if (mSocket != null) {
+                mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, json);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void connectToServer() {
@@ -176,6 +250,7 @@ public class SocketController implements Initializable {
         mSocket.on(ClientConfig.PLAYER.INCOMMING.JOIN_GAME, mOnJoinGameListener);
         mSocket.on(ClientConfig.PLAYER.INCOMMING.TICKTACK_PLAYER, mOnTickTackListener);
         mSocket.on(ClientConfig.PLAYER.INCOMMING.DRIVE_PLAYER, mOnDriveStateListener);
+        mSocket.on(ClientConfig.PLAYER.INCOMMING.REGISTER_POWER, mOnRegisterPowerResponse);
         mSocket.on(Socket.EVENT_CONNECT, objects -> {
             log.info("Connected");
             String gameParams = new Game(mGameId, mPlayerId).toString();

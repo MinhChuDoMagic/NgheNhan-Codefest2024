@@ -20,7 +20,10 @@
 
         <TextField fx:id="edtGameId" layoutX="112.0" layoutY="55.0" prefHeight="25.0" prefWidth="518.0" promptText="Room ID" />
 
-        <TextField id="editTextTid" fx:id="edtPlayerId" layoutX="112.0" layoutY="91.0" prefHeight="25.0" prefWidth="518.0" promptText="Team ID" />
+        <TextField fx:id="edtPlayerId" layoutX="112.0" layoutY="91.0" prefHeight="25.0" prefWidth="258.0" promptText="Team ID" />
+
+        <Label layoutX="382.0" layoutY="95.0" text="Power Type" />
+        <TextField fx:id="edtPowerType" layoutX="448.0" layoutY="91.0" prefHeight="25.0" prefWidth="182.0" promptText="Type 1 or 2" />
 
 
         <Button id="btnRegister" fx:id="btnRegister" layoutX="59.0" layoutY="132.0" mnemonicParsing="false" onAction="#onButtonRegisterClicked" prefHeight="39.0" prefWidth="572.0" text="Register" />

@@ -67,12 +67,12 @@ public class SocketController implements Initializable {
 
                 if (gameInfo != null) {
                     List<Order> orders = strategy.find(gameInfo);
-                    log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
+//                    log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
                     orders.forEach(this::handleOrder);
                 }
             }
 
-            log.info("Process time: {}", System.currentTimeMillis() - startTime);
+//            log.info("Process time: {}", System.currentTimeMillis() - startTime);
         }
     };
 

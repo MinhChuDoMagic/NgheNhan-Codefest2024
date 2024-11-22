@@ -17,8 +17,8 @@ public class AStarFinder{
     };
 
     public String find(int[][] map, Position currentPosition, MapSize size) {
-        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(n -> n.cost));
-        pq.add(new Node(currentPosition.row, currentPosition.col, 0, null, null));
+        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(Node::getF));
+        pq.add(new Node(currentPosition.row, currentPosition.col, 0,0, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
 
         while (!pq.isEmpty()) {
@@ -40,21 +40,20 @@ public class AStarFinder{
                 String move = Integer.toString(dir[2]);
 
                 if (isValid(newRow, newCol, map, visited, size)) {
-                    double newCost = current.cost;
+                    double newCost = current.g;
                     StringBuilder newCommands = new StringBuilder(current.commands);
 
                     if (map[newRow][newCol] == 0) {
-                        newCost += 0.2; // Empty cell
+                        newCost += 1; // Empty cell
                     } else if (map[newRow][newCol] == 3) {
                         newCommands.append(Dir.ACTION);
-                        newCost += 1.2; // 1s to destroy + 0.2s to move
-                        map[newRow][newCol] = 0; // Mark as empty after destruction
+                        newCost += 6; // 1s to destroy + 0.2s to move
                     }
 
                     // Add move command
                     newCommands.append(move);
                     double heuristic = manhattanDistance(newRow, newCol, map, size);
-                    pq.add(new Node(newRow, newCol, newCost + heuristic, current, newCommands));
+                    pq.add(new Node(newRow, newCol, newCost, heuristic, current, newCommands));
                 }
             }
         }
@@ -70,13 +69,14 @@ public class AStarFinder{
     }
 
     private double manhattanDistance(int row, int col, int[][] map, MapSize size) {
+        double ans = 999999;
         for (int r = 0; r < size.rows; r++) {
             for (int c = 0; c < size.cols; c++) {
                 if (map[r][c] == 6) {
-                    return Math.abs(row - r) + Math.abs(col - c);
+                    ans = Math.min(ans, Math.abs(row - r) + Math.abs(col - c));
                 }
             }
         }
-        return 0;
+        return ans == 999999 ? 0 : ans;
     }
 }

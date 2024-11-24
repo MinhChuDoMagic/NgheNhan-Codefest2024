@@ -1,6 +1,7 @@
-package org.codefest2024.nghenhan.service.caculator;
+package org.codefest2024.nghenhan.service.caculator.farming;
 
-import org.codefest2024.nghenhan.service.caculator.data.BFSNode;
+import org.codefest2024.nghenhan.service.caculator.data.Node;
+import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 
@@ -26,14 +27,14 @@ public class GodFarmStrategy {
         }
 
         if (myBomb == null) {
-            BFSNode bombNode = bfsFinder.find(mapInfo.map, myPlayer.currentPosition, MapInfo.BOX, mapInfo.size);
+            Node bombNode = bfsFinder.find(mapInfo.map, myPlayer.currentPosition, MapInfo.BOX, mapInfo.size);
             Bomb bomb = new Bomb();
             bomb.row = bombNode.row;
             bomb.col = bombNode.col;
             bomb.power = myPlayer.power;
             List<Bomb> bombs = List.of(bomb);
 
-            BFSNode safeNode = bfsFinder.findSafe(mapInfo.map, new Position(bombNode.row, bombNode.col), bombs, mapInfo.size);
+            Node safeNode = bfsFinder.findSafe(mapInfo.map, new Position(bombNode.row, bombNode.col), bombs, mapInfo.size);
             orders.add(new Dir(bombNode.reconstructPath() + "b" + safeNode.reconstructPath()));
         }
 

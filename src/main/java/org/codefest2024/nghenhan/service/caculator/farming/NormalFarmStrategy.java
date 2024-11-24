@@ -1,5 +1,6 @@
-package org.codefest2024.nghenhan.service.caculator;
+package org.codefest2024.nghenhan.service.caculator.farming;
 
+import org.codefest2024.nghenhan.service.caculator.finder.AStarFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
 
 import java.util.List;

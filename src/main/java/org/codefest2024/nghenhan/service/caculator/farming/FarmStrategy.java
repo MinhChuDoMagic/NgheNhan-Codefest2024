@@ -1,5 +1,6 @@
-package org.codefest2024.nghenhan.service.caculator;
+package org.codefest2024.nghenhan.service.caculator.farming;
 
+import org.codefest2024.nghenhan.service.caculator.Strategy;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 

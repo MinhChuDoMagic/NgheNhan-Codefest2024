@@ -1,6 +1,6 @@
-package org.codefest2024.nghenhan.service.caculator;
+package org.codefest2024.nghenhan.service.caculator.finder;
 
-import org.codefest2024.nghenhan.service.caculator.data.BFSNode;
+import org.codefest2024.nghenhan.service.caculator.data.Node;
 import org.codefest2024.nghenhan.service.socket.data.*;
 
 import java.util.LinkedList;
@@ -15,13 +15,13 @@ public class BFSFinder {
             {1, 0, Integer.parseInt(Dir.DOWN)}
     };
 
-    public BFSNode find(int[][] map, Position curr, int targetValue, MapSize size) {
-        Queue<BFSNode> queue = new LinkedList<>();
-        queue.add(new BFSNode(curr.row, curr.col, null, null));
+    public Node find(int[][] map, Position curr, int targetValue, MapSize size) {
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(new Node(curr.row, curr.col, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
 
         while (!queue.isEmpty()) {
-            BFSNode currNode = queue.poll();
+            Node currNode = queue.poll();
 
             int row = currNode.row;
             int col = currNode.col;
@@ -40,20 +40,20 @@ public class BFSFinder {
                 if (isValid(newRow, newCol, map, visited, size)) {
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
                     newCommands.append(dir[2]);
-                    queue.add(new BFSNode(newRow, newCol, currNode, newCommands));
+                    queue.add(new Node(newRow, newCol, currNode, newCommands));
                 }
             }
         }
-        return new BFSNode(curr.row, curr.col, null, null);
+        return new Node(curr.row, curr.col, null, null);
     }
 
-    public BFSNode findSafe(int[][] map, Position curr, List<Bomb> bomb, MapSize size) {
-        Queue<BFSNode> queue = new LinkedList<>();
-        queue.add(new BFSNode(curr.row, curr.col, null, null));
+    public Node findSafe(int[][] map, Position curr, List<Bomb> bomb, MapSize size) {
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(new Node(curr.row, curr.col, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
 
         while (!queue.isEmpty()) {
-            BFSNode currNode = queue.poll();
+            Node currNode = queue.poll();
 
             int row = currNode.row;
             int col = currNode.col;
@@ -73,11 +73,11 @@ public class BFSFinder {
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
                     newCommands.append(dir[2]);
 
-                    queue.add(new BFSNode(newRow, newCol, currNode, newCommands));
+                    queue.add(new Node(newRow, newCol, currNode, newCommands));
                 }
             }
         }
-        return new BFSNode(curr.row, curr.col, null, null);
+        return new Node(curr.row, curr.col, null, null);
     }
 
     private boolean isValid(int row, int col, int[][] map, boolean[][] visited, MapSize size) {

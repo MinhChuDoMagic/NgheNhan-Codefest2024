@@ -1,10 +1,11 @@
-package org.codefest2024.nghenhan.service.caculator;
+package org.codefest2024.nghenhan.service.caculator.finder;
 
 import org.codefest2024.nghenhan.service.caculator.data.AStarNode;
 import org.codefest2024.nghenhan.service.socket.data.Dir;
 import org.codefest2024.nghenhan.service.socket.data.MapInfo;
 import org.codefest2024.nghenhan.service.socket.data.MapSize;
 import org.codefest2024.nghenhan.service.socket.data.Position;
+import org.codefest2024.nghenhan.utils.CalculateUtils;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -53,7 +54,7 @@ public class AStarFinder{
 
                     // Add move command
                     newCommands.append(move);
-                    double heuristic = manhattanDistance(new Position(newRow, newCol), des);
+                    double heuristic = CalculateUtils.manhattanDistance(new Position(newRow, newCol), des);
                     pq.add(new AStarNode(newRow, newCol, newCost, heuristic, currNode, newCommands));
                 }
             }
@@ -73,9 +74,5 @@ public class AStarFinder{
                 && map[row][col] != MapInfo.WALL
                 && map[row][col] != MapInfo.BOX
                 && map[row][col] != MapInfo.PRISON;
-    }
-
-    private double manhattanDistance(Position curr, Position des) {
-        return Math.abs(curr.row - des.row) + Math.abs(curr.col - des.col);
     }
 }

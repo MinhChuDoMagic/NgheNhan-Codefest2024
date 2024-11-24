@@ -6,6 +6,7 @@ import org.codefest2024.nghenhan.utils.constant.Constants;
 import java.util.List;
 
 public class FarmStrategy implements Strategy {
+    boolean checkSwitch = false;
     @Override
     public List<Order> find(GameInfo gameInfo) {
         MapInfo mapInfo = gameInfo.map_info;
@@ -17,9 +18,16 @@ public class FarmStrategy implements Strategy {
         }
 
         if (!myPlayer.hasTransform) {
+            checkSwitch = false;
+            if (myPlayer.currentWeapon == 2) {
+                return List.of(new Action(Action.SWITCH_WEAPON));
+            }
+        }
+        if (!myPlayer.hasTransform) {
             String dir = new AStarFinder().find(mapInfo.map, myPlayer.currentPosition, mapInfo.size);
             return List.of(new Dir(dir));
-        } else if (myPlayer.currentWeapon != 2) {
+        } else if (myPlayer.currentWeapon != 2 && !checkSwitch) {
+            checkSwitch = true;
             return List.of(new Action(Action.SWITCH_WEAPON));
         }
 

@@ -29,9 +29,6 @@ public final class Dir extends Order {
         KEY_TO_STEP.put(KeyCode.DOWN.ordinal(), DOWN);
         KEY_TO_STEP.put(KeyCode.RIGHT.ordinal(), RIGHT);
         KEY_TO_STEP.put(KeyCode.SPACE.ordinal(), ACTION);
-        KEY_TO_STEP.put(KeyCode.J.ordinal(), SWITCH_WEAPON);
-        KEY_TO_STEP.put(KeyCode.K.ordinal(), USE_WEAPON);
-        KEY_TO_STEP.put(KeyCode.L.ordinal(), MARRY_WIFE);
 
         KEY_TO_ACTION.put(KeyCode.J.ordinal(), SWITCH_WEAPON);
         KEY_TO_ACTION.put(KeyCode.K.ordinal(), USE_WEAPON);

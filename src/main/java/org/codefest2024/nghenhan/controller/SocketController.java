@@ -34,10 +34,10 @@ public class SocketController implements Initializable {
     TextField edtPlayerId;
 
     @FXML
-    TextField editTextURL;
+    TextField edtPowerType;
 
     @FXML
-    javafx.scene.control.TextField edtPowerType;
+    TextField editTextURL;
 
     @FXML
     Button btnStart;
@@ -55,6 +55,7 @@ public class SocketController implements Initializable {
     private static final String URL = "http://localhost/";
     private String mPlayerId;
     private String mGameId;
+    private String powerType;
 
     private Socket mSocket;
     private static GameInfo gameInfo;
@@ -125,10 +126,8 @@ public class SocketController implements Initializable {
     };
 
     private final Emitter.Listener mOnRegisterPowerResponse = objects -> {
-        if (objects != null && objects.length > 0) {
-            String response = objects[0].toString();
-            log.info("ClientConfig.PLAYER.INCOMMING.REGISTER_POWER: {}", response);
-        }
+        String response = objects[0].toString();
+        log.info("ClientConfig.PLAYER.INCOMMING.REGISTER_POWER: {}", response);
     };
 
     @Override
@@ -148,7 +147,11 @@ public class SocketController implements Initializable {
             } else {
                 String action = Dir.KEY_TO_ACTION.get(event.getCode().ordinal());
                 if (action != null) {
-                    sendAction(action);
+                    switch (action) {
+                        case Dir.SWITCH_WEAPON -> sendAction(Action.SWITCH_WEAPON, null, null);
+                        case Dir.USE_WEAPON -> sendAction(Action.USE_WEAPON, null, null);
+                        case Dir.MARRY_WIFE -> sendAction(Action.MARRY_WIFE, null, null);
+                    }
                 }
             }
         });
@@ -170,52 +173,33 @@ public class SocketController implements Initializable {
     public void onButtonRegisterClicked(ActionEvent actionEvent) {
         mPlayerId = edtPlayerId.getText().trim();
         mGameId = edtGameId.getText().trim();
-        String powerType = edtPowerType.getText().trim();
-        connectToServer();
-        if (!powerType.isEmpty()) {
-            try {
-                JSONObject params = new JSONObject();
-                params.put("gameId", mGameId);
-                params.put("type", powerType);
-
-                mSocket.emit("register character power", params);
-                txtMessage.setText("Registered character power with type: " + powerType + "\n");
-            } catch (JSONException | NumberFormatException e) {
-                e.printStackTrace();
-                txtMessage.setText("Failed to register character power: " + e.getMessage() + "\n");
-            }
-        } else {
+        powerType = edtPowerType.getText().trim();
+        if (TextUtils.isEmpty(powerType)) {
             txtMessage.appendText("Power Type is empty. Skipping registration.\n");
+            return;
         }
+        connectToServer();
     }
 
     public void btnSend(ActionEvent actionEvent) {
         String step = editTextAction.getText().trim();
-//        String action = editTextAction.getText().trim();
-        movePlayer(step);
-//        sendAction(action);
-    }
-
-    private void movePlayer(String step) {
-        movePlayer(new Dir(step.trim().substring(0,1)));
-    }
-
-    private void movePlayer(Dir dir){
-        if (mSocket != null) {
-            log.info("Dir = {}", dir);
-            try {
-                mSocket.emit(ClientConfig.PLAYER.OUTGOING.DRIVE_PLAYER, new JSONObject(dir.toString()));
-            } catch (JSONException e) {
-                e.printStackTrace();
+        String action = editTextAction.getText().trim();
+        if (isStep(step)) {
+            movePlayer(step);
+        } else {
+            switch (action) {
+                case Dir.SWITCH_WEAPON -> sendAction(Action.SWITCH_WEAPON, null, null);
+                case Dir.USE_WEAPON -> sendAction(Action.USE_WEAPON, null, null);
+                case Dir.MARRY_WIFE -> sendAction(Action.MARRY_WIFE, null, null);
             }
         }
     }
 
-    private void sendAction(String action) {
-        sendAction(action, null, null);
+    private boolean isStep(String input) {
+        return input.matches("[0-9b]+");
     }
 
-    private void sendAction(String action, String characterType, Map<String, Integer> payload) {
+    private void sendAction(String action, Map<String, Integer> payload, String characterType) {
         JSONObject json = new JSONObject();
         try {
             json.put("action", action);
@@ -257,6 +241,12 @@ public class SocketController implements Initializable {
             log.info("Game params = {}", gameParams);
             try {
                 mSocket.emit(ClientConfig.PLAYER.OUTGOING.JOIN_GAME, new JSONObject(gameParams));
+                JSONObject powerParams = new JSONObject();
+                powerParams.put("gameId", mGameId);
+                powerParams.put("type", Integer.parseInt(powerType));
+                log.info("Registering power with params: {}", powerParams);
+                mSocket.emit(ClientConfig.PLAYER.INCOMMING.REGISTER_POWER, powerParams);
+                txtMessage.setText("Registered power type: " + powerType + "\n");
             } catch (JSONException e) {
                 e.printStackTrace();
             }

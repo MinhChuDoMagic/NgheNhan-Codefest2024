@@ -1,7 +1,8 @@
 package org.codefest2024.nghenhan.service.caculator;
 
-import org.codefest2024.nghenhan.service.caculator.data.Node;
+import org.codefest2024.nghenhan.service.caculator.data.AStarNode;
 import org.codefest2024.nghenhan.service.socket.data.Dir;
+import org.codefest2024.nghenhan.service.socket.data.MapInfo;
 import org.codefest2024.nghenhan.service.socket.data.MapSize;
 import org.codefest2024.nghenhan.service.socket.data.Position;
 
@@ -9,26 +10,26 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public class AStarFinder{
-    private int[][] directions = {
+    private final int[][] directions = {
             {0, -1, Integer.parseInt(Dir.LEFT)},
             {0, 1, Integer.parseInt(Dir.RIGHT)},
             {-1, 0, Integer.parseInt(Dir.UP)},
             {1, 0, Integer.parseInt(Dir.DOWN)}
     };
 
-    public String find(int[][] map, Position currentPosition, MapSize size) {
-        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(Node::getF));
-        pq.add(new Node(currentPosition.row, currentPosition.col, 0,0, null, null));
+    public String find(int[][] map, Position curr, Position des, MapSize size) {
+        PriorityQueue<AStarNode> pq = new PriorityQueue<>(Comparator.comparingDouble(AStarNode::getF));
+        pq.add(new AStarNode(curr.row, curr.col, 0,0, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
 
         while (!pq.isEmpty()) {
-            Node current = pq.poll();
-            int row = current.row;
-            int col = current.col;
+            AStarNode currNode = pq.poll();
+            int row = currNode.row;
+            int col = currNode.col;
 
             // If target is found
-            if (map[row][col] == 6) {
-                return reconstructPath(current);
+            if (des.row == row && des.col == col) {
+                return reconstructPath(currNode);
             }
 
             if (visited[row][col]) continue;
@@ -40,43 +41,41 @@ public class AStarFinder{
                 String move = Integer.toString(dir[2]);
 
                 if (isValid(newRow, newCol, map, visited, size)) {
-                    double newCost = current.g;
-                    StringBuilder newCommands = new StringBuilder(current.commands);
+                    double newCost = currNode.g;
+                    StringBuilder newCommands = new StringBuilder(currNode.commands);
 
-                    if (map[newRow][newCol] == 0) {
+                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] ==  MapInfo.DESTROYED) {
                         newCost += 1; // Empty cell
-                    } else if (map[newRow][newCol] == 3) {
+                    } else if (map[newRow][newCol] == MapInfo.BRICK) {
                         newCommands.append(Dir.ACTION);
                         newCost += 6; // 1s to destroy + 0.2s to move
                     }
 
                     // Add move command
                     newCommands.append(move);
-                    double heuristic = manhattanDistance(newRow, newCol, map, size);
-                    pq.add(new Node(newRow, newCol, newCost, heuristic, current, newCommands));
+                    double heuristic = manhattanDistance(new Position(newRow, newCol), des);
+                    pq.add(new AStarNode(newRow, newCol, newCost, heuristic, currNode, newCommands));
                 }
             }
         }
-        return "";
+        return Dir.INVALID;
     }
 
-    private String reconstructPath(Node node) {
-        return node != null ? node.commands.toString() : "";
+    private String reconstructPath(AStarNode node) {
+        return node != null ? node.commands.toString() : Dir.INVALID;
     }
 
     private boolean isValid(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
-        return row >= 0 && row < size.rows && col >= 0 && col < size.cols && !visited[row][col] && map[row][col] != 1 && map[row][col] != 2 && map[row][col] != 5;
+        return row >= 0
+                && row < size.rows
+                && col >= 0 && col < size.cols
+                && !visited[row][col]
+                && map[row][col] != MapInfo.WALL
+                && map[row][col] != MapInfo.BOX
+                && map[row][col] != MapInfo.PRISON;
     }
 
-    private double manhattanDistance(int row, int col, int[][] map, MapSize size) {
-        double ans = 999999;
-        for (int r = 0; r < size.rows; r++) {
-            for (int c = 0; c < size.cols; c++) {
-                if (map[r][c] == 6) {
-                    ans = Math.min(ans, Math.abs(row - r) + Math.abs(col - c));
-                }
-            }
-        }
-        return ans == 999999 ? 0 : ans;
+    private double manhattanDistance(Position curr, Position des) {
+        return Math.abs(curr.row - des.row) + Math.abs(curr.col - des.col);
     }
 }

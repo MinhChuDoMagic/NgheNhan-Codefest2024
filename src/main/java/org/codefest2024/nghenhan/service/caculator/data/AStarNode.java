@@ -2,13 +2,13 @@ package org.codefest2024.nghenhan.service.caculator.data;
 
 import org.codefest2024.nghenhan.service.socket.data.Position;
 
-public class Node extends Position {
+public class AStarNode extends Position {
     public double g;
     public double h;
-    public Node parent;
+    public AStarNode parent;
     public StringBuilder commands;
 
-    public Node(int row, int col, double g, double h, Node parent, StringBuilder commands) {
+    public AStarNode(int row, int col, double g, double h, AStarNode parent, StringBuilder commands) {
         this.row = row;
         this.col = col;
         this.g = g;

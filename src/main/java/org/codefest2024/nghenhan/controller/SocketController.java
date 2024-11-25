@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 @Slf4j
@@ -31,6 +32,9 @@ public class SocketController implements Initializable {
     TextField edtGameId;
     @FXML
     TextField edtPlayerId;
+
+    @FXML
+    TextField edtPowerType;
 
     @FXML
     TextField editTextURL;
@@ -51,6 +55,7 @@ public class SocketController implements Initializable {
     private static final String URL = "http://localhost/";
     private String mPlayerId;
     private String mGameId;
+    private String powerType;
 
     private Socket mSocket;
     private static GameInfo gameInfo;
@@ -68,7 +73,7 @@ public class SocketController implements Initializable {
                 if (gameInfo != null) {
                     List<Order> orders = strategy.find(gameInfo);
 //                    log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
-                    orders.forEach(this::handleOrder);
+//                    orders.forEach(this::handleOrder);
                 }
             }
 
@@ -120,11 +125,17 @@ public class SocketController implements Initializable {
         log.info("ClientConfig.PLAYER.INCOMMING.JOIN_GAME: {}", response);
     };
 
+    private final Emitter.Listener mOnRegisterPowerResponse = objects -> {
+        String response = objects[0].toString();
+        log.info("ClientConfig.PLAYER.INCOMMING.REGISTER_POWER: {}", response);
+    };
+
     @Override
     @SuppressWarnings("unknown enum constant DeprecationLevel.ERROR")
     public void initialize(URL url, ResourceBundle resourceBundle) {
         edtGameId.setText(Constants.KEY_MAP);
         edtPlayerId.setText(Constants.KEY_TEAM);
+        edtPowerType.setText(Constants.CHARACTER_POWER);
         editTextURL.setText(URL);
         btnStop.setDisable(true);
 
@@ -134,6 +145,15 @@ public class SocketController implements Initializable {
             String step = Dir.KEY_TO_STEP.get(key);
             if (!TextUtils.isEmpty(step)) {
                 movePlayer(step);
+            } else {
+                String action = Dir.KEY_TO_ACTION.get(event.getCode().ordinal());
+                if (action != null) {
+                    switch (action) {
+                        case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON));
+                        case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON));
+                        case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
+                    }
+                }
             }
         });
     }
@@ -154,12 +174,40 @@ public class SocketController implements Initializable {
     public void onButtonRegisterClicked(ActionEvent actionEvent) {
         mPlayerId = edtPlayerId.getText().trim();
         mGameId = edtGameId.getText().trim();
+        powerType = edtPowerType.getText().trim();
+        if (TextUtils.isEmpty(powerType)) {
+            txtMessage.appendText("Power Type is empty. Skipping registration.\n");
+            return;
+        }
         connectToServer();
     }
 
     public void btnSend(ActionEvent actionEvent) {
         String step = editTextAction.getText().trim();
-        movePlayer(step);
+        String action = editTextAction.getText().trim();
+        if (isStep(step)) {
+            movePlayer(step);
+        } else {
+            switch (action) {
+                case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON));
+                case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON));
+                case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
+            }
+        }
+    }
+
+    private boolean isStep(String input) {
+        return input.matches("[0-9b]+");
+    }
+
+    private void sendAction(Action action) {
+        try {
+            if (mSocket != null) {
+                mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, new JSONObject(action.toString()));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void connectToServer() {
@@ -176,12 +224,19 @@ public class SocketController implements Initializable {
         mSocket.on(ClientConfig.PLAYER.INCOMMING.JOIN_GAME, mOnJoinGameListener);
         mSocket.on(ClientConfig.PLAYER.INCOMMING.TICKTACK_PLAYER, mOnTickTackListener);
         mSocket.on(ClientConfig.PLAYER.INCOMMING.DRIVE_PLAYER, mOnDriveStateListener);
+        mSocket.on(ClientConfig.PLAYER.INCOMMING.REGISTER_POWER, mOnRegisterPowerResponse);
         mSocket.on(Socket.EVENT_CONNECT, objects -> {
             log.info("Connected");
             String gameParams = new Game(mGameId, mPlayerId).toString();
             log.info("Game params = {}", gameParams);
             try {
                 mSocket.emit(ClientConfig.PLAYER.OUTGOING.JOIN_GAME, new JSONObject(gameParams));
+                JSONObject powerParams = new JSONObject();
+                powerParams.put("gameId", mGameId);
+                powerParams.put("type", Integer.parseInt(powerType));
+                log.info("Registering power with params: {}", powerParams);
+                mSocket.emit(ClientConfig.PLAYER.INCOMMING.REGISTER_POWER, powerParams);
+                txtMessage.setText("Registered power type: " + powerType + "\n");
             } catch (JSONException e) {
                 e.printStackTrace();
             }

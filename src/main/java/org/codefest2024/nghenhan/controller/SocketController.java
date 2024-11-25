@@ -73,7 +73,7 @@ public class SocketController implements Initializable {
                 if (gameInfo != null) {
                     List<Order> orders = strategy.find(gameInfo);
 //                    log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
-//                    orders.forEach(this::handleOrder);
+                    orders.forEach(this::handleOrder);
                 }
             }
 

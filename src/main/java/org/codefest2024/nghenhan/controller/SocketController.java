@@ -73,7 +73,7 @@ public class SocketController implements Initializable {
                 if (gameInfo != null) {
                     List<Order> orders = strategy.find(gameInfo);
 //                    log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
-                    orders.forEach(this::handleOrder);
+//                    orders.forEach(this::handleOrder);
                 }
             }
 
@@ -135,6 +135,7 @@ public class SocketController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         edtGameId.setText(Constants.KEY_MAP);
         edtPlayerId.setText(Constants.KEY_TEAM);
+        edtPowerType.setText(Constants.CHARACTER_POWER);
         editTextURL.setText(URL);
         btnStop.setDisable(true);
 
@@ -148,9 +149,9 @@ public class SocketController implements Initializable {
                 String action = Dir.KEY_TO_ACTION.get(event.getCode().ordinal());
                 if (action != null) {
                     switch (action) {
-                        case Dir.SWITCH_WEAPON -> sendAction(Action.SWITCH_WEAPON, null, null);
-                        case Dir.USE_WEAPON -> sendAction(Action.USE_WEAPON, null, null);
-                        case Dir.MARRY_WIFE -> sendAction(Action.MARRY_WIFE, null, null);
+                        case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON));
+                        case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON));
+                        case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
                     }
                 }
             }
@@ -188,9 +189,9 @@ public class SocketController implements Initializable {
             movePlayer(step);
         } else {
             switch (action) {
-                case Dir.SWITCH_WEAPON -> sendAction(Action.SWITCH_WEAPON, null, null);
-                case Dir.USE_WEAPON -> sendAction(Action.USE_WEAPON, null, null);
-                case Dir.MARRY_WIFE -> sendAction(Action.MARRY_WIFE, null, null);
+                case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON));
+                case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON));
+                case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
             }
         }
     }
@@ -199,25 +200,14 @@ public class SocketController implements Initializable {
         return input.matches("[0-9b]+");
     }
 
-    private void sendAction(String action, Map<String, Integer> payload, String characterType) {
-        JSONObject json = new JSONObject();
+    private void sendAction(Action action) {
         try {
-            json.put("action", action);
-
-            if (characterType != null) {
-                json.put("characterType", characterType);
-            }
-            if (payload != null) {
-                json.put("payload", new JSONObject(payload));
-            }
-
             if (mSocket != null) {
-                mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, json);
+                mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, new JSONObject(action.toString()));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     private void connectToServer() {

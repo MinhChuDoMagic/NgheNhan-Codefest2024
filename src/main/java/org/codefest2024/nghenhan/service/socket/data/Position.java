@@ -1,14 +1,14 @@
 package org.codefest2024.nghenhan.service.socket.data;
 
 public class Position {
-    public int col;
     public int row;
+    public int col;
 
-    public int getCol() {
-        return col;
+    public Position() {
     }
 
-    public int getRow() {
-        return row;
+    public Position(int row, int col) {
+        this.row = row;
+        this.col = col;
     }
 }

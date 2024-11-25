@@ -6,13 +6,14 @@ import org.codefest2024.nghenhan.service.socket.data.*;
 import java.util.List;
 
 public class NormalFarmStrategy {
-    private final AStarFinder aStarFinder = new AStarFinder();
+    private final AStarFinder aStarFinder = AStarFinder.getInstance();
 
     public List<Order> find(GameInfo gameInfo, Player myPlayer) {
         MapInfo mapInfo = gameInfo.map_info;
         Position destination = getNearestBadgePosition(mapInfo.map, myPlayer.currentPosition, mapInfo.size);
         String dir = aStarFinder.find(mapInfo.map, myPlayer.currentPosition, destination, mapInfo.size);
-        return List.of(new Dir(dir));
+//        return List.of(new Dir(dir));
+        return List.of(new Dir(dir.length() > 3 ? dir.substring(0,3) : dir));
     }
 
     private Position getNearestBadgePosition(int[][] map, Position currentPosition, MapSize size) {

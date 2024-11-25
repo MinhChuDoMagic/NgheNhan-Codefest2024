@@ -16,14 +16,13 @@ import org.codefest2024.nghenhan.service.caculator.Strategy;
 import org.codefest2024.nghenhan.service.socket.ClientConfig;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.SocketUtils;
-import org.codefest2024.nghenhan.utils.TextUtils;
+import org.codefest2024.nghenhan.utils.Utils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 @Slf4j
@@ -67,7 +66,7 @@ public class SocketController implements Initializable {
             long startTime = System.currentTimeMillis();
             String data = objects[0].toString();
 
-            if (!TextUtils.isEmpty(data)) {
+            if (!Utils.isEmpty(data)) {
                 gameInfo = new Gson().fromJson(data, GameInfo.class);
 
                 if (gameInfo != null) {
@@ -94,7 +93,7 @@ public class SocketController implements Initializable {
     }
 
     private void movePlayer(Dir dir) {
-        if (mSocket != null) {
+        if (mSocket != null && !dir.direction.isEmpty()) {
             log.info("Dir = {}", dir);
             try {
                 mSocket.emit(ClientConfig.PLAYER.OUTGOING.DRIVE_PLAYER, new JSONObject(dir.toString()));
@@ -131,7 +130,6 @@ public class SocketController implements Initializable {
     };
 
     @Override
-    @SuppressWarnings("unknown enum constant DeprecationLevel.ERROR")
     public void initialize(URL url, ResourceBundle resourceBundle) {
         edtGameId.setText(Constants.KEY_MAP);
         edtPlayerId.setText(Constants.KEY_TEAM);
@@ -143,7 +141,7 @@ public class SocketController implements Initializable {
             txtController.setText(event.getCode().toString() + " - " + event.getCode().ordinal());
             int key = event.getCode().ordinal();
             String step = Dir.KEY_TO_STEP.get(key);
-            if (!TextUtils.isEmpty(step)) {
+            if (!Utils.isEmpty(step)) {
                 movePlayer(step);
             } else {
                 String action = Dir.KEY_TO_ACTION.get(event.getCode().ordinal());
@@ -175,7 +173,7 @@ public class SocketController implements Initializable {
         mPlayerId = edtPlayerId.getText().trim();
         mGameId = edtGameId.getText().trim();
         powerType = edtPowerType.getText().trim();
-        if (TextUtils.isEmpty(powerType)) {
+        if (Utils.isEmpty(powerType)) {
             txtMessage.appendText("Power Type is empty. Skipping registration.\n");
             return;
         }

@@ -14,8 +14,18 @@ public class BFSFinder {
             {-1, 0, Integer.parseInt(Dir.UP)},
             {1, 0, Integer.parseInt(Dir.DOWN)}
     };
+    private static BFSFinder instance;
 
-    public Node find(int[][] map, Position curr, int targetValue, MapSize size) {
+    private BFSFinder(){}
+
+    public static BFSFinder getInstance(){
+        if (instance == null) {
+            instance = new BFSFinder();
+        }
+        return instance;
+    }
+
+    public Node findBombPlace(int[][] map, Position curr, int targetValue, MapSize size) {
         Queue<Node> queue = new LinkedList<>();
         queue.add(new Node(curr.row, curr.col, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];

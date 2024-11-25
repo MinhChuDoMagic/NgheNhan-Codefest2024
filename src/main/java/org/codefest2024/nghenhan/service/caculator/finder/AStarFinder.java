@@ -17,6 +17,16 @@ public class AStarFinder{
             {-1, 0, Integer.parseInt(Dir.UP)},
             {1, 0, Integer.parseInt(Dir.DOWN)}
     };
+    private static AStarFinder instance;
+
+    private AStarFinder(){}
+
+    public static AStarFinder getInstance(){
+        if (instance == null) {
+            instance = new AStarFinder();
+        }
+        return instance;
+    }
 
     public String find(int[][] map, Position curr, Position des, MapSize size) {
         PriorityQueue<AStarNode> pq = new PriorityQueue<>(Comparator.comparingDouble(AStarNode::getF));

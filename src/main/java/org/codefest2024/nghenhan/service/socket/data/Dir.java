@@ -38,9 +38,9 @@ public final class Dir extends Order {
     public String direction;
     public String characterType;
 
-    public Dir(String direction, String characterType) {
+    public Dir(String direction, boolean useChild) {
         this.direction = direction;
-        this.characterType = characterType;
+        this.characterType = useChild ? USE_CHILD : null;
     }
 
     public Dir(String direction) {

@@ -18,8 +18,8 @@ public class MapInfo {
     public int[][] map;
     public List<Bomb> bombs;
     public List<Spoil> spoils;
-    public List<WeaponHammers> weaponHammers;
-    public List<WeaponWinds> weaponWinds;
+    public List<WeaponHammer> weaponHammers;
+    public List<WeaponWind> weaponWinds;
 
     @Override
     public String toString() {

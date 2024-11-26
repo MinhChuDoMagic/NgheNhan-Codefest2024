@@ -12,10 +12,10 @@ public final class Action extends Order {
     public Payload payload;
     public String characterType;
 
-    public Action(String action, Payload payload, String characterType) {
+    public Action(String action, Payload payload, boolean useChild) {
         this.action = action;
         this.payload = payload;
-        this.characterType = characterType;
+        this.characterType = useChild ? USE_CHILD : null;
     }
 
     public Action(String action, Payload payload) {
@@ -23,9 +23,9 @@ public final class Action extends Order {
         this.payload = payload;
     }
 
-    public Action(String action, String characterType) {
+    public Action(String action, boolean useChild) {
         this.action = action;
-        this.characterType = characterType;
+        this.characterType = useChild ? USE_CHILD : null;
     }
 
     public Action(String action) {

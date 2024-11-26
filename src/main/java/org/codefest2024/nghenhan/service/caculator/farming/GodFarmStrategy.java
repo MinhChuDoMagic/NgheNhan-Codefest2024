@@ -20,7 +20,7 @@ public class GodFarmStrategy {
     private List<Order> farmBox(MapInfo mapInfo, Player myPlayer) {
         List<Order> orders = new ArrayList<>();
         if (myPlayer.currentWeapon != 2) {
-            orders.add(new Action(Action.SWITCH_WEAPON));
+            orders.add(new Action(Action.SWITCH_WEAPON, myPlayer.isChild));
         }
 
         Bomb myBomb = null;

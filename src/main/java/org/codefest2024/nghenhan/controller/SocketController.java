@@ -96,8 +96,7 @@ public class SocketController implements Initializable {
     }
 
     private void movePlayer(String step) {
-        String useChild = cbUseChild.isSelected() ? Dir.USE_CHILD : null;
-        movePlayer(new Dir(step.trim().substring(0, 1), useChild));
+        movePlayer(new Dir(step.trim().substring(0, 1), cbUseChild.isSelected()));
     }
 
     private void movePlayer(Dir dir) {
@@ -141,7 +140,7 @@ public class SocketController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         edtGameId.setText(Constants.KEY_MAP);
         edtPlayerId.setText(Constants.KEY_TEAM);
-//        edtPowerType.setText(Constants.CHARACTER_POWER);
+        edtPowerType.setText(Constants.CHARACTER_POWER);
         editTextURL.setText(URL);
         btnStop.setDisable(true);
 

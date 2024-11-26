@@ -40,7 +40,10 @@
 
                     <children>
 
-                        <TextField fx:id="editTextAction" layoutX="14.0" layoutY="42.0" prefHeight="39.0" prefWidth="318.0" promptText="Chain of steps here" />
+                        <CheckBox id="cbUseChild" fx:id="cbUseChild" layoutX="14.0" layoutY="12.0" mnemonicParsing="false" text="Use child" />
+                        <TextField fx:id="editTextAction" layoutX="14.0" layoutY="42.0" prefHeight="39.0" prefWidth="159.0" promptText="Chain of steps here" />
+                        <TextField fx:id="editTextDestination" layoutX="183.0" layoutY="42.0" prefHeight="39.0" prefWidth="159.0" promptText="Destination (Ex: 13, 4)" />
+                        <Label id="cbPayload" fx:id="cbPayload" layoutX="183.0" layoutY="12.0" mnemonicParsing="false" text="Payload (for Character 1)" />
 
                         <Button layoutX="14.0" layoutY="93.0" mnemonicParsing="false" onAction="#btnSend" prefHeight="39.0" prefWidth="319.0" text="Send" />
 

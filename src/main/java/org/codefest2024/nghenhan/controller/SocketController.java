@@ -51,6 +51,13 @@ public class SocketController implements Initializable {
     @FXML
     CheckBox cbFProxy;
 
+    @FXML
+    private CheckBox cbUseChild;
+
+    @FXML
+    private TextField editTextDestination;
+
+
     private static final String URL = "http://localhost/";
     private String mPlayerId;
     private String mGameId;
@@ -89,7 +96,7 @@ public class SocketController implements Initializable {
     }
 
     private void movePlayer(String step) {
-        movePlayer(new Dir(step.trim().substring(0, 1)));
+        movePlayer(new Dir(step.trim().substring(0, 1), cbUseChild.isSelected()));
     }
 
     private void movePlayer(Dir dir) {
@@ -145,13 +152,7 @@ public class SocketController implements Initializable {
                 movePlayer(step);
             } else {
                 String action = Dir.KEY_TO_ACTION.get(event.getCode().ordinal());
-                if (action != null) {
-                    switch (action) {
-                        case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON));
-                        case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON));
-                        case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
-                    }
-                }
+                processActionForPlayer(action);
             }
         });
     }
@@ -186,11 +187,7 @@ public class SocketController implements Initializable {
         if (isStep(step)) {
             movePlayer(step);
         } else {
-            switch (action) {
-                case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON));
-                case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON));
-                case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
-            }
+            processActionForPlayer(action);
         }
     }
 
@@ -201,6 +198,9 @@ public class SocketController implements Initializable {
     private void sendAction(Action action) {
         try {
             if (mSocket != null) {
+                String json = new Gson().toJson(action);
+                log.info("Sending json: {}", json);
+                log.info("Sending Action: {}", action.toString());
                 mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, new JSONObject(action.toString()));
             }
         } catch (JSONException e) {
@@ -245,4 +245,34 @@ public class SocketController implements Initializable {
         btnStop.setDisable(false);
         txtMessage.setText("Running!!!");
     }
+
+    private Position processPositionForWeapon(String text) {
+        if (text != null && text.contains(",")) {
+            String[] parts = text.split(", ");
+            try {
+                return new Position(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()));
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number");
+            }
+        }
+        return null;
+    }
+    
+    private void processActionForPlayer(String action) {
+        String useChild = cbUseChild.isSelected() ? Action.USE_CHILD : null;
+        String destination = editTextDestination.getText().trim();
+        Position position = "1".equals(edtPowerType.getText().trim()) ? processPositionForWeapon(destination) : null;
+
+        Payload payload = new Payload();
+        payload.destination = position;
+
+        log.info("Action: {}, Payload: {}", action, payload);
+
+        switch (action) {
+            case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON, useChild));
+            case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON, payload, useChild));
+            case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
+        }
+    }
+
 }

@@ -174,6 +174,7 @@ public class SocketController implements Initializable {
         mPlayerId = edtPlayerId.getText().trim();
         mGameId = edtGameId.getText().trim();
         powerType = edtPowerType.getText().trim();
+        Constants.KEY_TEAM = mPlayerId;
         if (Utils.isEmpty(powerType)) {
             txtMessage.appendText("Power Type is empty. Skipping registration.\n");
             return;
@@ -259,7 +260,6 @@ public class SocketController implements Initializable {
     }
     
     private void processActionForPlayer(String action) {
-        String useChild = cbUseChild.isSelected() ? Action.USE_CHILD : null;
         String destination = editTextDestination.getText().trim();
         Position position = "1".equals(edtPowerType.getText().trim()) ? processPositionForWeapon(destination) : null;
 
@@ -269,8 +269,8 @@ public class SocketController implements Initializable {
         log.info("Action: {}, Payload: {}", action, payload);
 
         switch (action) {
-            case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON, useChild));
-            case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON, payload, useChild));
+            case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON, cbUseChild.isSelected()));
+            case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON, payload, cbUseChild.isSelected()));
             case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
         }
     }

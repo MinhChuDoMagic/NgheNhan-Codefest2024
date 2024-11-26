@@ -16,9 +16,10 @@ public class BFSFinder {
     };
     private static BFSFinder instance;
 
-    private BFSFinder(){}
+    private BFSFinder() {
+    }
 
-    public static BFSFinder getInstance(){
+    public static BFSFinder getInstance() {
         if (instance == null) {
             instance = new BFSFinder();
         }
@@ -57,7 +58,7 @@ public class BFSFinder {
         return new Node(curr.row, curr.col, null, null);
     }
 
-    public Node findSafe(int[][] map, Position curr, List<Bomb> bomb, MapSize size) {
+    public Node findSafe(int[][] map, Position curr, MapSize size, List<Bomb> bombs, List<WeaponHammer> hammers, List<WeaponWind> winds) {
         Queue<Node> queue = new LinkedList<>();
         queue.add(new Node(curr.row, curr.col, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
@@ -68,7 +69,7 @@ public class BFSFinder {
             int row = currNode.row;
             int col = currNode.col;
 
-            if (isSafe(currNode, bomb)) {
+            if (isSafe(map, currNode, bombs, hammers, winds)) {
                 return currNode;
             }
 
@@ -105,11 +106,84 @@ public class BFSFinder {
                 && map[row][col] != MapInfo.BOX;
     }
 
-    private boolean isSafe(Position curr, List<Bomb> bombs) {
+    private boolean isSafe(int[][] map, Position curr, List<Bomb> bombs, List<WeaponHammer> hammers, List<WeaponWind> winds) {
+        return isSafeFromBombs(curr, bombs)
+                && isSafeFromHammers(curr, hammers)
+                && isSafeFromWinds(map, curr, winds);
+    }
+
+    private boolean isSafeFromBombs(Position curr, List<Bomb> bombs) {
         return bombs.stream().noneMatch(bomb ->
                 (curr.row == bomb.row && Math.abs(curr.col - bomb.col) <= bomb.power)
                         || (curr.col == bomb.col && Math.abs(curr.row - bomb.row) <= bomb.power)
         );
+    }
+
+    private boolean isSafeFromHammers(Position curr, List<WeaponHammer> hammers) {
+        return hammers.stream().noneMatch(hammer ->
+                Math.abs(curr.col - hammer.destination.col) <= hammer.power
+                        && Math.abs(curr.row - hammer.destination.row) <= hammer.power);
+    }
+
+    public static boolean isSafeFromWinds(int[][] map, Position curr, List<WeaponWind> winds) {
+        for (WeaponWind wind : winds) {
+            int row = wind.currentRow;
+            int col = wind.currentCol;
+
+            switch (wind.direction) {
+                case 1: // Left
+                    while (col >= 0) {
+                        if (row == curr.row && col == curr.col) {
+                            return false; // wind can hit the player
+                        }
+                        if (map[row][col] != 0) {
+                            break; // wind is blocked
+                        }
+                        col--;
+                    }
+                    break;
+
+                case 2: // Right
+                    while (col < map[0].length) {
+                        if (row == curr.row && col == curr.col) {
+                            return false;
+                        }
+                        if (map[row][col] != 0) {
+                            break;
+                        }
+                        col++;
+                    }
+                    break;
+
+                case 3: // Up
+                    while (row >= 0) {
+                        if (row == curr.row && col == curr.col) {
+                            return false;
+                        }
+                        if (map[row][col] != 0) {
+                            break;
+                        }
+                        row--;
+                    }
+                    break;
+
+                case 4: // Down
+                    while (row < map.length) {
+                        if (row == curr.row && col == curr.col) {
+                            return false;
+                        }
+                        if (map[row][col] != 0) {
+                            break;
+                        }
+                        row++;
+                    }
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Invalid direction: " + wind.direction);
+            }
+        }
+        return true;
     }
 
 }

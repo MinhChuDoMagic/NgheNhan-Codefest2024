@@ -10,10 +10,15 @@ public class NormalFarmStrategy {
 
     public List<Order> find(GameInfo gameInfo, Player myPlayer) {
         MapInfo mapInfo = gameInfo.map_info;
+
+        if (mapInfo.map[myPlayer.currentPosition.row][myPlayer.currentPosition.col] == MapInfo.CAPTURED_BADGE) {
+            return List.of();
+        }
+
         Position destination = getNearestBadgePosition(mapInfo.map, myPlayer.currentPosition, mapInfo.size);
         String dir = aStarFinder.find(mapInfo.map, myPlayer.currentPosition, destination, mapInfo.size);
 //        return List.of(new Dir(dir));
-        return List.of(new Dir(dir.length() > 3 ? dir.substring(0,3) : dir));
+        return List.of(new Dir(dir.length() > 3 ? dir.substring(0, 3) : dir));
     }
 
     private Position getNearestBadgePosition(int[][] map, Position currentPosition, MapSize size) {

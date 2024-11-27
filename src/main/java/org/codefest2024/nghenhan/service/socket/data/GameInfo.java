@@ -9,6 +9,8 @@ public class GameInfo {
     public long gameRemainTime;
     public MapInfo map_info;
 
+    public static final String BOMB_EXPLODED = "bomb:exploded";
+
     @Override
     public String toString() {
         return new Gson().toJson(this);

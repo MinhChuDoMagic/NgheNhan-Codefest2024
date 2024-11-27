@@ -76,9 +76,9 @@ public class SocketController implements Initializable {
             if (!Utils.isEmpty(data)) {
                 gameInfo = new Gson().fromJson(data, GameInfo.class);
 
-                if (gameInfo != null) {
+                if (gameInfo != null && !gameInfo.tag.equals(GameInfo.BOMB_EXPLODED)) {
                     List<Order> orders = strategy.find(gameInfo);
-//                    log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
+                    log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
                     orders.forEach(this::handleOrder);
                 }
             }
@@ -122,8 +122,8 @@ public class SocketController implements Initializable {
     }
 
     private final Emitter.Listener mOnDriveStateListener = objects -> {
-        String response = objects[0].toString();
-        log.info("ClientConfig.PLAYER.INCOMMING.DRIVE_PLAYER: {}", response);
+//        String response = objects[0].toString();
+//        log.info("ClientConfig.PLAYER.INCOMMING.DRIVE_PLAYER: {}", response);
     };
 
     private Emitter.Listener mOnJoinGameListener = objects -> {

@@ -31,10 +31,10 @@ public class UseSkillStrategy {
             return List.of();
         }
 
-        return switch (myPlayer.transformType) {
+        return switch (playerType) {
             case Player.MOUNTAIN -> useMountainSkill(myPlayer, enemies);
             case Player.SEA -> useSeaSkill(mapInfo.map, myPlayer, enemies);
-            default -> throw new IllegalStateException("Invalid transformType: " + myPlayer.transformType);
+            default -> throw new IllegalStateException("Invalid transformType: " + playerType);
         };
     }
 

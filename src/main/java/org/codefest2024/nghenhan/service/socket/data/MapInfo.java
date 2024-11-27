@@ -12,6 +12,7 @@ public class MapInfo {
     public static final int PRISON = 5;
     public static final int BADGE = 6;
     public static final int DESTROYED = 7;
+    public static final int CAPTURED_BADGE = 16;
 
     public MapSize size;
     public List<Player> players;

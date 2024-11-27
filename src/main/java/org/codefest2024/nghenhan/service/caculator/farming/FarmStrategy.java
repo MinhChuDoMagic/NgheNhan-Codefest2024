@@ -73,7 +73,11 @@ public class FarmStrategy implements Strategy {
 
     private int[][] updateMap(int[][] map, List<Position> positions) {
         for (Position position : positions) {
-            map[position.row][position.col] = MapInfo.WALL;
+            if (map[position.row][position.col] == MapInfo.BADGE) {
+                map[position.row][position.col] = MapInfo.CAPTURED_BADGE;
+            } else {
+                map[position.row][position.col] = MapInfo.WALL;
+            }
         }
 
         return map;

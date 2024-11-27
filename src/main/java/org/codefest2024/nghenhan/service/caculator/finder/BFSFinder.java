@@ -114,8 +114,8 @@ public class BFSFinder {
 
     private boolean isSafeFromBombs(Position curr, List<Bomb> bombs) {
         return bombs.stream().noneMatch(bomb ->
-                (curr.row == bomb.row && Math.abs(curr.col - bomb.col) <= bomb.power)
-                        || (curr.col == bomb.col && Math.abs(curr.row - bomb.row) <= bomb.power)
+                (curr.row == bomb.row && Math.abs(curr.col - bomb.col) <= bomb.power + 1)
+                        || (curr.col == bomb.col && Math.abs(curr.row - bomb.row) <= bomb.power + 1)
         );
     }
 

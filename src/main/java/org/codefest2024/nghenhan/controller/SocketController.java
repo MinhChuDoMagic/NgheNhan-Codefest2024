@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import lombok.extern.slf4j.Slf4j;
 import org.codefest2024.nghenhan.service.caculator.farming.FarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
+import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.ClientConfig;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.SocketUtils;
@@ -76,7 +77,7 @@ public class SocketController implements Initializable {
             if (!Utils.isEmpty(data)) {
                 gameInfo = new Gson().fromJson(data, GameInfo.class);
 
-                if (gameInfo != null && !gameInfo.tag.equals(GameInfo.BOMB_EXPLODED)) {
+                if (gameInfo != null) {
                     List<Order> orders = strategy.find(gameInfo);
                     log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
                     orders.forEach(this::handleOrder);
@@ -175,6 +176,7 @@ public class SocketController implements Initializable {
         mGameId = edtGameId.getText().trim();
         powerType = edtPowerType.getText().trim();
         Constants.KEY_TEAM = mPlayerId;
+        InGameInfo.playerType = Integer.parseInt(powerType);
         if (Utils.isEmpty(powerType)) {
             txtMessage.appendText("Power Type is empty. Skipping registration.\n");
             return;

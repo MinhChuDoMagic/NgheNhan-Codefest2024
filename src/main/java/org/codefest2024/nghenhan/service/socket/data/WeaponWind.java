@@ -6,7 +6,6 @@ public class WeaponWind {
     public String playerId;
     public int currentRow;
     public int currentCol;
-    public int createAt;
     public int direction;
 
     public WeaponWind() {

@@ -4,6 +4,7 @@ import org.codefest2024.nghenhan.service.caculator.CollectSpoilsStrategy;
 import org.codefest2024.nghenhan.service.caculator.DodgeStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
 import org.codefest2024.nghenhan.service.caculator.UseSkillStrategy;
+import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.Utils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
@@ -51,10 +52,11 @@ public class FarmStrategy implements Strategy {
             if (!myPlayer.hasTransform) {
                 return normalFarmStrategy.find(gameInfo, myPlayer);
             } else {
+                updateEnemyData(enemyPlayer, mapInfo.weaponHammers);
                 List<Order> orders = playerStrategy(mapInfo, myPlayer, myChild, enemyPlayer, enemyChild);
                 if (myChild != null) {
                     orders = new ArrayList<>(orders);
-                    orders.addAll(childStrategy(mapInfo, myPlayer, myChild, enemyPlayer, enemyChild));
+                    orders.addAll(playerStrategy(mapInfo, myChild, myPlayer, enemyPlayer, enemyChild));
                 }
                 return orders;
             }
@@ -83,45 +85,42 @@ public class FarmStrategy implements Strategy {
         return map;
     }
 
-    private List<Order> playerStrategy(MapInfo mapInfo, Player myPlayer, Player myChild, Player enemyPlayer, Player enemyChild) {
-        List<Order> dodgeBombsOrders = dodgeStrategy.find(mapInfo, myPlayer);
+    private void updateEnemyData(Player enemy, List<WeaponHammer> hammers) {
+        if (InGameInfo.enemyType == 0 && enemy != null) {
+            InGameInfo.enemyType = enemy.transformType;
+        }
+
+        for (WeaponHammer hammer : hammers) {
+            if (!hammer.playerId.startsWith(Constants.KEY_TEAM)) {
+                if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
+                    InGameInfo.enemyChildLastSkillTime = hammer.createdAt;
+                } else {
+                    InGameInfo.enemyLastSkillTime = hammer.createdAt;
+                }
+            }
+        }
+    }
+
+    private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player teammate, Player enemyPlayer, Player enemyChild) {
+        List<Order> dodgeBombsOrders = dodgeStrategy.find(mapInfo, player);
         if (!dodgeBombsOrders.isEmpty()) {
             return dodgeBombsOrders;
         }
 
-        List<Order> useSkillOrders = useSkillStrategy.find(mapInfo, myPlayer, enemyPlayer, enemyChild);
+        List<Order> useSkillOrders = useSkillStrategy.find(mapInfo, player, enemyPlayer, enemyChild);
         if (!useSkillOrders.isEmpty()) {
             return useSkillOrders;
         }
 
-        if (myPlayer.eternalBadge > 0 && myChild == null && enemyPlayer != null) {
+        if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemyPlayer != null) {
             return List.of(new Action(Action.MARRY_WIFE));
         }
 
-        List<Order> collectSpoilOrders = collectSpoilsStrategy.find(mapInfo, myPlayer, Utils.filterNonNull(myChild, enemyPlayer, enemyChild));
+        List<Order> collectSpoilOrders = collectSpoilsStrategy.find(mapInfo, player, Utils.filterNonNull(teammate, enemyPlayer, enemyChild));
         if (!collectSpoilOrders.isEmpty()) {
             return collectSpoilOrders;
         }
 
-        return godFarmStrategy.find(mapInfo, myPlayer);
-    }
-
-    private List<Order> childStrategy(MapInfo mapInfo, Player myPlayer, Player myChild, Player enemyPlayer, Player enemyChild) {
-        List<Order> dodgeBombsOrders = dodgeStrategy.find(mapInfo, myChild);
-        if (!dodgeBombsOrders.isEmpty()) {
-            return dodgeBombsOrders;
-        }
-
-        List<Order> useSkillOrders = useSkillStrategy.find(mapInfo, myChild, enemyPlayer, enemyChild);
-        if (!useSkillOrders.isEmpty()) {
-            return useSkillOrders;
-        }
-
-        List<Order> collectSpoilOrders = collectSpoilsStrategy.find(mapInfo, myChild, Utils.filterNonNull(myPlayer, enemyPlayer, enemyChild));
-        if (!collectSpoilOrders.isEmpty()) {
-            return collectSpoilOrders;
-        }
-
-        return godFarmStrategy.find(mapInfo, myChild);
+        return godFarmStrategy.find(mapInfo, player);
     }
 }

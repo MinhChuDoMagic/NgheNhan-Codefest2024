@@ -21,7 +21,7 @@ public class BFSFinder {
         return instance;
     }
 
-    public Node findBombPlace(int[][] map, Position curr, int targetValue, MapSize size) {
+    public Node find(int[][] map, Position curr, int targetValue, MapSize size) {
         Queue<Node> queue = new LinkedList<>();
         queue.add(new Node(curr.row, curr.col, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
@@ -34,7 +34,7 @@ public class BFSFinder {
             int col = currNode.col;
 
             if (map[row][col] == targetValue) {
-                return currNode.parent;
+                return currNode;
             }
 
             if (visited[row][col]) continue;
@@ -44,7 +44,8 @@ public class BFSFinder {
                 int newRow = row + dir[0];
                 int newCol = col + dir[1];
 
-                if (isValid(newRow, newCol, map, visited, size)) {
+                if ((targetValue == MapInfo.BOX && isValidBoxPath(newRow, newCol, map, visited, size)
+                        || (targetValue == MapInfo.BRICK && isValidBrickPath(newRow, newCol, map, visited, size)))) {
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
                     newCommands.append(dir[2]);
                     queue.add(new Node(newRow, newCol, currNode, newCommands));
@@ -100,7 +101,7 @@ public class BFSFinder {
         return "";
     }
 
-    private boolean isValid(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
+    private boolean isValidBoxPath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
         return row >= 0
                 && row < size.rows
                 && col >= 0 && col < size.cols
@@ -110,8 +111,18 @@ public class BFSFinder {
                 && map[row][col] != MapInfo.PRISON;
     }
 
+    private boolean isValidBrickPath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
+        return row >= 0
+                && row < size.rows
+                && col >= 0 && col < size.cols
+                && !visited[row][col]
+                && map[row][col] != MapInfo.WALL
+                && map[row][col] != MapInfo.BOX
+                && map[row][col] != MapInfo.PRISON;
+    }
+
     private boolean isPath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
-        return isValid(row, col, map, visited, size)
+        return isValidBoxPath(row, col, map, visited, size)
                 && map[row][col] != MapInfo.BOX;
     }
 

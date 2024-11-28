@@ -1,10 +1,8 @@
 package org.codefest2024.nghenhan.service.caculator.farming;
 
 import org.codefest2024.nghenhan.service.caculator.data.Node;
-import org.codefest2024.nghenhan.service.caculator.finder.AStarFinder;
 import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
-import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 
 import java.util.ArrayList;
@@ -19,21 +17,42 @@ public class GodFarmStrategy {
 
     private List<Order> farmBox(MapInfo mapInfo, Player myPlayer) {
         List<Order> orders = new ArrayList<>();
-        if (myPlayer.currentWeapon != 2) {
-            orders.add(new Action(Action.SWITCH_WEAPON, myPlayer.isChild));
-        }
 
         Bomb myBomb = null;
         for (Bomb bomb : mapInfo.bombs) {
             if (bomb.playerId.startsWith(Constants.KEY_TEAM)
                     && (!myPlayer.isChild || bomb.playerId.endsWith(Constants.KEY_CHILD))) {
-                    myBomb = bomb;
-                }
+                myBomb = bomb;
+            }
         }
 
         if (myBomb == null) {
-            Node bombNode = bfsFinder.findBombPlace(mapInfo.map, myPlayer.currentPosition, MapInfo.BOX, mapInfo.size);
-            orders.add(new Dir(bombNode.reconstructPath() + Dir.ACTION, myPlayer.isChild));
+            Node boxNode = bfsFinder.find(mapInfo.map, myPlayer.currentPosition, MapInfo.BOX, mapInfo.size);
+            if (boxNode.parent != null) {
+                if (myPlayer.currentWeapon != 2) {
+                    orders.add(new Action(Action.SWITCH_WEAPON, myPlayer.isChild));
+                }
+                orders.add(new Dir(boxNode.parent.reconstructPath() + Dir.ACTION, myPlayer.isChild));
+            } else {
+                Node brickNode = bfsFinder.find(mapInfo.map, myPlayer.currentPosition, MapInfo.BRICK, mapInfo.size);
+                String brickPath = brickNode.reconstructPath();
+                int brickPathLength = brickPath.length();
+
+
+                if (brickPathLength > 1) {
+                    orders.add(new Dir(brickPath, myPlayer.isChild));
+//                        if(brickPath.charAt(brickPathLength -1) == brickPath.charAt(brickPathLength -2)){
+//                            orders.add(new Dir(brickPath.substring(0, brickPathLength -1) + Dir.ACTION, myPlayer.isChild));
+//                        }else{
+//                            orders.add(new Dir(brickPath, myPlayer.isChild));
+//                        }
+                } else if (brickPathLength == 1) {
+                    if (myPlayer.currentWeapon != 1) {
+                        orders.add(new Action(Action.SWITCH_WEAPON, myPlayer.isChild));
+                    }
+                    orders.add(new Dir(Dir.ACTION, myPlayer.isChild));
+                }
+            }
         }
 
         return orders;

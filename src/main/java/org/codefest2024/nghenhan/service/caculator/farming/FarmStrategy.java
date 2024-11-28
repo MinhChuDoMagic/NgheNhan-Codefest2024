@@ -4,6 +4,7 @@ import org.codefest2024.nghenhan.service.caculator.CollectSpoilsStrategy;
 import org.codefest2024.nghenhan.service.caculator.DodgeStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
 import org.codefest2024.nghenhan.service.caculator.UseSkillStrategy;
+import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.Utils;
@@ -91,7 +92,13 @@ public class FarmStrategy implements Strategy {
         }
 
         for (WeaponHammer hammer : hammers) {
-            if (!hammer.playerId.startsWith(Constants.KEY_TEAM)) {
+            if (hammer.playerId.startsWith(Constants.KEY_TEAM)) {
+                if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
+                    InGameInfo.myChildLastSkillTime = hammer.createdAt;
+                } else {
+                    InGameInfo.myPlayerLastSkillTime = hammer.createdAt;
+                }
+            }else {
                 if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
                     InGameInfo.enemyChildLastSkillTime = hammer.createdAt;
                 } else {
@@ -107,13 +114,13 @@ public class FarmStrategy implements Strategy {
             return dodgeBombsOrders;
         }
 
-        List<Order> useSkillOrders = useSkillStrategy.find(mapInfo, player, enemyPlayer, enemyChild);
-        if (!useSkillOrders.isEmpty()) {
-            return useSkillOrders;
-        }
-
         if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemyPlayer != null) {
             return List.of(new Action(Action.MARRY_WIFE));
+        }
+
+        List<Order> useSkillOrders = useSkillStrategy.find(mapInfo, player, teammate, enemyPlayer, enemyChild);
+        if (!useSkillOrders.isEmpty()) {
+            return useSkillOrders;
         }
 
         List<Order> collectSpoilOrders = collectSpoilsStrategy.find(mapInfo, player, Utils.filterNonNull(teammate, enemyPlayer, enemyChild));
@@ -121,6 +128,11 @@ public class FarmStrategy implements Strategy {
             return collectSpoilOrders;
         }
 
-        return godFarmStrategy.find(mapInfo, player);
+        List<Order> godFarmOrder = godFarmStrategy.find(mapInfo, player);
+        if (!godFarmOrder.isEmpty()) {
+            return godFarmOrder;
+        }
+
+        return List.of();
     }
 }

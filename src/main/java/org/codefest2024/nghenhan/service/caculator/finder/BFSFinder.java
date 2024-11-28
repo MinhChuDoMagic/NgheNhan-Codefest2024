@@ -2,18 +2,13 @@ package org.codefest2024.nghenhan.service.caculator.finder;
 
 import org.codefest2024.nghenhan.service.caculator.data.Node;
 import org.codefest2024.nghenhan.service.socket.data.*;
+import org.codefest2024.nghenhan.utils.CalculateUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 public class BFSFinder {
-    private final int[][] directions = {
-            {0, -1, Integer.parseInt(Dir.LEFT)},
-            {0, 1, Integer.parseInt(Dir.RIGHT)},
-            {-1, 0, Integer.parseInt(Dir.UP)},
-            {1, 0, Integer.parseInt(Dir.DOWN)}
-    };
     private static BFSFinder instance;
 
     private BFSFinder() {
@@ -30,6 +25,7 @@ public class BFSFinder {
         Queue<Node> queue = new LinkedList<>();
         queue.add(new Node(curr.row, curr.col, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
+        List<int[]> directions = CalculateUtils.getDirections();
 
         while (!queue.isEmpty()) {
             Node currNode = queue.poll();
@@ -62,6 +58,7 @@ public class BFSFinder {
         Queue<Node> queue = new LinkedList<>();
         queue.add(new Node(curr.row, curr.col, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
+        List<int[]> directions = CalculateUtils.getDirections();
 
         while (!queue.isEmpty()) {
             Node currNode = queue.poll();
@@ -91,6 +88,18 @@ public class BFSFinder {
         return new Node(curr.row, curr.col, null, null);
     }
 
+    public String oneSafeStep(int[][] map, Position curr, List<Bomb> bombs, List<WeaponHammer> hammers, List<WeaponWind> winds) {
+        List<int[]> directions = CalculateUtils.getDirections();
+        for (int[] dir : directions) {
+            int newRow = curr.row + dir[0];
+            int newCol = curr.col + dir[1];
+            if (isSafe(map, new Position(newRow, newCol), bombs, hammers, winds)) {
+                return String.valueOf(dir[2]);
+            }
+        }
+        return "";
+    }
+
     private boolean isValid(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
         return row >= 0
                 && row < size.rows
@@ -113,77 +122,14 @@ public class BFSFinder {
     }
 
     private boolean isSafeFromBombs(Position curr, List<Bomb> bombs) {
-        return bombs.stream().noneMatch(bomb ->
-                (curr.row == bomb.row && Math.abs(curr.col - bomb.col) <= bomb.power + 1)
-                        || (curr.col == bomb.col && Math.abs(curr.row - bomb.row) <= bomb.power + 1)
-        );
+        return bombs.stream().noneMatch(bomb -> CalculateUtils.isHitBomb(curr, bomb));
     }
 
     private boolean isSafeFromHammers(Position curr, List<WeaponHammer> hammers) {
-        return hammers.stream().noneMatch(hammer ->
-                Math.abs(curr.col - hammer.destination.col) <= hammer.power
-                        && Math.abs(curr.row - hammer.destination.row) <= hammer.power);
+        return hammers.stream().noneMatch(hammer -> CalculateUtils.isHitHammer(curr, hammer));
     }
 
     public static boolean isSafeFromWinds(int[][] map, Position curr, List<WeaponWind> winds) {
-        for (WeaponWind wind : winds) {
-            int row = wind.currentRow;
-            int col = wind.currentCol;
-
-            switch (wind.direction) {
-                case 1: // Left
-                    while (col >= 0) {
-                        if (row == curr.row && col == curr.col) {
-                            return false; // wind can hit the player
-                        }
-                        if (map[row][col] != 0) {
-                            break; // wind is blocked
-                        }
-                        col--;
-                    }
-                    break;
-
-                case 2: // Right
-                    while (col < map[0].length) {
-                        if (row == curr.row && col == curr.col) {
-                            return false;
-                        }
-                        if (map[row][col] != 0) {
-                            break;
-                        }
-                        col++;
-                    }
-                    break;
-
-                case 3: // Up
-                    while (row >= 0) {
-                        if (row == curr.row && col == curr.col) {
-                            return false;
-                        }
-                        if (map[row][col] != 0) {
-                            break;
-                        }
-                        row--;
-                    }
-                    break;
-
-                case 4: // Down
-                    while (row < map.length) {
-                        if (row == curr.row && col == curr.col) {
-                            return false;
-                        }
-                        if (map[row][col] != 0) {
-                            break;
-                        }
-                        row++;
-                    }
-                    break;
-
-                default:
-                    throw new IllegalArgumentException("Invalid direction: " + wind.direction);
-            }
-        }
-        return true;
+        return winds.stream().noneMatch(wind -> CalculateUtils.isHitWind(map, curr, wind));
     }
-
 }

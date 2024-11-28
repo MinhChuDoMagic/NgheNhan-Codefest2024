@@ -33,14 +33,19 @@ public class DodgeStrategy {
             String dir = bfsFinder
                     .findSafe(mapInfo.map, myPlayer.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds)
                     .reconstructPath();
-            orders.add(new Dir(dir, myPlayer.isChild));
+            if (dir.isEmpty()) {
+                String oneSafeStep = bfsFinder.oneSafeStep(mapInfo.map, myPlayer.currentPosition, dangerousBombs, dangerousHammers, dangerousWinds);
+                orders.add(new Dir(oneSafeStep, myPlayer.isChild));
+            } else {
+                orders.add(new Dir(dir, myPlayer.isChild));
+            }
         }
 
         return orders;
     }
 
     private boolean isDangerousBomb(Bomb bomb, Position curr) {
-        return CalculateUtils.manhattanDistance(curr, bomb) < 3 * bomb.power;
+        return CalculateUtils.manhattanDistance(curr, bomb) < Math.max(5, bomb.power + 1);
     }
 
     private boolean isDangerousHammer(WeaponHammer hammer, Position curr) {

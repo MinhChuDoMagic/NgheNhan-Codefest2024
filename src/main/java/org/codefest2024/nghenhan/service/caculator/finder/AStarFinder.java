@@ -8,15 +8,10 @@ import org.codefest2024.nghenhan.service.socket.data.Position;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class AStarFinder{
-    private final int[][] directions = {
-            {0, -1, Integer.parseInt(Dir.LEFT)},
-            {0, 1, Integer.parseInt(Dir.RIGHT)},
-            {-1, 0, Integer.parseInt(Dir.UP)},
-            {1, 0, Integer.parseInt(Dir.DOWN)}
-    };
     private static AStarFinder instance;
 
     private AStarFinder(){}
@@ -32,6 +27,7 @@ public class AStarFinder{
         PriorityQueue<AStarNode> pq = new PriorityQueue<>(Comparator.comparingDouble(AStarNode::getF));
         pq.add(new AStarNode(curr.row, curr.col, 0,0, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
+        List<int[]> directions = CalculateUtils.getDirections();
 
         while (!pq.isEmpty()) {
             AStarNode currNode = pq.poll();

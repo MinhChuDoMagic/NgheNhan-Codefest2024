@@ -3,6 +3,7 @@ package org.codefest2024.nghenhan.service.caculator;
 import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
+import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.Utils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 
@@ -12,7 +13,7 @@ import java.util.stream.Stream;
 
 public class UseSkillStrategy {
 
-    public List<Order> find(MapInfo mapInfo, Player myPlayer, Player enemyPlayer, Player enemyChild) {
+    public List<Order> find(MapInfo mapInfo, Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild) {
         if (myPlayer.timeToUseSpecialWeapons == 0
                 || (enemyPlayer != null && !enemyPlayer.hasTransform)) {
             return List.of();
@@ -24,21 +25,26 @@ public class UseSkillStrategy {
         }
 
         return switch (InGameInfo.playerType) {
-            case Player.MOUNTAIN -> useMountainSkill(myPlayer, enemies);
+            case Player.MOUNTAIN -> useMountainSkill(myPlayer, teammate, enemies);
             case Player.SEA -> useSeaSkill(mapInfo.map, myPlayer, enemies);
             default -> throw new IllegalStateException("Invalid transformType: " + InGameInfo.playerType);
         };
     }
 
-    private List<Order> useMountainSkill(Player player, List<Player> enemies) {
+    private List<Order> useMountainSkill(Player player, Player teammate, List<Player> enemies) {
         for (Player enemy : enemies) {
             if (Math.abs(player.currentPosition.col - enemy.currentPosition.col) <= WeaponHammer.RANGE - 2
-                    && Math.abs(player.currentPosition.row - enemy.currentPosition.row) <= WeaponHammer.RANGE - 2) {
-                updatePlayerSkillTime(player.isChild);
+                    && Math.abs(player.currentPosition.row - enemy.currentPosition.row) <= WeaponHammer.RANGE - 2
+                    && isSafeHammer(Utils.filterNonNull(player, teammate), new WeaponHammer(enemy.currentPosition))) {
                 return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), player.isChild));
             }
         }
         return List.of();
+    }
+
+    private boolean isSafeHammer(List<Player> players, WeaponHammer hammer) {
+        return players.stream()
+                .noneMatch(player -> CalculateUtils.isHitHammer(player.currentPosition, hammer));
     }
 
     private List<Order> useSeaSkill(int[][] map, Player player, List<Player> enemies) {

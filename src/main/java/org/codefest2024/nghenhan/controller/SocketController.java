@@ -123,8 +123,8 @@ public class SocketController implements Initializable {
     }
 
     private final Emitter.Listener mOnDriveStateListener = objects -> {
-//        String response = objects[0].toString();
-//        log.info("ClientConfig.PLAYER.INCOMMING.DRIVE_PLAYER: {}", response);
+        String response = objects[0].toString();
+        log.info("ClientConfig.PLAYER.INCOMMING.DRIVE_PLAYER: {}", response);
     };
 
     private Emitter.Listener mOnJoinGameListener = objects -> {

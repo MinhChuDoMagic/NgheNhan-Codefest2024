@@ -108,7 +108,12 @@ public class BFSFinder {
                 && !visited[row][col]
                 && map[row][col] != MapInfo.WALL
                 && map[row][col] != MapInfo.BRICK
-                && map[row][col] != MapInfo.PRISON;
+                && map[row][col] != MapInfo.PRISON
+                && map[row][col] != MapInfo.PLAYER
+                && map[row][col] != MapInfo.CHILD
+                && map[row][col] != MapInfo.ENEMY
+                && map[row][col] != MapInfo.ENEMY_CHILD
+                && map[row][col] != MapInfo.BOMB;
     }
 
     private boolean isValidBrickPath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {

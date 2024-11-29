@@ -1,10 +1,9 @@
 package org.codefest2024.nghenhan.service.caculator.farming;
 
-import org.codefest2024.nghenhan.service.caculator.CollectSpoilsStrategy;
-import org.codefest2024.nghenhan.service.caculator.DodgeStrategy;
+import org.codefest2024.nghenhan.service.caculator.usecase.CollectSpoilsStrategy;
+import org.codefest2024.nghenhan.service.caculator.usecase.DodgeStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
-import org.codefest2024.nghenhan.service.caculator.UseSkillStrategy;
-import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
+import org.codefest2024.nghenhan.service.caculator.usecase.UseSkillStrategy;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.Utils;
@@ -43,11 +42,7 @@ public class FarmStrategy implements Strategy {
             }
         }
 
-        mapInfo.map = updateMap(
-                mapInfo.map,
-                Utils.filterNonNull(myPlayer, myChild, enemyPlayer, enemyChild),
-                mapInfo.bombs
-        );
+        updateMap(mapInfo.map, myPlayer, myChild, enemyPlayer, enemyChild, mapInfo.bombs);
 
         if (myPlayer != null) {
             if (!myPlayer.hasTransform) {
@@ -66,25 +61,43 @@ public class FarmStrategy implements Strategy {
         return List.of();
     }
 
-    private int[][] updateMap(int[][] map, List<Player> players, List<Bomb> bombs) {
-        return updateMap(map,
-                Utils.combineList(
-                        players.stream().map(player -> player.currentPosition).toList(),
-                        bombs.stream().map(Position.class::cast).toList()
-                ));
+    private void updateMap(int[][] map, Player player, Player child, Player enemy, Player enemyChild, List<Bomb> bombs) {
+        updateMap(map, bombs);
+        updateMap(map, player, child, enemy, enemyChild);
     }
 
-    private int[][] updateMap(int[][] map, List<Position> positions) {
-        for (Position position : positions) {
-            if (map[position.row][position.col] == MapInfo.BADGE) {
-                map[position.row][position.col] = MapInfo.CAPTURED_BADGE;
+    private void updateMap(int[][] map, Player player, Player child, Player enemy, Player enemyChild) {
+        if (player != null) {
+            if (map[player.currentPosition.row][player.currentPosition.col] == MapInfo.BADGE) {
+                map[player.currentPosition.row][player.currentPosition.col] = MapInfo.CAPTURED_BADGE;
             } else {
-                map[position.row][position.col] = MapInfo.WALL;
+                map[player.currentPosition.row][player.currentPosition.col] = MapInfo.PLAYER;
             }
         }
 
-        return map;
+        if (child != null) {
+            map[child.currentPosition.row][child.currentPosition.col] = MapInfo.CHILD;
+        }
+
+        if (enemy != null) {
+            if (map[enemy.currentPosition.row][enemy.currentPosition.col] == MapInfo.BADGE) {
+                map[enemy.currentPosition.row][enemy.currentPosition.col] = MapInfo.CAPTURED_BADGE;
+            } else {
+                map[enemy.currentPosition.row][enemy.currentPosition.col] = MapInfo.ENEMY;
+            }
+        }
+
+        if (enemyChild != null) {
+            map[enemyChild.currentPosition.row][enemyChild.currentPosition.col] = MapInfo.ENEMY_CHILD;
+        }
     }
+
+    private void updateMap(int[][] map, List<Bomb> bombs) {
+        for (Bomb bomb : bombs) {
+            map[bomb.row][bomb.col] = MapInfo.BOMB;
+        }
+    }
+
 
     private void updateEnemyData(Player enemy, List<WeaponHammer> hammers) {
         if (InGameInfo.enemyType == 0 && enemy != null) {
@@ -98,7 +111,7 @@ public class FarmStrategy implements Strategy {
                 } else {
                     InGameInfo.myPlayerLastSkillTime = hammer.createdAt;
                 }
-            }else {
+            } else {
                 if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
                     InGameInfo.enemyChildLastSkillTime = hammer.createdAt;
                 } else {

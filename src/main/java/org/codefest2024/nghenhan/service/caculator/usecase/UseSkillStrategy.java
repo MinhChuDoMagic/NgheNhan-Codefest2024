@@ -1,15 +1,13 @@
-package org.codefest2024.nghenhan.service.caculator;
+package org.codefest2024.nghenhan.service.caculator.usecase;
 
 import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.Utils;
-import org.codefest2024.nghenhan.utils.constant.Constants;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class UseSkillStrategy {
 
@@ -33,8 +31,9 @@ public class UseSkillStrategy {
 
     private List<Order> useMountainSkill(Player player, Player teammate, List<Player> enemies) {
         for (Player enemy : enemies) {
-            if (Math.abs(player.currentPosition.col - enemy.currentPosition.col) <= WeaponHammer.RANGE - 2
-                    && Math.abs(player.currentPosition.row - enemy.currentPosition.row) <= WeaponHammer.RANGE - 2
+            if (Math.abs(player.currentPosition.col - enemy.currentPosition.col) <= WeaponHammer.RANGE
+                    && Math.abs(player.currentPosition.row - enemy.currentPosition.row) <= WeaponHammer.RANGE
+                    && CalculateUtils.realDistance(player.currentPosition, enemy.currentPosition) <= 4
                     && isSafeHammer(Utils.filterNonNull(player, teammate), new WeaponHammer(enemy.currentPosition))) {
                 return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), player.isChild));
             }

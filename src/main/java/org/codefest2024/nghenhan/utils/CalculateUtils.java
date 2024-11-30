@@ -25,6 +25,10 @@ public class CalculateUtils {
         return Math.abs(curr.row - des.row) + Math.abs(curr.col - des.col);
     }
 
+    public static double realDistance(Position curr, Position des) {
+        return Math.sqrt(1.0 * (curr.row - des.row) * (curr.row - des.row) + (curr.col - des.col) * (curr.col - des.col));
+    }
+
     public static boolean isNearest(Position curr, Position des, List<Position> otherPositions) {
         int currDistance = manhattanDistance(curr, des);
 

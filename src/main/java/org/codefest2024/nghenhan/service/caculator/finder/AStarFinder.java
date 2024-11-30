@@ -54,6 +54,10 @@ public class AStarFinder{
                     if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] ==  MapInfo.DESTROYED) {
                         newCost += 1; // Empty cell
                     } else if (map[newRow][newCol] == MapInfo.BRICK) {
+                        String currentCommand = currNode.commands.toString();
+                        if (!currentCommand.isEmpty() && currentCommand.substring(currentCommand.length() - 1).equals(move)) {
+                            newCommands.append(move);
+                        }
                         newCommands.append(Dir.ACTION);
                         newCost += 6; // 1s to destroy + 0.2s to move
                     }
@@ -79,6 +83,7 @@ public class AStarFinder{
                 && !visited[row][col]
                 && map[row][col] != MapInfo.WALL
                 && map[row][col] != MapInfo.BOX
-                && map[row][col] != MapInfo.PRISON;
+                && map[row][col] != MapInfo.PRISON
+                && map[row][col] != MapInfo.CAPTURED_BADGE;
     }
 }

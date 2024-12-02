@@ -141,8 +141,23 @@ public class SocketController implements Initializable {
     };
 
     private Emitter.Listener mOnJoinGameListener = objects -> {
-        String response = objects[0].toString();
-        log.info("ClientConfig.PLAYER.INCOMMING.JOIN_GAME: {}", response);
+        if (objects != null && objects.length != 0) {
+            String data = objects[0].toString();
+            log.info("ClientConfig.PLAYER.INCOMMING.JOIN_GAME: {}", data);
+
+            if (!Utils.isEmpty(data)) {
+                try {
+                    JSONObject powerParams = new JSONObject();
+                    powerParams.put("gameId", mGameId);
+                    powerParams.put("type", Integer.parseInt(powerType));
+                    log.info("Registering power with params: {}", powerParams);
+                    mSocket.emit(ClientConfig.PLAYER.INCOMMING.REGISTER_POWER, powerParams);
+                    txtMessage.setText("Registered power type: " + powerType + "\n");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     };
 
     private final Emitter.Listener mOnRegisterPowerResponse = objects -> {
@@ -188,7 +203,7 @@ public class SocketController implements Initializable {
         mPlayerId = edtPlayerId.getText().trim();
         mGameId = edtGameId.getText().trim();
         powerType = edtPowerType.getText().trim();
-        Constants.KEY_TEAM = mPlayerId;
+        Constants.KEY_TEAM = mPlayerId.length() > 13 ? mPlayerId.substring(0, 13) : mPlayerId;
         InGameInfo.playerType = Integer.parseInt(powerType);
         if (Utils.isEmpty(powerType)) {
             txtMessage.appendText("Power Type is empty. Skipping registration.\n");
@@ -245,12 +260,6 @@ public class SocketController implements Initializable {
             log.info("Game params = {}", gameParams);
             try {
                 mSocket.emit(ClientConfig.PLAYER.OUTGOING.JOIN_GAME, new JSONObject(gameParams));
-                JSONObject powerParams = new JSONObject();
-                powerParams.put("gameId", mGameId);
-                powerParams.put("type", Integer.parseInt(powerType));
-                log.info("Registering power with params: {}", powerParams);
-                mSocket.emit(ClientConfig.PLAYER.INCOMMING.REGISTER_POWER, powerParams);
-                txtMessage.setText("Registered power type: " + powerType + "\n");
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -1,5 +1,6 @@
 package org.codefest2024.nghenhan.service.caculator.usecase;
 
+import org.codefest2024.nghenhan.service.caculator.finder.AStarFinder;
 import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
@@ -7,10 +8,11 @@ import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.Utils;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
-public class UseSkillStrategy {
-    BFSFinder bfsFinder = BFSFinder.getInstance();
+public class FindAndFireStrategy {
+    AStarFinder aStarFinder = AStarFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild) {
         if (myPlayer.timeToUseSpecialWeapons == 0
@@ -39,14 +41,28 @@ public class UseSkillStrategy {
                 return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), player.isChild));
             }
 
-            if(CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition) <= 14){
-                String dir = bfsFinder.findEnemy(map, player.currentPosition, enemy.currentPosition, mapSize).reconstructPath();
-                if (!dir.isEmpty() && dir.length() < 10){
-                    return List.of(new Dir(dir, player.isChild));
+            String dir = aStarFinder.find(map, player.currentPosition, enemy.currentPosition, mapSize);
+            if (!dir.isEmpty()) {
+                List<Order> orders = new ArrayList<>();
+                if (player.currentWeapon != 1) {
+                    orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
                 }
+                orders.add(new Dir(dir, player.isChild));
+                return orders;
             }
         }
         return List.of();
+    }
+
+    private boolean isCooldown(boolean isChild) {
+        long cooldown = switch (InGameInfo.playerType) {
+            case Player.MOUNTAIN -> WeaponHammer.COOL_DOWN;
+            case Player.SEA -> WeaponWind.COOL_DOWN;
+            default -> 0L;
+        } * 1000;
+
+        return (isChild && Instant.now().toEpochMilli() - InGameInfo.myChildLastSkillTime <= cooldown)
+                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.myPlayerLastSkillTime <= cooldown);
     }
 
     private boolean isSafeHammer(List<Player> players, WeaponHammer hammer) {
@@ -124,16 +140,5 @@ public class UseSkillStrategy {
         } else {
             InGameInfo.myPlayerLastSkillTime = Instant.now().toEpochMilli();
         }
-    }
-
-    private boolean isCooldown(boolean isChild) {
-        long cooldown = switch (InGameInfo.playerType) {
-            case Player.MOUNTAIN -> WeaponHammer.COOL_DOWN;
-            case Player.SEA -> WeaponWind.COOL_DOWN;
-            default -> 0L;
-        } * 1000;
-
-        return (isChild && Instant.now().toEpochMilli() - InGameInfo.myChildLastSkillTime <= cooldown)
-                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.myPlayerLastSkillTime <= cooldown);
     }
 }

@@ -77,16 +77,29 @@ public class SocketController implements Initializable {
             if (!Utils.isEmpty(data)) {
                 gameInfo = new Gson().fromJson(data, GameInfo.class);
 
-                if (gameInfo != null) {
+                if (gameInfo != null && !gameInfo.tag.equals(GameInfo.BOMB_EXPLODED)) {
                     List<Order> orders = strategy.find(gameInfo);
                     log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
-                    orders.forEach(this::handleOrder);
+                    handleOrders(orders);
                 }
             }
 
 //            log.info("Process time: {}", System.currentTimeMillis() - startTime);
         }
     };
+
+    private void handleOrders(List<Order> orders) {
+        for (int i = 0; i < orders.size(); i++) {
+            handleOrder(orders.get(i));
+            if (i < orders.size() - 1) { // Only sleep if not the last element
+                try {
+                    Thread.sleep(5); // Adjust the delay as needed
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Restore interrupted status
+                }
+            }
+        }
+    }
 
     private void handleOrder(Order order) {
         if (order instanceof Action action) {
@@ -260,7 +273,7 @@ public class SocketController implements Initializable {
         }
         return null;
     }
-    
+
     private void processActionForPlayer(String action) {
         String destination = editTextDestination.getText().trim();
         Position position = "1".equals(edtPowerType.getText().trim()) ? processPositionForWeapon(destination) : null;

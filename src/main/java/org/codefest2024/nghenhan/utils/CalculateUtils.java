@@ -18,7 +18,7 @@ public class CalculateUtils {
     public static List<int[]> getDirections() {
         List<int[]> randomDirections = new ArrayList<>(directions);
         Collections.shuffle(randomDirections);
-        return directions;
+        return randomDirections;
     }
 
     public static int manhattanDistance(Position curr, Position des) {
@@ -94,5 +94,9 @@ public class CalculateUtils {
         }
 
         return false;
+    }
+
+    public static boolean inHammerRange(Position curr, Position enemy) {
+        return manhattanDistance(curr, enemy) < 5;
     }
 }

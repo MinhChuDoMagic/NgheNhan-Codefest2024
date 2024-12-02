@@ -4,6 +4,7 @@ import org.codefest2024.nghenhan.service.caculator.data.Node;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -89,8 +90,52 @@ public class BFSFinder {
         return new Node(curr.row, curr.col, null, null);
     }
 
+    public Node findEnemy(int[][] map, Position curr, Position enemy, MapSize size) {
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(new Node(curr.row, curr.col, null, null));
+        boolean[][] visited = new boolean[size.rows][size.cols];
+        List<int[]> directions = CalculateUtils.getDirections();
+
+        while (!queue.isEmpty()) {
+            Node currNode = queue.poll();
+
+            int row = currNode.row;
+            int col = currNode.col;
+
+            if (CalculateUtils.inHammerRange(currNode, enemy)) {
+                return currNode;
+            }
+
+            if (visited[row][col]) continue;
+            visited[row][col] = true;
+
+            for (int[] dir : directions) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+
+                if (isPath(newRow, newCol, map, visited, size)) {
+                    StringBuilder newCommands = new StringBuilder(currNode.commands);
+                    newCommands.append(dir[2]);
+
+                    queue.add(new Node(newRow, newCol, currNode, newCommands));
+                }
+            }
+        }
+        return new Node(curr.row, curr.col, null, null);
+    }
+
     public String oneSafeStep(int[][] map, Position curr, List<Bomb> bombs, List<WeaponHammer> hammers, List<WeaponWind> winds) {
         List<int[]> directions = CalculateUtils.getDirections();
+
+        Bomb nearestBomb = bombs.stream().min(Comparator.comparing(bomb -> CalculateUtils.manhattanDistance(curr, bomb))).orElse(null);
+        if (nearestBomb != null) {
+            return directions.stream()
+                    .filter(dir -> isSafe(map, new Position(curr.row + dir[0], curr.col + dir[1]), bombs, hammers, winds))
+                    .min(Comparator.comparing(dir -> CalculateUtils.manhattanDistance(nearestBomb, new Position(curr.row + dir[0], curr.col + dir[1]))))
+                    .map(dir -> String.valueOf(dir[2]))
+                    .orElse("");
+        }
+
         for (int[] dir : directions) {
             int newRow = curr.row + dir[0];
             int newCol = curr.col + dir[1];

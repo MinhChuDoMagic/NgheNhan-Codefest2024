@@ -55,7 +55,7 @@ public class AStarFinder{
                         newCost += 1; // Empty cell
                     } else if (map[newRow][newCol] == MapInfo.BRICK) {
                         String currentCommand = currNode.commands.toString();
-                        if (!currentCommand.isEmpty() && currentCommand.substring(currentCommand.length() - 1).equals(move)) {
+                        if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
                             newCommands.append(move);
                         }
                         newCommands.append(Dir.ACTION);

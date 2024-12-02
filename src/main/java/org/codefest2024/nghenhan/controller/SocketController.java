@@ -6,10 +6,7 @@ import io.socket.emitter.Emitter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
 import org.codefest2024.nghenhan.service.caculator.farming.FarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
@@ -57,6 +54,9 @@ public class SocketController implements Initializable {
 
     @FXML
     private TextField editTextDestination;
+
+    @FXML
+    private ComboBox<String> comboBoxStrategy;
 
 
     private static final String URL = "http://localhost/";
@@ -155,6 +155,14 @@ public class SocketController implements Initializable {
                 String action = Dir.KEY_TO_ACTION.get(event.getCode().ordinal());
                 processActionForPlayer(action);
             }
+        });
+    }
+
+    @FXML
+    public void initialize() {
+        comboBoxStrategy.setOnAction(event -> {
+            String selectedStrategy = comboBoxStrategy.getSelectionModel().getSelectedItem();
+            System.out.println("Selected Strategy: " + selectedStrategy);
         });
     }
 

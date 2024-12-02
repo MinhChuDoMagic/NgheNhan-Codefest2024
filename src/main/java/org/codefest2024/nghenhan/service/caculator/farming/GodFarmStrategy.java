@@ -29,20 +29,6 @@ public class GodFarmStrategy {
                     orders.add(new Action(Action.SWITCH_WEAPON, myPlayer.isChild));
                 }
                 orders.add(new Dir(boxNode.parent.reconstructPath() + Dir.ACTION, myPlayer.isChild));
-            } else {
-                Node brickNode = bfsFinder.find(mapInfo.map, myPlayer.currentPosition, MapInfo.BRICK, mapInfo.size);
-                String brickPath = brickNode.reconstructPath();
-                int brickPathLength = brickPath.length();
-
-
-                if (brickPathLength > 1) {
-                    orders.add(new Dir(brickPath, myPlayer.isChild));
-                } else if (brickPathLength == 1) {
-                    if (myPlayer.currentWeapon != 1) {
-                        orders.add(new Action(Action.SWITCH_WEAPON, myPlayer.isChild));
-                    }
-                    orders.add(new Dir(Dir.ACTION, myPlayer.isChild));
-                }
             }
         }
 

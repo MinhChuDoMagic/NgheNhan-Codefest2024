@@ -1,10 +1,8 @@
 package org.codefest2024.nghenhan.service.caculator.farming;
 
-import org.codefest2024.nghenhan.service.caculator.usecase.CollectSpoilsStrategy;
-import org.codefest2024.nghenhan.service.caculator.usecase.DodgeStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
-import org.codefest2024.nghenhan.service.caculator.usecase.UseSkillStrategy;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
+import org.codefest2024.nghenhan.service.caculator.usecase.*;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.Utils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
@@ -18,6 +16,8 @@ public class FarmStrategy implements Strategy {
     private final DodgeStrategy dodgeStrategy = new DodgeStrategy();
     private final CollectSpoilsStrategy collectSpoilsStrategy = new CollectSpoilsStrategy();
     private final UseSkillStrategy useSkillStrategy = new UseSkillStrategy();
+    private final FindAndFireStrategy findAndFireStrategy = new FindAndFireStrategy();
+    private final RandomRunStrategy randomRunStrategy = new RandomRunStrategy();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -141,9 +141,19 @@ public class FarmStrategy implements Strategy {
             return collectSpoilOrders;
         }
 
-        List<Order> godFarmOrder = godFarmStrategy.find(mapInfo, player);
-        if (!godFarmOrder.isEmpty()) {
-            return godFarmOrder;
+        List<Order> godFarmOrders = godFarmStrategy.find(mapInfo, player);
+        if (!godFarmOrders.isEmpty()) {
+            return godFarmOrders;
+        }
+
+        List<Order> findAndFireOrders = findAndFireStrategy.find(mapInfo, player, teammate, enemyPlayer, enemyChild);
+        if (!findAndFireOrders.isEmpty()) {
+            return findAndFireOrders;
+        }
+
+        List<Order> randomRunOrders = randomRunStrategy.find(mapInfo, player);
+        if (!randomRunOrders.isEmpty()) {
+            return randomRunOrders;
         }
 
         return List.of();

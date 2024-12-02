@@ -4,6 +4,7 @@ import org.codefest2024.nghenhan.service.caculator.data.Node;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -91,6 +92,16 @@ public class BFSFinder {
 
     public String oneSafeStep(int[][] map, Position curr, List<Bomb> bombs, List<WeaponHammer> hammers, List<WeaponWind> winds) {
         List<int[]> directions = CalculateUtils.getDirections();
+
+        Bomb nearestBomb = bombs.stream().min(Comparator.comparing(bomb -> CalculateUtils.manhattanDistance(curr, bomb))).orElse(null);
+        if (nearestBomb != null) {
+            return directions.stream()
+                    .filter(dir -> isSafe(map, new Position(curr.row + dir[0], curr.col + dir[1]), bombs, hammers, winds))
+                    .min(Comparator.comparing(dir -> CalculateUtils.manhattanDistance(nearestBomb, new Position(curr.row + dir[0], curr.col + dir[1]))))
+                    .map(dir -> String.valueOf(dir[2]))
+                    .orElse("");
+        }
+
         for (int[] dir : directions) {
             int newRow = curr.row + dir[0];
             int newCol = curr.col + dir[1];

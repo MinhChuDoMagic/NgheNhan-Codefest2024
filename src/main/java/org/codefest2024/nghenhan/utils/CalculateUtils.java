@@ -18,7 +18,7 @@ public class CalculateUtils {
     public static List<int[]> getDirections() {
         List<int[]> randomDirections = new ArrayList<>(directions);
         Collections.shuffle(randomDirections);
-        return directions;
+        return randomDirections;
     }
 
     public static int manhattanDistance(Position curr, Position des) {

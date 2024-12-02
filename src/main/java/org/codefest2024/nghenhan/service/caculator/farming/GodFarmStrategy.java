@@ -12,10 +12,6 @@ public class GodFarmStrategy {
     private final BFSFinder bfsFinder = BFSFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer) {
-        return farmBox(mapInfo, myPlayer);
-    }
-
-    private List<Order> farmBox(MapInfo mapInfo, Player myPlayer) {
         List<Order> orders = new ArrayList<>();
 
         Bomb myBomb = null;
@@ -41,11 +37,6 @@ public class GodFarmStrategy {
 
                 if (brickPathLength > 1) {
                     orders.add(new Dir(brickPath, myPlayer.isChild));
-//                        if(brickPath.charAt(brickPathLength -1) == brickPath.charAt(brickPathLength -2)){
-//                            orders.add(new Dir(brickPath.substring(0, brickPathLength -1) + Dir.ACTION, myPlayer.isChild));
-//                        }else{
-//                            orders.add(new Dir(brickPath, myPlayer.isChild));
-//                        }
                 } else if (brickPathLength == 1) {
                     if (myPlayer.currentWeapon != 1) {
                         orders.add(new Action(Action.SWITCH_WEAPON, myPlayer.isChild));

@@ -95,4 +95,8 @@ public class CalculateUtils {
 
         return false;
     }
+
+    public static boolean inHammerRange(Position curr, Position enemy) {
+        return manhattanDistance(curr, enemy) < 5;
+    }
 }

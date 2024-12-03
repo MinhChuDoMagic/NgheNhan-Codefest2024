@@ -53,7 +53,7 @@ public class AStarFinder{
 
                     if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] ==  MapInfo.DESTROYED) {
                         newCost += 1; // Empty cell
-                    } else if (map[newRow][newCol] == MapInfo.BRICK) {
+                    } else if (map[newRow][newCol] == MapInfo.BRICK || map[newRow][newCol] ==  MapInfo.ENEMY) {
                         String currentCommand = currNode.commands.toString();
                         if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
                             newCommands.append(move);

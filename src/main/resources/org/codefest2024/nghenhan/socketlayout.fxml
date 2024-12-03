@@ -1,30 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-
-<?import javafx.scene.control.ComboBox?>
-<?import java.lang.String?>
-<?import javafx.collections.FXCollections?>
 <AnchorPane prefHeight="650.0" prefWidth="687.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.codefest2024.nghenhan.controller.SocketController">
 
     <children>
         <Label layoutX="58.0" layoutY="26.0" text="URL" />
         <TextField id="editTextURL" fx:id="editTextURL" layoutX="112.0" layoutY="20.0" prefHeight="25.0" prefWidth="258.0" promptText="Server URL" />
 
-        <ComboBox fx:id="comboBoxStrategy" layoutX="380.0" layoutY="20.0" prefHeight="25.0" prefWidth="200.0" promptText="Choose Strategy">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Farm Strategy" />
-                    <String fx:value="Stop" />
-                </FXCollections>
-            </items>
-        </ComboBox>
+        <ComboBox fx:id="comboBoxStrategy" layoutX="380.0" layoutY="20.0" prefHeight="25.0" prefWidth="200.0" promptText="Choose Strategy"/>
 
         <Label layoutX="58.0" layoutY="60.0" text="Game ID" />
 

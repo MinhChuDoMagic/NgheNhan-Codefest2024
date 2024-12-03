@@ -3,14 +3,18 @@ package org.codefest2024.nghenhan.controller;
 import com.google.gson.Gson;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
+import org.codefest2024.nghenhan.service.caculator.DoNothingStrategy;
+import org.codefest2024.nghenhan.service.caculator.StrategyEnum;
 import org.codefest2024.nghenhan.service.caculator.farming.FarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
+import org.codefest2024.nghenhan.service.caculator.seaAttack.SeaAttackStrategy;
 import org.codefest2024.nghenhan.service.socket.ClientConfig;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.SocketUtils;
@@ -56,7 +60,7 @@ public class SocketController implements Initializable {
     private TextField editTextDestination;
 
     @FXML
-    private ComboBox<String> comboBoxStrategy;
+    private ComboBox<StrategyEnum> comboBoxStrategy;
 
 
     private static final String URL = "http://localhost/";
@@ -67,7 +71,10 @@ public class SocketController implements Initializable {
     private Socket mSocket;
     private static GameInfo gameInfo;
 
-    private Strategy strategy = new FarmStrategy();
+    private Strategy strategy;
+    private final Strategy farmStrategy = new FarmStrategy();
+    private final Strategy seaAttackStrategy = new SeaAttackStrategy();
+    private final Strategy doNothingStrategy = new DoNothingStrategy();
 
     private final Emitter.Listener mOnTickTackListener = objects -> {
         if (objects != null && objects.length != 0) {
@@ -173,6 +180,11 @@ public class SocketController implements Initializable {
         editTextURL.setText(URL);
         btnStop.setDisable(true);
 
+        comboBoxStrategy.setItems(FXCollections.observableArrayList(StrategyEnum.values()));
+        comboBoxStrategy.setValue(StrategyEnum.values()[0]);
+        strategy = getStrategyFromEnum(StrategyEnum.values()[0]);
+        comboBoxStrategy.setOnAction(event -> strategy = getStrategyFromEnum(comboBoxStrategy.getValue()));
+
         txtController.setOnKeyPressed(event -> {
             txtController.setText(event.getCode().toString() + " - " + event.getCode().ordinal());
             int key = event.getCode().ordinal();
@@ -186,12 +198,12 @@ public class SocketController implements Initializable {
         });
     }
 
-    @FXML
-    public void initialize() {
-        comboBoxStrategy.setOnAction(event -> {
-            String selectedStrategy = comboBoxStrategy.getSelectionModel().getSelectedItem();
-            System.out.println("Selected Strategy: " + selectedStrategy);
-        });
+    private Strategy getStrategyFromEnum(StrategyEnum strategyEnum) {
+        return switch (strategyEnum) {
+            case FARM_STRATEGY -> farmStrategy;
+            case SEA_DIRECT_ATTACK -> seaAttackStrategy;
+            case DO_NOTHING -> doNothingStrategy;
+        };
     }
 
     public void onBtnStopClicked(ActionEvent actionEvent) {

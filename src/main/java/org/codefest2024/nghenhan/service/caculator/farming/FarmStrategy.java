@@ -80,6 +80,7 @@ public class FarmStrategy implements Strategy {
         }
 
         if (enemy != null) {
+            InGameInfo.enemyLastPosition = enemy.currentPosition;
             if (map[enemy.currentPosition.row][enemy.currentPosition.col] == MapInfo.BADGE) {
                 map[enemy.currentPosition.row][enemy.currentPosition.col] = MapInfo.CAPTURED_BADGE;
             } else {
@@ -125,6 +126,12 @@ public class FarmStrategy implements Strategy {
         List<Order> dodgeBombsOrders = dodgeStrategy.find(mapInfo, player);
         if (!dodgeBombsOrders.isEmpty()) {
             return dodgeBombsOrders;
+        }
+
+        if (enemyPlayer != null
+                && player.score - enemyPlayer.score > 40
+                && enemyPlayer.currentPosition.equals(InGameInfo.enemyLastPosition)) {
+            return randomRunStrategy.find(mapInfo, player);
         }
 
         if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemyPlayer != null) {

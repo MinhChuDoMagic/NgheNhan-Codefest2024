@@ -99,4 +99,32 @@ public class CalculateUtils {
     public static boolean inHammerRange(Position curr, Position enemy) {
         return manhattanDistance(curr, enemy) < 6;
     }
+
+    public static boolean enemyNearby(Position curr, Position enemy) {
+        return manhattanDistance(curr, enemy) < 16;
+    }
+
+    public static String processDirWithBrick(String dir) {
+        int indexOfB = dir.indexOf('b');
+        if (indexOfB == 2 && dir.charAt(0) != dir.charAt(1)) {
+            return dir.substring(0, 2);
+        } else {
+            return dir.length() > 3 ? dir.substring(0, 3) : dir;
+        }
+//        String input = dir;
+//        if (input == null || input.isEmpty()) {
+//            return ""; // Handle null or empty strings
+//        }
+//
+//        if (input.charAt(0) == 'b') {
+//            return "b";
+//        }
+//
+//        int indexOfB = input.indexOf('b');
+//        if (indexOfB != -1) {
+//            return input.substring(0, indexOfB);
+//        }
+//
+//        return input;
+    }
 }

@@ -2,6 +2,7 @@ package org.codefest2024.nghenhan.service.caculator.farming;
 
 import org.codefest2024.nghenhan.service.caculator.finder.AStarFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
+import org.codefest2024.nghenhan.utils.CalculateUtils;
 
 import java.util.List;
 
@@ -18,16 +19,7 @@ public class NormalFarmStrategy {
         Position destination = getNearestBadgePosition(mapInfo.map, myPlayer.currentPosition, mapInfo.size);
         String dir = aStarFinder.find(mapInfo.map, myPlayer.currentPosition, destination, mapInfo.size);
 //        return List.of(new Dir(dir));
-        return List.of(new Dir(processDir(dir)));
-    }
-
-    private  String processDir(String dir) {
-        int indexOfB = dir.indexOf('b');
-        if (indexOfB == 2 && dir.charAt(0) != dir.charAt(1)) {
-            return dir.substring(0, 2);
-        }else {
-            return dir.length() > 3 ? dir.substring(0, 3) : dir;
-        }
+        return List.of(new Dir(CalculateUtils.processDirWithBrick(dir)));
     }
 
     private Position getNearestBadgePosition(int[][] map, Position currentPosition, MapSize size) {

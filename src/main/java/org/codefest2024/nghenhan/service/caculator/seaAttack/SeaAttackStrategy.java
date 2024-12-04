@@ -4,6 +4,7 @@ import org.codefest2024.nghenhan.service.caculator.Strategy;
 import org.codefest2024.nghenhan.service.caculator.farming.NormalFarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.finder.AStarFinder;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
+import org.codefest2024.nghenhan.service.caculator.usecase.DodgeStrategy;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public class SeaAttackStrategy implements Strategy {
     private final NormalFarmStrategy normalFarmStrategy = new NormalFarmStrategy();
     private final AStarFinder aStarFinder = AStarFinder.getInstance();
+    private final DodgeStrategy dodgeStrategy = new DodgeStrategy();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -51,6 +53,11 @@ public class SeaAttackStrategy implements Strategy {
     }
 
     private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player enemy) {
+        List<Order> dodgeBombsOrders = dodgeStrategy.find(mapInfo, player);
+        if (!dodgeBombsOrders.isEmpty()) {
+            return dodgeBombsOrders;
+        }
+
         if(!enemy.isStun && !isCooldown(player.isChild)){
             InGameInfo.myPlayerLastSkillTime = Instant.now().toEpochMilli();
             return List.of(new Action(Action.USE_WEAPON, player.isChild));

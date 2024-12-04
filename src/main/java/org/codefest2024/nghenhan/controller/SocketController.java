@@ -13,6 +13,7 @@ import org.codefest2024.nghenhan.service.caculator.DoNothingStrategy;
 import org.codefest2024.nghenhan.service.caculator.StrategyEnum;
 import org.codefest2024.nghenhan.service.caculator.farming.FarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
+import org.codefest2024.nghenhan.service.caculator.hitAndRun.HitAndRunStrategy;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.caculator.seaAttack.SeaAttackStrategy;
 import org.codefest2024.nghenhan.service.socket.ClientConfig;
@@ -75,6 +76,7 @@ public class SocketController implements Initializable {
     private final Strategy farmStrategy = new FarmStrategy();
     private final Strategy seaAttackStrategy = new SeaAttackStrategy();
     private final Strategy doNothingStrategy = new DoNothingStrategy();
+    private final Strategy hitAndRunStrategy = new HitAndRunStrategy();
 
     private final Emitter.Listener mOnTickTackListener = objects -> {
         if (objects != null && objects.length != 0) {
@@ -202,6 +204,7 @@ public class SocketController implements Initializable {
         return switch (strategyEnum) {
             case FARM_STRATEGY -> farmStrategy;
             case SEA_DIRECT_ATTACK -> seaAttackStrategy;
+            case HIT_AND_RUN -> hitAndRunStrategy;
             case DO_NOTHING -> doNothingStrategy;
         };
     }

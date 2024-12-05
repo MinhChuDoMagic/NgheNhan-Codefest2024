@@ -49,6 +49,28 @@ public class UseSkillStrategy {
         return List.of();
     }
 
+    public List<Order> useMountainSkillDirect(Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild){
+        if (myPlayer.timeToUseSpecialWeapons == 0
+                || (enemyPlayer != null && !enemyPlayer.hasTransform)) {
+            return List.of();
+        }
+
+        List<Player> enemies = Utils.filterNonNull(enemyPlayer, enemyChild);
+        if (enemies.isEmpty() || isCooldown(myPlayer.isChild)) {
+            return List.of();
+        }
+
+        for (Player enemy : enemies) {
+            if (Math.abs(myPlayer.currentPosition.col - enemy.currentPosition.col) <= WeaponHammer.RANGE
+                    && Math.abs(myPlayer.currentPosition.row - enemy.currentPosition.row) <= WeaponHammer.RANGE
+                    && CalculateUtils.inHammerRange(myPlayer.currentPosition, enemy.currentPosition)
+                    && isSafeHammer(Utils.filterNonNull(myPlayer, teammate), new WeaponHammer(enemy.currentPosition))) {
+                return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), myPlayer.isChild));
+            }
+        }
+        return List.of();
+    }
+
     private boolean isSafeHammer(List<Player> players, WeaponHammer hammer) {
         return players.stream()
                 .noneMatch(player -> CalculateUtils.isHitHammer(player.currentPosition, hammer));

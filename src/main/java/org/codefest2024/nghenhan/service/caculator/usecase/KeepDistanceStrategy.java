@@ -43,6 +43,4 @@ public class KeepDistanceStrategy {
 
         return List.of();
     }
-
-
 }

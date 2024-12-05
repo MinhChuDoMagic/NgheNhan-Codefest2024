@@ -1,6 +1,7 @@
 package org.codefest2024.nghenhan.service.caculator.usecase;
 
 import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
+import org.codefest2024.nghenhan.service.caculator.finder.KeepDistanceFinderVer2;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class DodgeStrategy {
     private final BFSFinder bfsFinder = BFSFinder.getInstance();
+    private final KeepDistanceFinderVer2 keepDistanceFinderVer2 = KeepDistanceFinderVer2.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer) {
         List<Order> orders = new ArrayList<>();
@@ -42,6 +44,38 @@ public class DodgeStrategy {
         }
 
         return orders;
+    }
+
+    public List<Order> findAndKeepDistance(MapInfo mapInfo, Player myPlayer, Player ennemy) {
+        List<Bomb> dangerousBombs = mapInfo
+                .bombs
+                .stream()
+                .filter(bomb -> isDangerousBomb(bomb, myPlayer.currentPosition))
+                .toList();
+        List<WeaponHammer> dangerousHammers = mapInfo
+                .weaponHammers
+                .stream()
+                .filter(hammer -> isDangerousHammer(hammer, myPlayer.currentPosition))
+                .toList();
+        List<WeaponWind> dangerousWinds = mapInfo
+                .weaponWinds
+                .stream()
+                .filter(wind -> isDangerousWind(mapInfo.map, wind, myPlayer.currentPosition))
+                .toList();
+
+        if (!dangerousBombs.isEmpty() || !dangerousHammers.isEmpty() || !dangerousWinds.isEmpty()) {
+            String dir = keepDistanceFinderVer2
+                    .findSafe(mapInfo.map, myPlayer.currentPosition, ennemy.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds)
+                    .reconstructPath();
+            if (dir.isEmpty()) {
+                String oneSafeStep = bfsFinder.oneSafeStep(mapInfo.map, myPlayer.currentPosition, dangerousBombs, dangerousHammers, dangerousWinds);
+                return List.of(new Dir(oneSafeStep, myPlayer.isChild));
+            } else {
+                return List.of(new Dir(dir, myPlayer.isChild));
+            }
+        }
+
+        return List.of();
     }
 
     private boolean isDangerousBomb(Bomb bomb, Position curr) {

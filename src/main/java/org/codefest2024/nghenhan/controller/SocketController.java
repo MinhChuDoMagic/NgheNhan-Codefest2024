@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
 import org.codefest2024.nghenhan.service.caculator.DoNothingStrategy;
+import org.codefest2024.nghenhan.service.caculator.HitAndRunStrategyVer2;
 import org.codefest2024.nghenhan.service.caculator.StrategyEnum;
 import org.codefest2024.nghenhan.service.caculator.farming.FarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
@@ -77,6 +78,7 @@ public class SocketController implements Initializable {
     private final Strategy seaAttackStrategy = new SeaAttackStrategy();
     private final Strategy doNothingStrategy = new DoNothingStrategy();
     private final Strategy hitAndRunStrategy = new HitAndRunStrategy();
+    private final Strategy hitAndRunStrategyVer2 = new HitAndRunStrategyVer2();
 
     private final Emitter.Listener mOnTickTackListener = objects -> {
         if (objects != null && objects.length != 0) {
@@ -211,6 +213,7 @@ public class SocketController implements Initializable {
             case FARM_STRATEGY -> farmStrategy;
             case SEA_DIRECT_ATTACK -> seaAttackStrategy;
             case HIT_AND_RUN -> hitAndRunStrategy;
+            case HIT_AND_RUN_VER_2 -> hitAndRunStrategyVer2;
             case DO_NOTHING -> doNothingStrategy;
         };
     }

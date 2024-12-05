@@ -53,7 +53,7 @@ public class HitAndRunStrategy implements Strategy {
             if (!myPlayer.hasTransform) {
                 return normalFarmStrategy.find(gameInfo, myPlayer);
             } else {
-                updateEnemyData(enemyPlayer, mapInfo.weaponHammers);
+                updateSkillData(enemyPlayer, mapInfo.weaponHammers);
                 List<Order> orders = playerStrategy(mapInfo, myPlayer, myChild, enemyPlayer, enemyChild);
                 if (myChild != null) {
                     orders = new ArrayList<>(orders);
@@ -181,7 +181,7 @@ public class HitAndRunStrategy implements Strategy {
         }
     }
 
-    private void updateEnemyData(Player enemy, List<WeaponHammer> hammers) {
+    private void updateSkillData(Player enemy, List<WeaponHammer> hammers) {
         if (InGameInfo.enemyType == 0 && enemy != null) {
             InGameInfo.enemyType = enemy.transformType;
         }

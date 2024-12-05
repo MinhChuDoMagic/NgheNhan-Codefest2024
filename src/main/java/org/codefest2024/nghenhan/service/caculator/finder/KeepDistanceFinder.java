@@ -86,8 +86,6 @@ public class KeepDistanceFinder {
                 && map[row][col] != MapInfo.ENEMY
                 && map[row][col] != MapInfo.ENEMY_CHILD
                 && map[row][col] != MapInfo.BOMB
-                && map[row][col] != MapInfo.BOMB_EXPLODE
-                && map[row][col] != MapInfo.HAMMER_EXPLODE
                 && map[row][col] != MapInfo.WIND
                 && map[row][col] != MapInfo.CAPTURED_BADGE;
 

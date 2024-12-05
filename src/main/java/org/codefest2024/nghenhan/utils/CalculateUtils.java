@@ -97,11 +97,16 @@ public class CalculateUtils {
     }
 
     public static boolean inHammerRange(Position curr, Position enemy) {
-        return manhattanDistance(curr, enemy) < 6;
+        return Math.abs(curr.col - enemy.col) < 3 && Math.abs(curr.row - enemy.row) < 5 ||
+                Math.abs(curr.row - enemy.row) < 3 && Math.abs(curr.col - enemy.col) < 5;
     }
 
     public static boolean enemyNearby(Position curr, Position enemy) {
         return manhattanDistance(curr, enemy) < 16;
+    }
+
+    public static boolean enemySupperNearby(Position curr, Position enemy) {
+        return manhattanDistance(curr, enemy) < 8;
     }
 
     public static String processDirWithBrick(String dir) {
@@ -126,5 +131,10 @@ public class CalculateUtils {
 //        }
 //
 //        return input;
+    }
+
+    public static boolean isNearBox(int[][] map, Position curr){
+        return directions.stream()
+                .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BOX);
     }
 }

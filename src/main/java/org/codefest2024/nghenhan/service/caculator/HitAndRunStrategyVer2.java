@@ -1,20 +1,25 @@
-package org.codefest2024.nghenhan.service.caculator.seaAttack;
+package org.codefest2024.nghenhan.service.caculator;
 
-import org.codefest2024.nghenhan.service.caculator.Strategy;
+import org.codefest2024.nghenhan.service.caculator.farming.GodFarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.farming.NormalFarmStrategy;
-import org.codefest2024.nghenhan.service.caculator.finder.AStarFinder;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
-import org.codefest2024.nghenhan.service.caculator.usecase.DodgeStrategy;
+import org.codefest2024.nghenhan.service.caculator.usecase.*;
 import org.codefest2024.nghenhan.service.socket.data.*;
+import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
-public class SeaAttackStrategy implements Strategy {
+public class HitAndRunStrategyVer2 implements Strategy {
     private final NormalFarmStrategy normalFarmStrategy = new NormalFarmStrategy();
-    private final AStarFinder aStarFinder = AStarFinder.getInstance();
+    private final KeepDistanceStrategyVer2 keepDistanceStrategyVer2 = new KeepDistanceStrategyVer2();
+    private final UseSkillStrategy useSkillStrategy = new UseSkillStrategy();
+    private final GodFarmStrategy godFarmStrategy = new GodFarmStrategy();
     private final DodgeStrategy dodgeStrategy = new DodgeStrategy();
+    private final CollectSpoilsStrategy collectSpoilsStrategy = new CollectSpoilsStrategy();
+    private final RandomRunStrategy randomRunStrategy = new RandomRunStrategy();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -39,61 +44,74 @@ public class SeaAttackStrategy implements Strategy {
             }
         }
 
-        updateMap(mapInfo.map, myPlayer, myChild, enemyPlayer, enemyChild, mapInfo.bombs);
+        updateMap(mapInfo.map,
+                myPlayer, myChild, enemyPlayer, enemyChild,
+                mapInfo.bombs, mapInfo.weaponWinds, mapInfo.weaponHammers,
+                mapInfo.spoils);
 
         if (myPlayer != null) {
             if (!myPlayer.hasTransform) {
                 return normalFarmStrategy.find(gameInfo, myPlayer);
             } else {
                 updateSkillData(enemyPlayer, mapInfo.weaponHammers, mapInfo.weaponWinds);
-                return playerStrategy(mapInfo, myPlayer, enemyPlayer);
+                List<Order> orders = playerStrategy(mapInfo, myPlayer, myChild, enemyPlayer, enemyChild);
+                if (myChild != null) {
+                    orders = new ArrayList<>(orders);
+                    orders.addAll(playerStrategy(mapInfo, myChild, myPlayer, enemyPlayer, enemyChild));
+                }
+                return orders;
             }
         }
 
         return List.of();
     }
 
-    private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player enemy) {
-        List<Order> dodgeBombsOrders = dodgeStrategy.find(mapInfo, player);
+    private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
+        List<Order> useSkillOrders = useSkillStrategy.useMountainSkillDirect(player, teammate, enemy, enemyChild);
+        if (!useSkillOrders.isEmpty()) {
+            return useSkillOrders;
+        }
+
+        if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemy != null) {
+            return List.of(new Action(Action.MARRY_WIFE));
+        }
+
+        List<Order> runOrders = keepDistanceStrategyVer2.run(mapInfo, player, enemy);
+        if (!runOrders.isEmpty()) {
+            return runOrders;
+        }
+
+        List<Order> dodgeBombsOrders = dodgeStrategy.findAndKeepDistance(mapInfo, player, enemy);
         if (!dodgeBombsOrders.isEmpty()) {
             return dodgeBombsOrders;
         }
 
-        if(enemy.isStun){
-            InGameInfo.isEnemyStun = true;
+        List<Order> farmOrders = keepDistanceStrategyVer2.farm(mapInfo, player, enemy);
+        if(!farmOrders.isEmpty()){
+            return farmOrders;
         }
 
-        if (!enemy.isStun && !isCooldown(player.isChild) && InGameInfo.isEnemyStun) {
-            InGameInfo.isEnemyStun = false;
-            return List.of(new Action(Action.USE_WEAPON, player.isChild));
+        List<Order> randomRunOrders = randomRunStrategy.find(mapInfo, player);
+        if (!randomRunOrders.isEmpty()) {
+            return randomRunOrders;
         }
-        String dir = aStarFinder.find(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size);
-        return List.of(new Dir(processDir(dir)));
+
+        return List.of();
     }
 
-    private String processDir(String dir) {
-        int indexOfB = dir.indexOf('b');
-        if (indexOfB == 2 && dir.charAt(0) != dir.charAt(1)) {
-            return dir.substring(0, 2);
-        } else {
-            return dir.length() > 3 ? dir.substring(0, 3) : dir;
-        }
-    }
-
-    private boolean isCooldown(boolean isChild) {
-        long cooldown = switch (InGameInfo.playerType) {
-            case Player.MOUNTAIN -> WeaponHammer.COOL_DOWN;
-            case Player.SEA -> WeaponWind.COOL_DOWN;
-            default -> 0L;
-        } * 1000;
-
-        return (isChild && Instant.now().toEpochMilli() - InGameInfo.myChildLastSkillTime <= cooldown)
-                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.myPlayerLastSkillTime <= cooldown);
-    }
-
-    private void updateMap(int[][] map, Player player, Player child, Player enemy, Player enemyChild, List<Bomb> bombs) {
-        updateMap(map, bombs);
+    private void updateMap(int[][] map,
+                           Player player, Player child, Player enemy, Player enemyChild,
+                           List<Bomb> bombs, List<WeaponWind> winds, List<WeaponHammer> hammers,
+                           List<Spoil> spoils) {
+        updateMap(map, spoils);
+        updateMap(map, bombs, hammers, winds);
         updateMap(map, player, child, enemy, enemyChild);
+    }
+
+    private void updateMap(int[][] map, List<Spoil> spoils) {
+        for (Spoil spoil : spoils) {
+            map[spoil.row][spoil.col] = MapInfo.SPOIL;
+        }
     }
 
     private void updateMap(int[][] map, Player player, Player child, Player enemy, Player enemyChild) {
@@ -122,9 +140,54 @@ public class SeaAttackStrategy implements Strategy {
         }
     }
 
-    private void updateMap(int[][] map, List<Bomb> bombs) {
+    private void updateMap(int[][] map, List<Bomb> bombs, List<WeaponHammer> hammers, List<WeaponWind> winds) {
+        List<int[]> directions = CalculateUtils.getDirections();
+        MapSize size = new MapSize(map.length, map[0].length);
+
         for (Bomb bomb : bombs) {
             map[bomb.row][bomb.col] = MapInfo.BOMB;
+            directions.forEach(dir -> markBombExplosion(map, bomb, dir[0], dir[1], size));
+        }
+
+        hammers.forEach(hammer -> markHammerExplosion(map, hammer, size));
+
+        for (WeaponWind wind : winds) {
+            map[wind.currentRow][wind.currentCol] = MapInfo.WIND;
+        }
+    }
+
+    private void markBombExplosion(int[][] map, Bomb bomb, int rowDir, int colDir, MapSize size) {
+        for (int i = 1; i <= bomb.power; i++) {
+            int newRow = bomb.row + i * rowDir;
+            int newCol = bomb.col + i * colDir;
+
+            // Check boundaries
+            if (newRow < 0 || newRow >= size.rows || newCol < 0 || newCol >= size.cols) {
+                break;
+            }
+
+            if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
+                map[newRow][newCol] = MapInfo.BOMB_EXPLODE;
+            }
+        }
+    }
+
+    private void markHammerExplosion(int[][] map, WeaponHammer hammer, MapSize mapSize) {
+        int centerRow = hammer.destination.row;
+        int centerCol = hammer.destination.col;
+        int power = hammer.power;
+
+        for (int row = centerRow - power; row <= centerRow + power; row++) {
+            for (int col = centerCol - power; col <= centerCol + power; col++) {
+                // Check boundaries
+                if (row < 0 || row >= mapSize.rows || col < 0 || col >= mapSize.cols) {
+                    continue;
+                }
+
+                if (map[row][col] == MapInfo.BLANK || map[row][col] == MapInfo.DESTROYED) {
+                    map[row][col] = MapInfo.HAMMER_EXPLODE;
+                }
+            }
         }
     }
 

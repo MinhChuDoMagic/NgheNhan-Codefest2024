@@ -12,6 +12,7 @@ public class MapInfo {
     public static final int PRISON = 5;
     public static final int BADGE = 6;
     public static final int DESTROYED = 7;
+    public static final int SPOIL = 10;
     public static final int CAPTURED_BADGE = 16;
     public static final int PLAYER = 21;
     public static final int CHILD = 22;

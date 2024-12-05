@@ -10,7 +10,6 @@ public final class Action extends Order {
 
     public String action;
     public Payload payload;
-    public String characterType;
 
     public Action(String action, Payload payload, boolean useChild) {
         this.action = action;

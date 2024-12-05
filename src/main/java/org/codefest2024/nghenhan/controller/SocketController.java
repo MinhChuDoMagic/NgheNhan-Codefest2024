@@ -99,10 +99,16 @@ public class SocketController implements Initializable {
 
     private void handleOrders(List<Order> orders) {
         for (int i = 0; i < orders.size(); i++) {
-            handleOrder(orders.get(i));
+            Order currOrder = orders.get(i);
+            handleOrder(currOrder);
             if (i < orders.size() - 1) { // Only sleep if not the last element
                 try {
-                    Thread.sleep(5); // Adjust the delay as needed
+                    Order nextOrder = orders.get(i + 1);
+                    if ((currOrder.characterType == null) != (nextOrder.characterType == null)) {
+                        Thread.sleep(5);
+                    } else {
+                        Thread.sleep(5);
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // Restore interrupted status
                 }
@@ -135,7 +141,7 @@ public class SocketController implements Initializable {
 
     private void handleAction(Action action) {
         if (mSocket != null) {
-            log.info("Action = {}", action);
+            log.info("Action = {}", action.toString());
             try {
                 mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, new JSONObject(action.toString()));
             } catch (JSONException e) {
@@ -249,19 +255,6 @@ public class SocketController implements Initializable {
         return input.matches("[0-9b]+");
     }
 
-    private void sendAction(Action action) {
-        try {
-            if (mSocket != null) {
-                String json = new Gson().toJson(action);
-                log.info("Sending json: {}", json);
-                log.info("Sending Action: {}", action.toString());
-                mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, new JSONObject(action.toString()));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void connectToServer() {
         if (mSocket != null) {
             mSocket.disconnect();
@@ -313,12 +306,10 @@ public class SocketController implements Initializable {
         Payload payload = new Payload();
         payload.destination = position;
 
-        log.info("Action: {}, Payload: {}", action, payload);
-
         switch (action) {
-            case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON, cbUseChild.isSelected()));
-            case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON, payload, cbUseChild.isSelected()));
-            case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
+            case Dir.SWITCH_WEAPON -> handleAction(new Action(Action.SWITCH_WEAPON, cbUseChild.isSelected()));
+            case Dir.USE_WEAPON -> handleAction(new Action(Action.USE_WEAPON, payload, cbUseChild.isSelected()));
+            case Dir.MARRY_WIFE -> handleAction(new Action(Action.MARRY_WIFE));
         }
     }
 

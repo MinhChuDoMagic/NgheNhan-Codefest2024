@@ -224,7 +224,8 @@ public class KeepDistanceFinderVer2 {
                 && map[row][col] != MapInfo.WIND
                 && map[row][col] != MapInfo.CAPTURED_BADGE
                 && map[row][col] != MapInfo.BOX
-                && map[row][col] != MapInfo.HAMMER_EXPLODE;
+                && map[row][col] != MapInfo.HAMMER_EXPLODE
+                && map[row][col] != MapInfo.BOMB_EXPLODE;
     }
 
     private boolean isSafe(int[][] map, Position curr, List<Bomb> bombs, List<WeaponHammer> hammers, List<WeaponWind> winds) {

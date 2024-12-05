@@ -10,9 +10,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
 import org.codefest2024.nghenhan.service.caculator.DoNothingStrategy;
+import org.codefest2024.nghenhan.service.caculator.HitAndRunStrategyVer2;
 import org.codefest2024.nghenhan.service.caculator.StrategyEnum;
 import org.codefest2024.nghenhan.service.caculator.farming.FarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.Strategy;
+import org.codefest2024.nghenhan.service.caculator.hitAndRun.HitAndRunStrategy;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.caculator.seaAttack.SeaAttackStrategy;
 import org.codefest2024.nghenhan.service.socket.ClientConfig;
@@ -75,6 +77,8 @@ public class SocketController implements Initializable {
     private final Strategy farmStrategy = new FarmStrategy();
     private final Strategy seaAttackStrategy = new SeaAttackStrategy();
     private final Strategy doNothingStrategy = new DoNothingStrategy();
+    private final Strategy hitAndRunStrategy = new HitAndRunStrategy();
+    private final Strategy hitAndRunStrategyVer2 = new HitAndRunStrategyVer2();
 
     private final Emitter.Listener mOnTickTackListener = objects -> {
         if (objects != null && objects.length != 0) {
@@ -97,10 +101,16 @@ public class SocketController implements Initializable {
 
     private void handleOrders(List<Order> orders) {
         for (int i = 0; i < orders.size(); i++) {
-            handleOrder(orders.get(i));
+            Order currOrder = orders.get(i);
+            handleOrder(currOrder);
             if (i < orders.size() - 1) { // Only sleep if not the last element
                 try {
-                    Thread.sleep(5); // Adjust the delay as needed
+                    Order nextOrder = orders.get(i + 1);
+                    if ((currOrder.characterType == null) != (nextOrder.characterType == null)) {
+                        Thread.sleep(5);
+                    } else {
+                        Thread.sleep(5);
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // Restore interrupted status
                 }
@@ -133,7 +143,7 @@ public class SocketController implements Initializable {
 
     private void handleAction(Action action) {
         if (mSocket != null) {
-            log.info("Action = {}", action);
+            log.info("Action = {}", action.toString());
             try {
                 mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, new JSONObject(action.toString()));
             } catch (JSONException e) {
@@ -202,6 +212,8 @@ public class SocketController implements Initializable {
         return switch (strategyEnum) {
             case FARM_STRATEGY -> farmStrategy;
             case SEA_DIRECT_ATTACK -> seaAttackStrategy;
+            case HIT_AND_RUN -> hitAndRunStrategy;
+            case HIT_AND_RUN_VER_2 -> hitAndRunStrategyVer2;
             case DO_NOTHING -> doNothingStrategy;
         };
     }
@@ -244,19 +256,6 @@ public class SocketController implements Initializable {
 
     private boolean isStep(String input) {
         return input.matches("[0-9b]+");
-    }
-
-    private void sendAction(Action action) {
-        try {
-            if (mSocket != null) {
-                String json = new Gson().toJson(action);
-                log.info("Sending json: {}", json);
-                log.info("Sending Action: {}", action.toString());
-                mSocket.emit(ClientConfig.PLAYER.OUTGOING.ACTION, new JSONObject(action.toString()));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     private void connectToServer() {
@@ -310,12 +309,10 @@ public class SocketController implements Initializable {
         Payload payload = new Payload();
         payload.destination = position;
 
-        log.info("Action: {}, Payload: {}", action, payload);
-
         switch (action) {
-            case Dir.SWITCH_WEAPON -> sendAction(new Action(Action.SWITCH_WEAPON, cbUseChild.isSelected()));
-            case Dir.USE_WEAPON -> sendAction(new Action(Action.USE_WEAPON, payload, cbUseChild.isSelected()));
-            case Dir.MARRY_WIFE -> sendAction(new Action(Action.MARRY_WIFE));
+            case Dir.SWITCH_WEAPON -> handleAction(new Action(Action.SWITCH_WEAPON, cbUseChild.isSelected()));
+            case Dir.USE_WEAPON -> handleAction(new Action(Action.USE_WEAPON, payload, cbUseChild.isSelected()));
+            case Dir.MARRY_WIFE -> handleAction(new Action(Action.MARRY_WIFE));
         }
     }
 

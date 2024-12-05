@@ -97,6 +97,44 @@ public class CalculateUtils {
     }
 
     public static boolean inHammerRange(Position curr, Position enemy) {
-        return manhattanDistance(curr, enemy) < 6;
+        return Math.abs(curr.col - enemy.col) < 3 && Math.abs(curr.row - enemy.row) < 5 ||
+                Math.abs(curr.row - enemy.row) < 3 && Math.abs(curr.col - enemy.col) < 5;
+    }
+
+    public static boolean enemyNearby(Position curr, Position enemy) {
+        return manhattanDistance(curr, enemy) < 16;
+    }
+
+    public static boolean enemySupperNearby(Position curr, Position enemy) {
+        return manhattanDistance(curr, enemy) < 8;
+    }
+
+    public static String processDirWithBrick(String dir) {
+        int indexOfB = dir.indexOf('b');
+        if (indexOfB == 2 && dir.charAt(0) != dir.charAt(1)) {
+            return dir.substring(0, 2);
+        } else {
+            return dir.length() > 3 ? dir.substring(0, 3) : dir;
+        }
+//        String input = dir;
+//        if (input == null || input.isEmpty()) {
+//            return ""; // Handle null or empty strings
+//        }
+//
+//        if (input.charAt(0) == 'b') {
+//            return "b";
+//        }
+//
+//        int indexOfB = input.indexOf('b');
+//        if (indexOfB != -1) {
+//            return input.substring(0, indexOfB);
+//        }
+//
+//        return input;
+    }
+
+    public static boolean isNearBox(int[][] map, Position curr){
+        return directions.stream()
+                .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BOX);
     }
 }

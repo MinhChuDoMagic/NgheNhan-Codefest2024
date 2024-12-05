@@ -39,11 +39,33 @@ public class UseSkillStrategy {
                 return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), player.isChild));
             }
 
-            if(CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition) <= 14){
+            if (CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition) <= 14) {
                 String dir = bfsFinder.findEnemy(map, player.currentPosition, enemy.currentPosition, mapSize).reconstructPath();
-                if (!dir.isEmpty() && dir.length() < 10){
+                if (!dir.isEmpty() && dir.length() < 10) {
                     return List.of(new Dir(dir, player.isChild));
                 }
+            }
+        }
+        return List.of();
+    }
+
+    public List<Order> useMountainSkillDirect(Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild){
+        if (myPlayer.timeToUseSpecialWeapons == 0
+                || (enemyPlayer != null && !enemyPlayer.hasTransform)) {
+            return List.of();
+        }
+
+        List<Player> enemies = Utils.filterNonNull(enemyPlayer, enemyChild);
+        if (enemies.isEmpty() || isCooldown(myPlayer.isChild)) {
+            return List.of();
+        }
+
+        for (Player enemy : enemies) {
+            if (Math.abs(myPlayer.currentPosition.col - enemy.currentPosition.col) <= WeaponHammer.RANGE
+                    && Math.abs(myPlayer.currentPosition.row - enemy.currentPosition.row) <= WeaponHammer.RANGE
+                    && CalculateUtils.inHammerRange(myPlayer.currentPosition, enemy.currentPosition)
+                    && isSafeHammer(Utils.filterNonNull(myPlayer, teammate), new WeaponHammer(enemy.currentPosition))) {
+                return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), myPlayer.isChild));
             }
         }
         return List.of();
@@ -70,9 +92,9 @@ public class UseSkillStrategy {
         // Check Left Direction
         if (Math.abs(enemy.row - player.row) <= 1 && enemy.col < player.col) {
             var winds = List.of(
-                    new WeaponWind(player.row - 1, player.col, 1),
-                    new WeaponWind(player.row, player.col, 1),
-                    new WeaponWind(player.row + 1, player.col, 1));
+                    new WeaponWind(player.row - 1, player.col - 1, 1),
+                    new WeaponWind(player.row, player.col - 1, 1),
+                    new WeaponWind(player.row + 1, player.col - 1, 1));
 
             if (!BFSFinder.isSafeFromWinds(map, enemy, winds)) {
                 return Dir.LEFT;
@@ -82,9 +104,9 @@ public class UseSkillStrategy {
         // Check Right Direction
         if (Math.abs(enemy.row - player.row) <= 1 && enemy.col > player.col) {
             var winds = List.of(
-                    new WeaponWind(player.row - 1, player.col, 2),
-                    new WeaponWind(player.row, player.col, 2),
-                    new WeaponWind(player.row + 1, player.col, 2));
+                    new WeaponWind(player.row - 1, player.col + 1, 2),
+                    new WeaponWind(player.row, player.col + 1, 2),
+                    new WeaponWind(player.row + 1, player.col + 1, 2));
 
             if (!BFSFinder.isSafeFromWinds(map, enemy, winds)) {
                 return Dir.RIGHT;
@@ -94,9 +116,9 @@ public class UseSkillStrategy {
         // Check Up Direction
         if (Math.abs(enemy.col - player.col) <= 1 && enemy.row < player.row) {
             var winds = List.of(
-                    new WeaponWind(player.row, player.col - 1, 3),
-                    new WeaponWind(player.row, player.col, 3),
-                    new WeaponWind(player.row, player.col + 1, 3));
+                    new WeaponWind(player.row - 1, player.col - 1, 3),
+                    new WeaponWind(player.row - 1, player.col, 3),
+                    new WeaponWind(player.row - 1, player.col + 1, 3));
 
             if (!BFSFinder.isSafeFromWinds(map, enemy, winds)) {
                 return Dir.UP;
@@ -106,9 +128,9 @@ public class UseSkillStrategy {
         // Check Down Direction
         if (Math.abs(enemy.col - player.col) <= 1 && enemy.row > player.row) {
             var winds = List.of(
-                    new WeaponWind(player.row, player.col - 1, 4),
-                    new WeaponWind(player.row, player.col, 4),
-                    new WeaponWind(player.row, player.col + 1, 4));
+                    new WeaponWind(player.row + 1, player.col - 1, 4),
+                    new WeaponWind(player.row + 1, player.col, 4),
+                    new WeaponWind(player.row + 1, player.col + 1, 4));
 
             if (!BFSFinder.isSafeFromWinds(map, enemy, winds)) {
                 return Dir.DOWN;

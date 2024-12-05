@@ -3,6 +3,8 @@ package org.codefest2024.nghenhan.service.caculator;
 public enum StrategyEnum {
     FARM_STRATEGY("Farm Strategy"),
     SEA_DIRECT_ATTACK("Sea Direct Attack"),
+    HIT_AND_RUN("Hit and Run"),
+    HIT_AND_RUN_VER_2("son tinh"),
     DO_NOTHING("Do Nothing");
 
     private final String displayName;

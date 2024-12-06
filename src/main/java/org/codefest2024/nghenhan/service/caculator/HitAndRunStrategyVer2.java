@@ -20,6 +20,7 @@ public class HitAndRunStrategyVer2 implements Strategy {
     private final DodgeStrategy dodgeStrategy = new DodgeStrategy();
     private final CollectSpoilsStrategy collectSpoilsStrategy = new CollectSpoilsStrategy();
     private final RandomRunStrategy randomRunStrategy = new RandomRunStrategy();
+    private final FarmBrickStrategy farmBrickStrategy = new FarmBrickStrategy();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -52,6 +53,8 @@ public class HitAndRunStrategyVer2 implements Strategy {
         if (myPlayer != null) {
             if (!myPlayer.hasTransform) {
                 return normalFarmStrategy.find(gameInfo, myPlayer);
+            } else if (enemyPlayer != null && !enemyPlayer.hasTransform) {
+                return farmBrickStrategy.farmBrick(mapInfo, myPlayer, enemyPlayer);
             } else {
                 updateSkillData(enemyPlayer, mapInfo.weaponHammers, mapInfo.weaponWinds);
                 List<Order> orders = playerStrategy(mapInfo, myPlayer, myChild, enemyPlayer, enemyChild);

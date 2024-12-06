@@ -1,7 +1,9 @@
 package org.codefest2024.nghenhan.utils;
 
+import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 
+import java.time.Instant;
 import java.util.*;
 
 public class CalculateUtils {
@@ -136,5 +138,21 @@ public class CalculateUtils {
     public static boolean isNearBox(int[][] map, Position curr){
         return directions.stream()
                 .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BOX);
+    }
+
+    public static boolean isNearBrick(int[][] map, Position curr){
+        return directions.stream()
+                .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BRICK);
+    }
+
+    public static boolean isCooldown(boolean isChild) {
+        long cooldown = switch (InGameInfo.playerType) {
+            case Player.MOUNTAIN -> WeaponHammer.COOL_DOWN;
+            case Player.SEA -> WeaponWind.COOL_DOWN;
+            default -> 0L;
+        } * 1000;
+
+        return (isChild && Instant.now().toEpochMilli() - InGameInfo.myChildLastSkillTime <= cooldown)
+                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.myPlayerLastSkillTime <= cooldown);
     }
 }

@@ -30,6 +30,19 @@ public class KeepDistanceStrategyVer2 {
                 orders.add(new Dir(Dir.ACTION, player.isChild));
                 return orders;
             } else {
+                AStarNode boxNodeWithoutBrick = keepDistanceFinderVer2.findWithoutBrick(mapInfo.map, player.currentPosition, enemy.currentPosition, MapInfo.BOX, mapInfo.size);
+                if (boxNodeWithoutBrick.parent != null) {
+                    String dir = boxNodeWithoutBrick.parent.reconstructPath();
+                    if (!dir.isEmpty()) {
+                        List<Order> orders = new ArrayList<>();
+                        if (dir.contains(Dir.ACTION) && player.currentWeapon != 1) {
+                            orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
+                        }
+                        orders.add(new Dir(boxNodeWithoutBrick.parent.reconstructPath(), player.isChild));
+                        return orders;
+                    }
+                }
+
                 AStarNode boxNode = keepDistanceFinderVer2.find(mapInfo.map, player.currentPosition, enemy.currentPosition, MapInfo.BOX, mapInfo.size);
                 if (boxNode.parent != null) {
                     String dir = boxNode.parent.reconstructPath();
@@ -39,6 +52,7 @@ public class KeepDistanceStrategyVer2 {
                             orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
                         }
                         orders.add(new Dir(boxNode.parent.reconstructPath(), player.isChild));
+                        return orders;
                     }
                 }
             }
@@ -57,13 +71,20 @@ public class KeepDistanceStrategyVer2 {
                 }
             }
 
-            if (myBomb == null && CalculateUtils.enemySupperNearby(player.currentPosition, enemy.currentPosition)) {
+            if (myBomb == null
+                    && CalculateUtils.enemySupperNearby(player.currentPosition, enemy.currentPosition)
+                    && !CalculateUtils.isNearBrick(mapInfo.map, player.currentPosition)) {
                 List<Order> orders = new ArrayList<>();
                 if (player.currentWeapon != 2) {
                     orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
                 }
                 orders.add(new Dir(Dir.ACTION, player.isChild));
                 return orders;
+            }
+
+            String dirWithoutBrick = keepDistanceFinderVer2.keepDistanceWithoutBrick(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size).reconstructPath();
+            if (!dirWithoutBrick.isEmpty()) {
+                return List.of(new Dir(dirWithoutBrick, player.isChild));
             }
 
             String dir = keepDistanceFinderVer2.keepDistance(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size).reconstructPath();

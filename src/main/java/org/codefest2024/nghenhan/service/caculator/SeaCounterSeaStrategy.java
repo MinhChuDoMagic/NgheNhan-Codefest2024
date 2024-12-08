@@ -1,9 +1,10 @@
 package org.codefest2024.nghenhan.service.caculator;
 
-import org.codefest2024.nghenhan.service.caculator.farming.GodFarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.farming.NormalFarmStrategy;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
-import org.codefest2024.nghenhan.service.caculator.usecase.*;
+import org.codefest2024.nghenhan.service.caculator.usecase.DodgeStrategy;
+import org.codefest2024.nghenhan.service.caculator.usecase.EnemyNearbyStrategy;
+import org.codefest2024.nghenhan.service.caculator.usecase.SeaStunAndSkillStrategy;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
@@ -12,15 +13,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HitAndRunStrategyVer2 implements Strategy {
+public class SeaCounterSeaStrategy implements Strategy {
     private final NormalFarmStrategy normalFarmStrategy = new NormalFarmStrategy();
-    private final KeepDistanceStrategyVer2 keepDistanceStrategyVer2 = new KeepDistanceStrategyVer2();
-    private final UseSkillStrategy useSkillStrategy = new UseSkillStrategy();
-    private final GodFarmStrategy godFarmStrategy = new GodFarmStrategy();
+    private final EnemyNearbyStrategy enemyNearbyStrategy = new EnemyNearbyStrategy();
     private final DodgeStrategy dodgeStrategy = new DodgeStrategy();
-    private final CollectSpoilsStrategy collectSpoilsStrategy = new CollectSpoilsStrategy();
-    private final RandomRunStrategy randomRunStrategy = new RandomRunStrategy();
-    private final FarmBrickStrategy farmBrickStrategy = new FarmBrickStrategy();
+    private final SeaStunAndSkillStrategy seaStunAndSkillStrategy = new SeaStunAndSkillStrategy();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -53,8 +50,6 @@ public class HitAndRunStrategyVer2 implements Strategy {
         if (myPlayer != null) {
             if (!myPlayer.hasTransform) {
                 return normalFarmStrategy.find(gameInfo, myPlayer);
-            } else if (enemyPlayer != null && !enemyPlayer.hasTransform) {
-                return farmBrickStrategy.farmBrick(mapInfo, myPlayer, enemyPlayer);
             } else {
                 updateSkillData(enemyPlayer, mapInfo.weaponHammers, mapInfo.weaponWinds);
                 List<Order> orders = playerStrategy(mapInfo, myPlayer, myChild, enemyPlayer, enemyChild);
@@ -70,33 +65,23 @@ public class HitAndRunStrategyVer2 implements Strategy {
     }
 
     private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
-        List<Order> useSkillOrders = useSkillStrategy.useMountainSkillDirect(player, teammate, enemy, enemyChild);
-        if (!useSkillOrders.isEmpty()) {
-            return useSkillOrders;
+        if(enemy.isStun){
+            InGameInfo.isEnemyStun = true;
         }
 
-        if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemy != null) {
-            return List.of(new Action(Action.MARRY_WIFE));
-        }
+//        List<Order> enemyNearbyOrders = enemyNearbyStrategy.find(mapInfo, player, enemy);
+//        if (!enemyNearbyOrders.isEmpty()) {
+//            return enemyNearbyOrders;
+//        }
 
-        List<Order> runOrders = keepDistanceStrategyVer2.run(mapInfo, player, enemy);
-        if (!runOrders.isEmpty()) {
-            return runOrders;
-        }
+//        List<Order> dodgeBombsOrders = dodgeStrategy.findAndStand(mapInfo, player, enemy);
+//        if (!dodgeBombsOrders.isEmpty()) {
+//            return dodgeBombsOrders;
+//        }
 
-        List<Order> dodgeBombsOrders = dodgeStrategy.findAndKeepDistance(mapInfo, player, enemy);
-        if (!dodgeBombsOrders.isEmpty()) {
-            return dodgeBombsOrders;
-        }
-
-        List<Order> farmOrders = keepDistanceStrategyVer2.farm(mapInfo, player, enemy);
-        if(!farmOrders.isEmpty()){
-            return farmOrders;
-        }
-
-        List<Order> randomRunOrders = randomRunStrategy.find(mapInfo, player);
-        if (!randomRunOrders.isEmpty()) {
-            return randomRunOrders;
+        List<Order> seaStunAndSkillOrders = seaStunAndSkillStrategy.find(mapInfo, player, enemy);
+        if (!seaStunAndSkillOrders.isEmpty()) {
+            return seaStunAndSkillOrders;
         }
 
         return List.of();

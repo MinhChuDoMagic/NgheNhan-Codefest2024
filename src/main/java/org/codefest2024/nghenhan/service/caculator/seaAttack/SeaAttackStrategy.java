@@ -54,7 +54,7 @@ public class SeaAttackStrategy implements Strategy {
     }
 
     private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player enemy) {
-        List<Order> dodgeBombsOrders = dodgeStrategy.find(mapInfo, player);
+        List<Order> dodgeBombsOrders = dodgeStrategy.findWithoutWind(mapInfo, player);
         if (!dodgeBombsOrders.isEmpty()) {
             return dodgeBombsOrders;
         }

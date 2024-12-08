@@ -9,11 +9,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
-import org.codefest2024.nghenhan.service.caculator.DoNothingStrategy;
-import org.codefest2024.nghenhan.service.caculator.HitAndRunStrategyVer2;
-import org.codefest2024.nghenhan.service.caculator.StrategyEnum;
+import org.codefest2024.nghenhan.service.caculator.*;
 import org.codefest2024.nghenhan.service.caculator.farming.FarmStrategy;
-import org.codefest2024.nghenhan.service.caculator.Strategy;
 import org.codefest2024.nghenhan.service.caculator.hitAndRun.HitAndRunStrategy;
 import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
 import org.codefest2024.nghenhan.service.caculator.seaAttack.SeaAttackStrategy;
@@ -79,6 +76,7 @@ public class SocketController implements Initializable {
     private final Strategy doNothingStrategy = new DoNothingStrategy();
     private final Strategy hitAndRunStrategy = new HitAndRunStrategy();
     private final Strategy hitAndRunStrategyVer2 = new HitAndRunStrategyVer2();
+    private final Strategy seaCounterSeaStrategy = new SeaCounterSeaStrategy();
 
     private final Emitter.Listener mOnTickTackListener = objects -> {
         if (objects != null && objects.length != 0) {
@@ -214,6 +212,7 @@ public class SocketController implements Initializable {
             case SEA_DIRECT_ATTACK -> seaAttackStrategy;
             case HIT_AND_RUN -> hitAndRunStrategy;
             case HIT_AND_RUN_VER_2 -> hitAndRunStrategyVer2;
+            case SEA_COUNTER_SEA -> seaCounterSeaStrategy;
             case DO_NOTHING -> doNothingStrategy;
         };
     }

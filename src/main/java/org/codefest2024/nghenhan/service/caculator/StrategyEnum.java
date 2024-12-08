@@ -5,6 +5,7 @@ public enum StrategyEnum {
     SEA_DIRECT_ATTACK("Sea Direct Attack"),
     HIT_AND_RUN("Hit and Run"),
     HIT_AND_RUN_VER_2("son tinh"),
+    SEA_COUNTER_SEA("thuy tinh"),
     DO_NOTHING("Do Nothing");
 
     private final String displayName;

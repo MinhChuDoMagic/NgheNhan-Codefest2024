@@ -43,13 +43,10 @@ public class FarmStrategy implements Strategy {
             }
         }
 
-        updateMap(mapInfo.map, myPlayer, myChild, enemyPlayer, enemyChild, mapInfo.bombs);
-
         if (myPlayer != null) {
             if (!myPlayer.hasTransform) {
                 return findBadge.find(gameInfo, myPlayer);
             } else {
-                updateEnemyData(enemyPlayer, mapInfo.weaponHammers);
                 List<Order> orders = playerStrategy(mapInfo, myPlayer, myChild, enemyPlayer, enemyChild);
                 if (myChild != null) {
                     orders = new ArrayList<>(orders);
@@ -60,66 +57,6 @@ public class FarmStrategy implements Strategy {
         }
 
         return List.of();
-    }
-
-    private void updateMap(int[][] map, Player player, Player child, Player enemy, Player enemyChild, List<Bomb> bombs) {
-        updateMap(map, bombs);
-        updateMap(map, player, child, enemy, enemyChild);
-    }
-
-    private void updateMap(int[][] map, Player player, Player child, Player enemy, Player enemyChild) {
-        if (player != null) {
-            if (map[player.currentPosition.row][player.currentPosition.col] == MapInfo.BADGE) {
-                map[player.currentPosition.row][player.currentPosition.col] = MapInfo.CAPTURED_BADGE;
-            } else {
-                map[player.currentPosition.row][player.currentPosition.col] = MapInfo.PLAYER;
-            }
-        }
-
-        if (child != null) {
-            map[child.currentPosition.row][child.currentPosition.col] = MapInfo.CHILD;
-        }
-
-        if (enemy != null) {
-            if (map[enemy.currentPosition.row][enemy.currentPosition.col] == MapInfo.BADGE) {
-                map[enemy.currentPosition.row][enemy.currentPosition.col] = MapInfo.CAPTURED_BADGE;
-            } else {
-                map[enemy.currentPosition.row][enemy.currentPosition.col] = MapInfo.ENEMY;
-            }
-        }
-
-        if (enemyChild != null) {
-            map[enemyChild.currentPosition.row][enemyChild.currentPosition.col] = MapInfo.ENEMY_CHILD;
-        }
-    }
-
-    private void updateMap(int[][] map, List<Bomb> bombs) {
-        for (Bomb bomb : bombs) {
-            map[bomb.row][bomb.col] = MapInfo.BOMB;
-        }
-    }
-
-
-    private void updateEnemyData(Player enemy, List<Hammer> hammers) {
-        if (InGameInfo.enemyType == 0 && enemy != null) {
-            InGameInfo.enemyType = enemy.transformType;
-        }
-
-        for (Hammer hammer : hammers) {
-            if (hammer.playerId.startsWith(Constants.KEY_TEAM)) {
-                if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
-                    InGameInfo.myChildLastSkillTime = hammer.createdAt;
-                } else {
-                    InGameInfo.myPlayerLastSkillTime = hammer.createdAt;
-                }
-            } else {
-                if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
-                    InGameInfo.enemyChildLastSkillTime = hammer.createdAt;
-                } else {
-                    InGameInfo.enemyLastSkillTime = hammer.createdAt;
-                }
-            }
-        }
     }
 
     private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player teammate, Player enemyPlayer, Player enemyChild) {

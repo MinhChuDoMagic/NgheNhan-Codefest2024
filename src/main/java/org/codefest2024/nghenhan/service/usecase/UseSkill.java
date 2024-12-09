@@ -19,7 +19,7 @@ public class UseSkill {
         }
 
         List<Player> enemies = Utils.filterNonNull(enemy, enemyChild);
-        if (enemies.isEmpty() || isCooldown(player.isChild)) {
+        if (enemies.isEmpty() || CalculateUtils.isCooldown(player.isChild)) {
             return List.of();
         }
 
@@ -56,7 +56,7 @@ public class UseSkill {
         }
 
         List<Player> enemies = Utils.filterNonNull(enemyPlayer, enemyChild);
-        if (enemies.isEmpty() || isCooldown(player.isChild)) {
+        if (enemies.isEmpty() || CalculateUtils.isCooldown(player.isChild)) {
             return List.of();
         }
 
@@ -146,16 +146,5 @@ public class UseSkill {
         } else {
             InGameInfo.myPlayerLastSkillTime = Instant.now().toEpochMilli();
         }
-    }
-
-    private boolean isCooldown(boolean isChild) {
-        long cooldown = switch (InGameInfo.playerType) {
-            case Player.MOUNTAIN -> Hammer.COOL_DOWN;
-            case Player.SEA -> Wind.COOL_DOWN;
-            default -> 0L;
-        } * 1000;
-
-        return (isChild && Instant.now().toEpochMilli() - InGameInfo.myChildLastSkillTime <= cooldown)
-                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.myPlayerLastSkillTime <= cooldown);
     }
 }

@@ -49,7 +49,7 @@ public class UseSkill {
         return List.of();
     }
 
-    public List<Order> useMountainSkillDirect(Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild){
+    public List<Order> useMountainSkillDirect(Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild) {
         if (myPlayer.timeToUseSpecialWeapons == 0
                 || (enemyPlayer != null && !enemyPlayer.hasTransform)) {
             return List.of();

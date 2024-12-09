@@ -1,7 +1,7 @@
 package org.codefest2024.nghenhan.service.usecase;
 
-import org.codefest2024.nghenhan.service.finder.data.AStarNode;
 import org.codefest2024.nghenhan.service.finder.KeepDistanceFinder;
+import org.codefest2024.nghenhan.service.finder.data.AStarNode;
 import org.codefest2024.nghenhan.service.socket.data.*;
 
 import java.util.ArrayList;

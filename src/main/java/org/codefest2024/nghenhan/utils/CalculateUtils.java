@@ -4,7 +4,10 @@ import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class CalculateUtils {
     private CalculateUtils() {
@@ -135,12 +138,12 @@ public class CalculateUtils {
 //        return input;
     }
 
-    public static boolean isNearBox(int[][] map, Position curr){
+    public static boolean isNearBox(int[][] map, Position curr) {
         return directions.stream()
                 .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BOX);
     }
 
-    public static boolean isNearBrick(int[][] map, Position curr){
+    public static boolean isNearBrick(int[][] map, Position curr) {
         return directions.stream()
                 .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BRICK);
     }

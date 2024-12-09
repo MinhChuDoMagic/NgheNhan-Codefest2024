@@ -27,7 +27,7 @@ public class Utils {
         return result;
     }
 
-    public static <T> List<T> combineList(List<T> list1, List<T> list2){
+    public static <T> List<T> combineList(List<T> list1, List<T> list2) {
         List<T> ans = new ArrayList<>(list1);
         ans.addAll(list2);
         return ans;

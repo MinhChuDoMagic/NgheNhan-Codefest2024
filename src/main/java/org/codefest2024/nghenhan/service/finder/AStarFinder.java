@@ -11,12 +11,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class AStarFinder{
+public class AStarFinder {
     private static AStarFinder instance;
 
-    private AStarFinder(){}
+    private AStarFinder() {
+    }
 
-    public static AStarFinder getInstance(){
+    public static AStarFinder getInstance() {
         if (instance == null) {
             instance = new AStarFinder();
         }
@@ -25,7 +26,7 @@ public class AStarFinder{
 
     public String find(int[][] map, Position curr, Position des, MapSize size) {
         PriorityQueue<AStarNode> pq = new PriorityQueue<>(Comparator.comparingDouble(AStarNode::getF));
-        pq.add(new AStarNode(curr.row, curr.col, 0,0, null, null));
+        pq.add(new AStarNode(curr.row, curr.col, 0, 0, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
         List<int[]> directions = CalculateUtils.getDirections();
 
@@ -51,9 +52,9 @@ public class AStarFinder{
                     double newCost = currNode.g;
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
 
-                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] ==  MapInfo.DESTROYED) {
+                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
                         newCost += 1; // Empty cell
-                    } else if (map[newRow][newCol] == MapInfo.BRICK || map[newRow][newCol] ==  MapInfo.ENEMY) {
+                    } else if (map[newRow][newCol] == MapInfo.BRICK || map[newRow][newCol] == MapInfo.ENEMY) {
                         String currentCommand = currNode.commands.toString();
                         if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
                             newCommands.append(move);

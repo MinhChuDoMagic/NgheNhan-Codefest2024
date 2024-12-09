@@ -10,7 +10,7 @@ public class AStarNode extends Node {
         this.h = h;
     }
 
-    public double getF(){
-        return g+h;
+    public double getF() {
+        return g + h;
     }
 }

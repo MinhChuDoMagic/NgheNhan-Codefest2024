@@ -375,7 +375,7 @@ public class KeepDistanceFinder {
                 && map[row][col] != MapInfo.BRICK;
     }
 
-    private boolean isRunPath(int row, int col, int[][] map, boolean[][] visited, MapSize size){
+    private boolean isRunPath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
         return row >= 0
                 && row < size.rows
                 && col >= 0 && col < size.cols
@@ -394,7 +394,7 @@ public class KeepDistanceFinder {
                 && map[row][col] != MapInfo.BOMB_EXPLODE;
     }
 
-    private boolean isRunPathWithoutBrick(int row, int col, int[][] map, boolean[][] visited, MapSize size){
+    private boolean isRunPathWithoutBrick(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
         return isRunPath(row, col, map, visited, size)
                 && map[row][col] != MapInfo.BRICK;
     }

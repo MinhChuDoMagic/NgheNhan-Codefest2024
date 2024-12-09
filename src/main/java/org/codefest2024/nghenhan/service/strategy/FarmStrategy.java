@@ -1,10 +1,7 @@
 package org.codefest2024.nghenhan.service.strategy;
 
-import org.codefest2024.nghenhan.service.usecase.GodFarmBox;
-import org.codefest2024.nghenhan.service.usecase.FindBadge;
-import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
-import org.codefest2024.nghenhan.service.usecase.*;
 import org.codefest2024.nghenhan.service.socket.data.*;
+import org.codefest2024.nghenhan.service.usecase.*;
 import org.codefest2024.nghenhan.utils.Utils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 

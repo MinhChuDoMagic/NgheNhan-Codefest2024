@@ -14,7 +14,8 @@ public class ForwardFinder {
     private final int BRICK_POINT = 6;
     private final int ENEMY_RATIO = 1;
 
-    private ForwardFinder(){}
+    private ForwardFinder() {
+    }
 
     public static ForwardFinder getInstance() {
         if (instance == null) {

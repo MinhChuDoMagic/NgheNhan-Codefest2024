@@ -49,7 +49,7 @@ public class SeaAttackStrategy implements Strategy {
             return dodgeBombsOrders;
         }
 
-        if(enemy.isStun){
+        if (enemy.isStun) {
             InGameInfo.isEnemyStun = true;
         }
 

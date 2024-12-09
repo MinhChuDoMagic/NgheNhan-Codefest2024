@@ -61,7 +61,7 @@ public class HitAndRunStrategy implements Strategy {
         }
 
         List<Order> farmOrders = keepDistance.farm(mapInfo, player, enemy);
-        if(!farmOrders.isEmpty()){
+        if (!farmOrders.isEmpty()) {
             return farmOrders;
         }
 

@@ -1,10 +1,8 @@
 package org.codefest2024.nghenhan.service.handler;
 
-import org.codefest2024.nghenhan.service.strategy.*;
-import org.codefest2024.nghenhan.service.strategy.FarmStrategy;
 import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
-import org.codefest2024.nghenhan.service.strategy.SeaAttackStrategy;
 import org.codefest2024.nghenhan.service.socket.data.*;
+import org.codefest2024.nghenhan.service.strategy.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 
@@ -130,7 +128,7 @@ public class TickTackHandler {
         spoils.forEach(spoil -> map[spoil.row][spoil.col] = MapInfo.SPOIL);
     }
 
-    private void updateBombsInMap(int[][] map, MapSize size, List<Bomb> bombs){
+    private void updateBombsInMap(int[][] map, MapSize size, List<Bomb> bombs) {
         List<int[]> directions = CalculateUtils.getDirections();
 
         for (Bomb bomb : bombs) {
@@ -143,7 +141,7 @@ public class TickTackHandler {
         hammers.forEach(hammer -> markHammerExplosion(map, hammer, size));
     }
 
-    private void updateWindsInMap(int[][] map, List<Wind> winds){
+    private void updateWindsInMap(int[][] map, List<Wind> winds) {
         winds.forEach(wind -> map[wind.currentRow][wind.currentCol] = MapInfo.WIND);
     }
 

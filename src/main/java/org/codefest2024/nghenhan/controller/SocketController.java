@@ -113,6 +113,8 @@ public class SocketController implements Initializable {
             handleAction(action);
         } else if (order instanceof Dir dir) {
             movePlayer(dir);
+        } else if (order instanceof Wait wait) {
+            handleWait(wait);
         }
     }
 
@@ -139,6 +141,14 @@ public class SocketController implements Initializable {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void handleWait(Wait wait) {
+        try {
+            Thread.sleep(wait.duration);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 

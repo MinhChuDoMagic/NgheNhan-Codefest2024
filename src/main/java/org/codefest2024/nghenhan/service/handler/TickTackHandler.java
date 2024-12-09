@@ -14,6 +14,7 @@ public class TickTackHandler {
     private final Strategy seaAttackStrategy = new SeaAttackStrategy();
     private final Strategy doNothingStrategy = new DoNothingStrategy();
     private final Strategy hitAndRunStrategy = new HitAndRunStrategy();
+    private final Strategy testStrategy = new TestStrategy();
 
     public List<Order> handle(GameInfo gameInfo, StrategyEnum strategyEnum) {
         updateMapInfo(gameInfo.map_info);
@@ -25,6 +26,7 @@ public class TickTackHandler {
             case FARM_STRATEGY -> farmStrategy;
             case SEA_DIRECT_ATTACK -> seaAttackStrategy;
             case HIT_AND_RUN -> hitAndRunStrategy;
+            case TEST -> testStrategy;
             case DO_NOTHING -> doNothingStrategy;
         };
     }

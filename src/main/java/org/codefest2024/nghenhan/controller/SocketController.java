@@ -9,13 +9,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
-import org.codefest2024.nghenhan.service.caculator.*;
-import org.codefest2024.nghenhan.service.caculator.farming.FarmStrategy;
-import org.codefest2024.nghenhan.service.caculator.hitAndRun.HitAndRunStrategy;
-import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
-import org.codefest2024.nghenhan.service.caculator.seaAttack.SeaAttackStrategy;
+import org.codefest2024.nghenhan.service.handler.TickTackHandler;
+import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.ClientConfig;
 import org.codefest2024.nghenhan.service.socket.data.*;
+import org.codefest2024.nghenhan.service.strategy.StrategyEnum;
 import org.codefest2024.nghenhan.utils.SocketUtils;
 import org.codefest2024.nghenhan.utils.Utils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
@@ -70,13 +68,7 @@ public class SocketController implements Initializable {
     private Socket mSocket;
     private static GameInfo gameInfo;
 
-    private Strategy strategy;
-    private final Strategy farmStrategy = new FarmStrategy();
-    private final Strategy seaAttackStrategy = new SeaAttackStrategy();
-    private final Strategy doNothingStrategy = new DoNothingStrategy();
-    private final Strategy hitAndRunStrategy = new HitAndRunStrategy();
-    private final Strategy hitAndRunStrategyVer2 = new HitAndRunStrategyVer2();
-    private final Strategy seaCounterSeaStrategy = new SeaCounterSeaStrategy();
+    private final TickTackHandler tickTackHandler = new TickTackHandler();
 
     private final Emitter.Listener mOnTickTackListener = objects -> {
         if (objects != null && objects.length != 0) {
@@ -87,7 +79,7 @@ public class SocketController implements Initializable {
                 gameInfo = new Gson().fromJson(data, GameInfo.class);
 
                 if (gameInfo != null && !gameInfo.tag.equals(GameInfo.BOMB_EXPLODED)) {
-                    List<Order> orders = strategy.find(gameInfo);
+                    List<Order> orders = tickTackHandler.handle(gameInfo, comboBoxStrategy.getValue());
                     log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
                     handleOrders(orders);
                 }
@@ -190,8 +182,6 @@ public class SocketController implements Initializable {
 
         comboBoxStrategy.setItems(FXCollections.observableArrayList(StrategyEnum.values()));
         comboBoxStrategy.setValue(StrategyEnum.values()[0]);
-        strategy = getStrategyFromEnum(StrategyEnum.values()[0]);
-        comboBoxStrategy.setOnAction(event -> strategy = getStrategyFromEnum(comboBoxStrategy.getValue()));
 
         txtController.setOnKeyPressed(event -> {
             txtController.setText(event.getCode().toString() + " - " + event.getCode().ordinal());
@@ -204,17 +194,6 @@ public class SocketController implements Initializable {
                 processActionForPlayer(action);
             }
         });
-    }
-
-    private Strategy getStrategyFromEnum(StrategyEnum strategyEnum) {
-        return switch (strategyEnum) {
-            case FARM_STRATEGY -> farmStrategy;
-            case SEA_DIRECT_ATTACK -> seaAttackStrategy;
-            case HIT_AND_RUN -> hitAndRunStrategy;
-            case HIT_AND_RUN_VER_2 -> hitAndRunStrategyVer2;
-            case SEA_COUNTER_SEA -> seaCounterSeaStrategy;
-            case DO_NOTHING -> doNothingStrategy;
-        };
     }
 
     public void onBtnStopClicked(ActionEvent actionEvent) {

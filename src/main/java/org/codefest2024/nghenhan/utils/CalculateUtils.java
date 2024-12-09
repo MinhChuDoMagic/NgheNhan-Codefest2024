@@ -1,10 +1,13 @@
 package org.codefest2024.nghenhan.utils;
 
-import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
+import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class CalculateUtils {
     private CalculateUtils() {
@@ -49,12 +52,12 @@ public class CalculateUtils {
                 || (curr.col == bomb.col && Math.abs(curr.row - bomb.row) <= bomb.power);
     }
 
-    public static boolean isHitHammer(Position curr, WeaponHammer hammer) {
+    public static boolean isHitHammer(Position curr, Hammer hammer) {
         return Math.abs(curr.col - hammer.destination.col) <= hammer.power
                 && Math.abs(curr.row - hammer.destination.row) <= hammer.power;
     }
 
-    public static boolean isHitWind(int[][] map, Position curr, WeaponWind wind) {
+    public static boolean isHitWind(int[][] map, Position curr, Wind wind) {
         int row = wind.currentRow;
         int col = wind.currentCol;
 
@@ -135,20 +138,20 @@ public class CalculateUtils {
 //        return input;
     }
 
-    public static boolean isNearBox(int[][] map, Position curr){
+    public static boolean isNearBox(int[][] map, Position curr) {
         return directions.stream()
                 .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BOX);
     }
 
-    public static boolean isNearBrick(int[][] map, Position curr){
+    public static boolean isNearBrick(int[][] map, Position curr) {
         return directions.stream()
                 .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BRICK);
     }
 
     public static boolean isCooldown(boolean isChild) {
         long cooldown = switch (InGameInfo.playerType) {
-            case Player.MOUNTAIN -> WeaponHammer.COOL_DOWN;
-            case Player.SEA -> WeaponWind.COOL_DOWN;
+            case Player.MOUNTAIN -> Hammer.COOL_DOWN;
+            case Player.SEA -> Wind.COOL_DOWN;
             default -> 0L;
         } * 1000;
 

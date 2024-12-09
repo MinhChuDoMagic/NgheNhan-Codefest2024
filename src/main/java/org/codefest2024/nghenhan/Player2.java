@@ -1,11 +1,10 @@
 package org.codefest2024.nghenhan;
 
+import io.socket.client.Socket;
 import org.codefest2024.nghenhan.service.socket.ClientConfig;
 import org.codefest2024.nghenhan.service.socket.data.Game;
 import org.codefest2024.nghenhan.utils.SocketUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
-
-import io.socket.client.Socket;
 import org.json.JSONException;
 import org.json.JSONObject;
 

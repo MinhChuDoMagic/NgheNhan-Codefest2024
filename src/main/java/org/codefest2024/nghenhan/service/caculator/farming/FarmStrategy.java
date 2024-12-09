@@ -99,12 +99,12 @@ public class FarmStrategy implements Strategy {
     }
 
 
-    private void updateEnemyData(Player enemy, List<WeaponHammer> hammers) {
+    private void updateEnemyData(Player enemy, List<Hammer> hammers) {
         if (InGameInfo.enemyType == 0 && enemy != null) {
             InGameInfo.enemyType = enemy.transformType;
         }
 
-        for (WeaponHammer hammer : hammers) {
+        for (Hammer hammer : hammers) {
             if (hammer.playerId.startsWith(Constants.KEY_TEAM)) {
                 if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
                     InGameInfo.myChildLastSkillTime = hammer.createdAt;

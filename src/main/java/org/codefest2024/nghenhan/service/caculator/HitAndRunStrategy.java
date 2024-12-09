@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HitAndRunStrategyVer2 implements Strategy {
+public class HitAndRunStrategy implements Strategy {
     private final NormalFarmStrategy normalFarmStrategy = new NormalFarmStrategy();
     private final KeepDistanceStrategyVer2 keepDistanceStrategyVer2 = new KeepDistanceStrategyVer2();
     private final UseSkillStrategy useSkillStrategy = new UseSkillStrategy();
@@ -104,7 +104,7 @@ public class HitAndRunStrategyVer2 implements Strategy {
 
     private void updateMap(int[][] map,
                            Player player, Player child, Player enemy, Player enemyChild,
-                           List<Bomb> bombs, List<WeaponWind> winds, List<WeaponHammer> hammers,
+                           List<Bomb> bombs, List<Wind> winds, List<Hammer> hammers,
                            List<Spoil> spoils) {
         updateMap(map, spoils);
         updateMap(map, bombs, hammers, winds);
@@ -143,7 +143,7 @@ public class HitAndRunStrategyVer2 implements Strategy {
         }
     }
 
-    private void updateMap(int[][] map, List<Bomb> bombs, List<WeaponHammer> hammers, List<WeaponWind> winds) {
+    private void updateMap(int[][] map, List<Bomb> bombs, List<Hammer> hammers, List<Wind> winds) {
         List<int[]> directions = CalculateUtils.getDirections();
         MapSize size = new MapSize(map.length, map[0].length);
 
@@ -154,7 +154,7 @@ public class HitAndRunStrategyVer2 implements Strategy {
 
         hammers.forEach(hammer -> markHammerExplosion(map, hammer, size));
 
-        for (WeaponWind wind : winds) {
+        for (Wind wind : winds) {
             map[wind.currentRow][wind.currentCol] = MapInfo.WIND;
         }
     }
@@ -175,7 +175,7 @@ public class HitAndRunStrategyVer2 implements Strategy {
         }
     }
 
-    private void markHammerExplosion(int[][] map, WeaponHammer hammer, MapSize mapSize) {
+    private void markHammerExplosion(int[][] map, Hammer hammer, MapSize mapSize) {
         int centerRow = hammer.destination.row;
         int centerCol = hammer.destination.col;
         int power = hammer.power;
@@ -194,12 +194,12 @@ public class HitAndRunStrategyVer2 implements Strategy {
         }
     }
 
-    private void updateSkillData(Player enemy, List<WeaponHammer> hammers, List<WeaponWind> winds) {
+    private void updateSkillData(Player enemy, List<Hammer> hammers, List<Wind> winds) {
         if (InGameInfo.enemyType == 0 && enemy != null) {
             InGameInfo.enemyType = enemy.transformType;
         }
 
-        for (WeaponHammer hammer : hammers) {
+        for (Hammer hammer : hammers) {
             if (hammer.playerId.startsWith(Constants.KEY_TEAM)) {
                 if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
                     InGameInfo.myChildLastSkillTime = hammer.createdAt;
@@ -215,20 +215,20 @@ public class HitAndRunStrategyVer2 implements Strategy {
             }
         }
 
-        for (WeaponWind wind : winds) {
+        for (Wind wind : winds) {
             long currentTime = Instant.now().toEpochMilli();
             if (wind.playerId.startsWith(Constants.KEY_TEAM)) {
                 if (wind.playerId.endsWith(Constants.KEY_CHILD)
-                        && currentTime - InGameInfo.myChildLastSkillTime > WeaponWind.COOL_DOWN * 1000) {
+                        && currentTime - InGameInfo.myChildLastSkillTime > Wind.COOL_DOWN * 1000) {
                     InGameInfo.myChildLastSkillTime = currentTime;
-                } else if (currentTime - InGameInfo.myPlayerLastSkillTime > WeaponWind.COOL_DOWN * 1000) {
+                } else if (currentTime - InGameInfo.myPlayerLastSkillTime > Wind.COOL_DOWN * 1000) {
                     InGameInfo.myPlayerLastSkillTime = currentTime;
                 }
             } else {
                 if (wind.playerId.endsWith(Constants.KEY_CHILD)
-                        && currentTime - InGameInfo.enemyChildLastSkillTime > WeaponWind.COOL_DOWN * 1000) {
+                        && currentTime - InGameInfo.enemyChildLastSkillTime > Wind.COOL_DOWN * 1000) {
                     InGameInfo.enemyChildLastSkillTime = currentTime;
-                } else if (currentTime - InGameInfo.enemyLastSkillTime > WeaponWind.COOL_DOWN * 1000) {
+                } else if (currentTime - InGameInfo.enemyLastSkillTime > Wind.COOL_DOWN * 1000) {
                     InGameInfo.enemyLastSkillTime = currentTime;
                 }
             }

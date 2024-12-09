@@ -99,7 +99,7 @@ public class HitAndRunStrategy implements Strategy {
         return List.of();
     }
 
-    private void updateMap(int[][] map, Player player, Player child, Player enemy, Player enemyChild, List<Bomb> bombs, List<WeaponWind> winds, List<WeaponHammer> hammers) {
+    private void updateMap(int[][] map, Player player, Player child, Player enemy, Player enemyChild, List<Bomb> bombs, List<Wind> winds, List<Hammer> hammers) {
         updateMap(map, bombs, hammers, winds);
         updateMap(map, player, child, enemy, enemyChild);
     }
@@ -130,7 +130,7 @@ public class HitAndRunStrategy implements Strategy {
         }
     }
 
-    private void updateMap(int[][] map, List<Bomb> bombs, List<WeaponHammer> hammers, List<WeaponWind> winds) {
+    private void updateMap(int[][] map, List<Bomb> bombs, List<Hammer> hammers, List<Wind> winds) {
         List<int[]> directions = CalculateUtils.getDirections();
         MapSize size = new MapSize(map.length, map[0].length);
 
@@ -141,7 +141,7 @@ public class HitAndRunStrategy implements Strategy {
 
         hammers.forEach(hammer -> markHammerExplosion(map, hammer, size));
 
-        for (WeaponWind wind:winds){
+        for (Wind wind:winds){
             map[wind.currentRow][wind.currentCol] = MapInfo.WIND;
         }
     }
@@ -162,7 +162,7 @@ public class HitAndRunStrategy implements Strategy {
         }
     }
 
-    private void markHammerExplosion(int[][] map, WeaponHammer hammer, MapSize mapSize){
+    private void markHammerExplosion(int[][] map, Hammer hammer, MapSize mapSize){
         int centerRow = hammer.destination.row;
         int centerCol = hammer.destination.col;
         int power = hammer.power;
@@ -181,12 +181,12 @@ public class HitAndRunStrategy implements Strategy {
         }
     }
 
-    private void updateSkillData(Player enemy, List<WeaponHammer> hammers) {
+    private void updateSkillData(Player enemy, List<Hammer> hammers) {
         if (InGameInfo.enemyType == 0 && enemy != null) {
             InGameInfo.enemyType = enemy.transformType;
         }
 
-        for (WeaponHammer hammer : hammers) {
+        for (Hammer hammer : hammers) {
             if (hammer.playerId.startsWith(Constants.KEY_TEAM)) {
                 if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
                     InGameInfo.myChildLastSkillTime = hammer.createdAt;

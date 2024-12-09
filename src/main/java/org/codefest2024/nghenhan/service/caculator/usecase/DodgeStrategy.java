@@ -22,12 +22,12 @@ public class DodgeStrategy {
                 .stream()
                 .filter(bomb -> isDangerousBomb(bomb, myPlayer.currentPosition))
                 .toList();
-        List<WeaponHammer> dangerousHammers = mapInfo
+        List<Hammer> dangerousHammers = mapInfo
                 .weaponHammers
                 .stream()
                 .filter(hammer -> isDangerousHammer(hammer, myPlayer.currentPosition))
                 .toList();
-        List<WeaponWind> dangerousWinds = mapInfo
+        List<Wind> dangerousWinds = mapInfo
                 .weaponWinds
                 .stream()
                 .filter(wind -> isDangerousWind(mapInfo.map, wind, myPlayer.currentPosition))
@@ -56,7 +56,7 @@ public class DodgeStrategy {
                 .stream()
                 .filter(bomb -> isDangerousBomb(bomb, myPlayer.currentPosition))
                 .toList();
-        List<WeaponHammer> dangerousHammers = mapInfo
+        List<Hammer> dangerousHammers = mapInfo
                 .weaponHammers
                 .stream()
                 .filter(hammer -> isDangerousHammer(hammer, myPlayer.currentPosition))
@@ -83,12 +83,12 @@ public class DodgeStrategy {
                 .stream()
                 .filter(bomb -> isDangerousBomb(bomb, myPlayer.currentPosition))
                 .toList();
-        List<WeaponHammer> dangerousHammers = mapInfo
+        List<Hammer> dangerousHammers = mapInfo
                 .weaponHammers
                 .stream()
                 .filter(hammer -> isDangerousHammer(hammer, myPlayer.currentPosition))
                 .toList();
-        List<WeaponWind> dangerousWinds = mapInfo
+        List<Wind> dangerousWinds = mapInfo
                 .weaponWinds
                 .stream()
                 .filter(wind -> isDangerousWind(mapInfo.map, wind, myPlayer.currentPosition))
@@ -115,12 +115,12 @@ public class DodgeStrategy {
                 .stream()
                 .filter(bomb -> isDangerousBomb(bomb, myPlayer.currentPosition))
                 .toList();
-        List<WeaponHammer> dangerousHammers = mapInfo
+        List<Hammer> dangerousHammers = mapInfo
                 .weaponHammers
                 .stream()
                 .filter(hammer -> isDangerousHammer(hammer, myPlayer.currentPosition))
                 .toList();
-        List<WeaponWind> dangerousWinds = mapInfo
+        List<Wind> dangerousWinds = mapInfo
                 .weaponWinds
                 .stream()
                 .filter(wind -> isDangerousWind(mapInfo.map, wind, myPlayer.currentPosition))
@@ -142,12 +142,12 @@ public class DodgeStrategy {
         return CalculateUtils.manhattanDistance(curr, bomb) < Math.max(5, bomb.power + 1);
     }
 
-    private boolean isDangerousHammer(WeaponHammer hammer, Position curr) {
+    private boolean isDangerousHammer(Hammer hammer, Position curr) {
         return Math.abs(curr.col - hammer.destination.col) <= 2 * hammer.power
                 && Math.abs(curr.row - hammer.destination.row) <= 2 * hammer.power;
     }
 
-    private boolean isDangerousWind(int[][] map, WeaponWind wind, Position curr) {
+    private boolean isDangerousWind(int[][] map, Wind wind, Position curr) {
         int row = wind.currentRow;
         int col = wind.currentCol;
 

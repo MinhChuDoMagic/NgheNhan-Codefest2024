@@ -34,10 +34,10 @@ public class FindAndFireStrategy {
 
     private List<Order> useMountainSkill(Player player, Player teammate, List<Player> enemies, int[][] map, MapSize mapSize) {
         for (Player enemy : enemies) {
-            if (Math.abs(player.currentPosition.col - enemy.currentPosition.col) <= WeaponHammer.RANGE
-                    && Math.abs(player.currentPosition.row - enemy.currentPosition.row) <= WeaponHammer.RANGE
+            if (Math.abs(player.currentPosition.col - enemy.currentPosition.col) <= Hammer.RANGE
+                    && Math.abs(player.currentPosition.row - enemy.currentPosition.row) <= Hammer.RANGE
                     && CalculateUtils.inHammerRange(player.currentPosition, enemy.currentPosition)
-                    && isSafeHammer(Utils.filterNonNull(player, teammate), new WeaponHammer(enemy.currentPosition))) {
+                    && isSafeHammer(Utils.filterNonNull(player, teammate), new Hammer(enemy.currentPosition))) {
                 return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), player.isChild));
             }
 
@@ -56,8 +56,8 @@ public class FindAndFireStrategy {
 
     private boolean isCooldown(boolean isChild) {
         long cooldown = switch (InGameInfo.playerType) {
-            case Player.MOUNTAIN -> WeaponHammer.COOL_DOWN;
-            case Player.SEA -> WeaponWind.COOL_DOWN;
+            case Player.MOUNTAIN -> Hammer.COOL_DOWN;
+            case Player.SEA -> Wind.COOL_DOWN;
             default -> 0L;
         } * 1000;
 
@@ -65,7 +65,7 @@ public class FindAndFireStrategy {
                 || (!isChild && Instant.now().toEpochMilli() - InGameInfo.myPlayerLastSkillTime <= cooldown);
     }
 
-    private boolean isSafeHammer(List<Player> players, WeaponHammer hammer) {
+    private boolean isSafeHammer(List<Player> players, Hammer hammer) {
         return players.stream()
                 .noneMatch(player -> CalculateUtils.isHitHammer(player.currentPosition, hammer));
     }
@@ -86,9 +86,9 @@ public class FindAndFireStrategy {
         // Check Left Direction
         if (Math.abs(enemy.row - player.row) <= 1 && enemy.col < player.col) {
             var winds = List.of(
-                    new WeaponWind(player.row - 1, player.col, 1),
-                    new WeaponWind(player.row, player.col, 1),
-                    new WeaponWind(player.row + 1, player.col, 1));
+                    new Wind(player.row - 1, player.col, 1),
+                    new Wind(player.row, player.col, 1),
+                    new Wind(player.row + 1, player.col, 1));
 
             if (!BFSFinder.isSafeFromWinds(map, enemy, winds)) {
                 return Dir.LEFT;
@@ -98,9 +98,9 @@ public class FindAndFireStrategy {
         // Check Right Direction
         if (Math.abs(enemy.row - player.row) <= 1 && enemy.col > player.col) {
             var winds = List.of(
-                    new WeaponWind(player.row - 1, player.col, 2),
-                    new WeaponWind(player.row, player.col, 2),
-                    new WeaponWind(player.row + 1, player.col, 2));
+                    new Wind(player.row - 1, player.col, 2),
+                    new Wind(player.row, player.col, 2),
+                    new Wind(player.row + 1, player.col, 2));
 
             if (!BFSFinder.isSafeFromWinds(map, enemy, winds)) {
                 return Dir.RIGHT;
@@ -110,9 +110,9 @@ public class FindAndFireStrategy {
         // Check Up Direction
         if (Math.abs(enemy.col - player.col) <= 1 && enemy.row < player.row) {
             var winds = List.of(
-                    new WeaponWind(player.row, player.col - 1, 3),
-                    new WeaponWind(player.row, player.col, 3),
-                    new WeaponWind(player.row, player.col + 1, 3));
+                    new Wind(player.row, player.col - 1, 3),
+                    new Wind(player.row, player.col, 3),
+                    new Wind(player.row, player.col + 1, 3));
 
             if (!BFSFinder.isSafeFromWinds(map, enemy, winds)) {
                 return Dir.UP;
@@ -122,9 +122,9 @@ public class FindAndFireStrategy {
         // Check Down Direction
         if (Math.abs(enemy.col - player.col) <= 1 && enemy.row > player.row) {
             var winds = List.of(
-                    new WeaponWind(player.row, player.col - 1, 4),
-                    new WeaponWind(player.row, player.col, 4),
-                    new WeaponWind(player.row, player.col + 1, 4));
+                    new Wind(player.row, player.col - 1, 4),
+                    new Wind(player.row, player.col, 4),
+                    new Wind(player.row, player.col + 1, 4));
 
             if (!BFSFinder.isSafeFromWinds(map, enemy, winds)) {
                 return Dir.DOWN;

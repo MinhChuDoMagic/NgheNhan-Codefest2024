@@ -18,7 +18,10 @@ public class TickTackHandler {
 
     public List<Order> handle(GameInfo gameInfo, StrategyEnum strategyEnum) {
         updateMapInfo(gameInfo.map_info);
-        return getStrategy(strategyEnum).find(gameInfo);
+        initialLastPosition(gameInfo.map_info.player, gameInfo.map_info.child, gameInfo.map_info.enemy, gameInfo.map_info.enemyChild);
+        List<Order> orders = getStrategy(strategyEnum).find(gameInfo);
+        updateLastPosition(gameInfo.map_info.player, gameInfo.map_info.child, gameInfo.map_info.enemy, gameInfo.map_info.enemyChild);
+        return orders;
     }
 
     private Strategy getStrategy(StrategyEnum strategyEnum) {
@@ -29,6 +32,42 @@ public class TickTackHandler {
             case TEST -> testStrategy;
             case DO_NOTHING -> doNothingStrategy;
         };
+    }
+
+    private void updateLastPosition(Player player, Player child, Player enemy, Player enemyChild){
+        if(player != null){
+            InGameInfo.playerLastPosition = player.currentPosition;
+        }
+
+        if(child != null){
+            InGameInfo.childLastPosition = child.currentPosition;
+        }
+
+        if(enemy != null){
+            InGameInfo.enemyLastPosition = enemy.currentPosition;
+        }
+
+        if(enemyChild != null){
+            InGameInfo.enemyChildLastPosition = enemyChild.currentPosition;
+        }
+    }
+
+    private void initialLastPosition(Player player, Player child, Player enemy, Player enemyChild){
+        if(InGameInfo.playerLastPosition == null && player != null){
+            InGameInfo.playerLastPosition = player.currentPosition;
+        }
+
+        if(InGameInfo.childLastPosition == null && child != null){
+            InGameInfo.childLastPosition = child.currentPosition;
+        }
+
+        if(InGameInfo.enemyLastPosition == null && enemy != null){
+            InGameInfo.enemyLastPosition = enemy.currentPosition;
+        }
+
+        if(InGameInfo.enemyChildLastPosition == null && enemyChild != null){
+            InGameInfo.enemyChildLastPosition = enemyChild.currentPosition;
+        }
     }
 
     private void updateMapInfo(MapInfo mapInfo) {

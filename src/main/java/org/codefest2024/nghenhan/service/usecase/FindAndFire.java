@@ -1,8 +1,8 @@
-package org.codefest2024.nghenhan.service.caculator.usecase;
+package org.codefest2024.nghenhan.service.usecase;
 
-import org.codefest2024.nghenhan.service.caculator.finder.AStarFinder;
-import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
-import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
+import org.codefest2024.nghenhan.service.finder.AStarFinder;
+import org.codefest2024.nghenhan.service.finder.BFSFinder;
+import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.Utils;
@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FindAndFireStrategy {
+public class FindAndFire {
     AStarFinder aStarFinder = AStarFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild) {

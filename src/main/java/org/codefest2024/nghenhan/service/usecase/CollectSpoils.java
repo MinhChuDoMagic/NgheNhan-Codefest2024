@@ -1,12 +1,12 @@
-package org.codefest2024.nghenhan.service.caculator.usecase;
+package org.codefest2024.nghenhan.service.usecase;
 
-import org.codefest2024.nghenhan.service.caculator.finder.AStarFinder;
+import org.codefest2024.nghenhan.service.finder.AStarFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 
 import java.util.List;
 
-public class CollectSpoilsStrategy {
+public class CollectSpoils {
     private final AStarFinder aStarFinder = AStarFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer, List<Player> otherPlayers) {

@@ -1,4 +1,4 @@
-package org.codefest2024.nghenhan.service.caculator.info;
+package org.codefest2024.nghenhan.service.handler.info;
 
 public class InGameInfo {
     public static long myPlayerLastSkillTime = 0;

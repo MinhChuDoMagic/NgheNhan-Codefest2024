@@ -1,14 +1,14 @@
-package org.codefest2024.nghenhan.service.caculator.farming;
+package org.codefest2024.nghenhan.service.usecase;
 
-import org.codefest2024.nghenhan.service.caculator.data.Node;
-import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
+import org.codefest2024.nghenhan.service.finder.data.Node;
+import org.codefest2024.nghenhan.service.finder.BFSFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GodFarmStrategy {
+public class GodFarmBox {
     private final BFSFinder bfsFinder = BFSFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer) {

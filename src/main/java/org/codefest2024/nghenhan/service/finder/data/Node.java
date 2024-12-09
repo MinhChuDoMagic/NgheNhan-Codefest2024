@@ -1,4 +1,4 @@
-package org.codefest2024.nghenhan.service.caculator.data;
+package org.codefest2024.nghenhan.service.finder.data;
 
 import org.codefest2024.nghenhan.service.socket.data.Dir;
 import org.codefest2024.nghenhan.service.socket.data.Position;

@@ -1,4 +1,4 @@
-package org.codefest2024.nghenhan.service.caculator.data;
+package org.codefest2024.nghenhan.service.finder.data;
 
 public class DijkstraNode extends Node{
     public double g;

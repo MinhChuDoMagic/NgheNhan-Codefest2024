@@ -1,6 +1,6 @@
 package org.codefest2024.nghenhan.utils;
 
-import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
+import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 
 import java.time.Instant;

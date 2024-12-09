@@ -1,7 +1,7 @@
-package org.codefest2024.nghenhan.service.caculator.usecase;
+package org.codefest2024.nghenhan.service.usecase;
 
-import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
-import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
+import org.codefest2024.nghenhan.service.finder.BFSFinder;
+import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.Utils;
@@ -9,7 +9,7 @@ import org.codefest2024.nghenhan.utils.Utils;
 import java.time.Instant;
 import java.util.List;
 
-public class UseSkillStrategy {
+public class UseSkill {
     BFSFinder bfsFinder = BFSFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild) {

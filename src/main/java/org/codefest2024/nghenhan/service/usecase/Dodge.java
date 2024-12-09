@@ -1,17 +1,17 @@
-package org.codefest2024.nghenhan.service.caculator.usecase;
+package org.codefest2024.nghenhan.service.usecase;
 
-import org.codefest2024.nghenhan.service.caculator.finder.BFSFinder;
-import org.codefest2024.nghenhan.service.caculator.finder.ForwardFinder;
-import org.codefest2024.nghenhan.service.caculator.finder.KeepDistanceFinderVer2;
+import org.codefest2024.nghenhan.service.finder.BFSFinder;
+import org.codefest2024.nghenhan.service.finder.ForwardFinder;
+import org.codefest2024.nghenhan.service.finder.KeepDistanceFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DodgeStrategy {
+public class Dodge {
     private final BFSFinder bfsFinder = BFSFinder.getInstance();
-    private final KeepDistanceFinderVer2 keepDistanceFinderVer2 = KeepDistanceFinderVer2.getInstance();
+    private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
     private final ForwardFinder forwardFinder = ForwardFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer) {
@@ -95,7 +95,7 @@ public class DodgeStrategy {
                 .toList();
 
         if (!dangerousBombs.isEmpty() || !dangerousHammers.isEmpty() || !dangerousWinds.isEmpty()) {
-            String dir = keepDistanceFinderVer2
+            String dir = keepDistanceFinder
                     .findSafe(mapInfo.map, myPlayer.currentPosition, enemy.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds)
                     .reconstructPath();
             if (dir.isEmpty()) {

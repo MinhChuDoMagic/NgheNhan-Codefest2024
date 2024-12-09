@@ -1,10 +1,9 @@
-package org.codefest2024.nghenhan.service.caculator;
+package org.codefest2024.nghenhan.service.strategy;
 
 public enum StrategyEnum {
     FARM_STRATEGY("Farm Strategy"),
     SEA_DIRECT_ATTACK("Sea Direct Attack"),
-    HIT_AND_RUN("son tinh"),
-    SEA_COUNTER_SEA("thuy tinh"),
+    HIT_AND_RUN("Mountain Hit And Run"),
     DO_NOTHING("Do Nothing");
 
     private final String displayName;

@@ -1,9 +1,9 @@
 package org.codefest2024.nghenhan.service.handler;
 
-import org.codefest2024.nghenhan.service.caculator.*;
-import org.codefest2024.nghenhan.service.caculator.farming.FarmStrategy;
-import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
-import org.codefest2024.nghenhan.service.caculator.seaAttack.SeaAttackStrategy;
+import org.codefest2024.nghenhan.service.strategy.*;
+import org.codefest2024.nghenhan.service.strategy.FarmStrategy;
+import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
+import org.codefest2024.nghenhan.service.strategy.SeaAttackStrategy;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
@@ -16,7 +16,6 @@ public class TickTackHandler {
     private final Strategy seaAttackStrategy = new SeaAttackStrategy();
     private final Strategy doNothingStrategy = new DoNothingStrategy();
     private final Strategy hitAndRunStrategy = new HitAndRunStrategy();
-    private final Strategy seaCounterSeaStrategy = new SeaCounterSeaStrategy();
 
     public List<Order> handle(GameInfo gameInfo, StrategyEnum strategyEnum) {
         updateMapInfo(gameInfo.map_info);
@@ -28,7 +27,6 @@ public class TickTackHandler {
             case FARM_STRATEGY -> farmStrategy;
             case SEA_DIRECT_ATTACK -> seaAttackStrategy;
             case HIT_AND_RUN -> hitAndRunStrategy;
-            case SEA_COUNTER_SEA -> seaCounterSeaStrategy;
             case DO_NOTHING -> doNothingStrategy;
         };
     }

@@ -1,7 +1,7 @@
-package org.codefest2024.nghenhan.service.caculator.usecase;
+package org.codefest2024.nghenhan.service.usecase;
 
-import org.codefest2024.nghenhan.service.caculator.data.AStarNode;
-import org.codefest2024.nghenhan.service.caculator.finder.KeepDistanceFinderVer2;
+import org.codefest2024.nghenhan.service.finder.data.AStarNode;
+import org.codefest2024.nghenhan.service.finder.KeepDistanceFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
@@ -9,8 +9,8 @@ import org.codefest2024.nghenhan.utils.constant.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeepDistanceStrategyVer2 {
-    private final KeepDistanceFinderVer2 keepDistanceFinderVer2 = KeepDistanceFinderVer2.getInstance();
+public class KeepDistance {
+    private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
 
     public List<Order> farm(MapInfo mapInfo, Player player, Player enemy) {
         Bomb myBomb = null;
@@ -30,7 +30,7 @@ public class KeepDistanceStrategyVer2 {
                 orders.add(new Dir(Dir.ACTION, player.isChild));
                 return orders;
             } else {
-                AStarNode boxNodeWithoutBrick = keepDistanceFinderVer2.findWithoutBrick(mapInfo.map, player.currentPosition, enemy.currentPosition, MapInfo.BOX, mapInfo.size);
+                AStarNode boxNodeWithoutBrick = keepDistanceFinder.findWithoutBrick(mapInfo.map, player.currentPosition, enemy.currentPosition, MapInfo.BOX, mapInfo.size);
                 if (boxNodeWithoutBrick.parent != null) {
                     String dir = boxNodeWithoutBrick.parent.reconstructPath();
                     if (!dir.isEmpty()) {
@@ -43,7 +43,7 @@ public class KeepDistanceStrategyVer2 {
                     }
                 }
 
-                AStarNode boxNode = keepDistanceFinderVer2.find(mapInfo.map, player.currentPosition, enemy.currentPosition, MapInfo.BOX, mapInfo.size);
+                AStarNode boxNode = keepDistanceFinder.find(mapInfo.map, player.currentPosition, enemy.currentPosition, MapInfo.BOX, mapInfo.size);
                 if (boxNode.parent != null) {
                     String dir = boxNode.parent.reconstructPath();
                     if (!dir.isEmpty()) {
@@ -82,12 +82,12 @@ public class KeepDistanceStrategyVer2 {
                 return orders;
             }
 
-            String dirWithoutBrick = keepDistanceFinderVer2.keepDistanceWithoutBrick(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size).reconstructPath();
+            String dirWithoutBrick = keepDistanceFinder.keepDistanceWithoutBrick(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size).reconstructPath();
             if (!dirWithoutBrick.isEmpty()) {
                 return List.of(new Dir(dirWithoutBrick, player.isChild));
             }
 
-            String dir = keepDistanceFinderVer2.keepDistance(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size).reconstructPath();
+            String dir = keepDistanceFinder.keepDistance(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size).reconstructPath();
             if (!dir.isEmpty()) {
                 String processDir = CalculateUtils.processDirWithBrick(dir);
                 List<Order> orders = new ArrayList<>();

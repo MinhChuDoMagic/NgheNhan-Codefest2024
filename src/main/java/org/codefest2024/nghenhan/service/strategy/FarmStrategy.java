@@ -1,8 +1,9 @@
-package org.codefest2024.nghenhan.service.caculator.farming;
+package org.codefest2024.nghenhan.service.strategy;
 
-import org.codefest2024.nghenhan.service.caculator.Strategy;
-import org.codefest2024.nghenhan.service.caculator.info.InGameInfo;
-import org.codefest2024.nghenhan.service.caculator.usecase.*;
+import org.codefest2024.nghenhan.service.usecase.GodFarmBox;
+import org.codefest2024.nghenhan.service.usecase.FindBadge;
+import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
+import org.codefest2024.nghenhan.service.usecase.*;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.Utils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
@@ -11,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FarmStrategy implements Strategy {
-    private final NormalFarmStrategy normalFarmStrategy = new NormalFarmStrategy();
-    private final GodFarmStrategy godFarmStrategy = new GodFarmStrategy();
-    private final DodgeStrategy dodgeStrategy = new DodgeStrategy();
-    private final CollectSpoilsStrategy collectSpoilsStrategy = new CollectSpoilsStrategy();
-    private final UseSkillStrategy useSkillStrategy = new UseSkillStrategy();
-    private final FindAndFireStrategy findAndFireStrategy = new FindAndFireStrategy();
-    private final RandomRunStrategy randomRunStrategy = new RandomRunStrategy();
+    private final FindBadge findBadge = new FindBadge();
+    private final GodFarmBox godFarmBox = new GodFarmBox();
+    private final Dodge dodge = new Dodge();
+    private final CollectSpoils collectSpoils = new CollectSpoils();
+    private final UseSkill useSkill = new UseSkill();
+    private final FindAndFire findAndFire = new FindAndFire();
+    private final RandomRun randomRun = new RandomRun();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -46,7 +47,7 @@ public class FarmStrategy implements Strategy {
 
         if (myPlayer != null) {
             if (!myPlayer.hasTransform) {
-                return normalFarmStrategy.find(gameInfo, myPlayer);
+                return findBadge.find(gameInfo, myPlayer);
             } else {
                 updateEnemyData(enemyPlayer, mapInfo.weaponHammers);
                 List<Order> orders = playerStrategy(mapInfo, myPlayer, myChild, enemyPlayer, enemyChild);
@@ -122,7 +123,7 @@ public class FarmStrategy implements Strategy {
     }
 
     private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player teammate, Player enemyPlayer, Player enemyChild) {
-        List<Order> dodgeBombsOrders = dodgeStrategy.find(mapInfo, player);
+        List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
         if (!dodgeBombsOrders.isEmpty()) {
             return dodgeBombsOrders;
         }
@@ -131,27 +132,27 @@ public class FarmStrategy implements Strategy {
             return List.of(new Action(Action.MARRY_WIFE));
         }
 
-        List<Order> useSkillOrders = useSkillStrategy.find(mapInfo, player, teammate, enemyPlayer, enemyChild);
+        List<Order> useSkillOrders = useSkill.find(mapInfo, player, teammate, enemyPlayer, enemyChild);
         if (!useSkillOrders.isEmpty()) {
             return useSkillOrders;
         }
 
-        List<Order> collectSpoilOrders = collectSpoilsStrategy.find(mapInfo, player, Utils.filterNonNull(teammate, enemyPlayer, enemyChild));
+        List<Order> collectSpoilOrders = collectSpoils.find(mapInfo, player, Utils.filterNonNull(teammate, enemyPlayer, enemyChild));
         if (!collectSpoilOrders.isEmpty()) {
             return collectSpoilOrders;
         }
 
-        List<Order> godFarmOrders = godFarmStrategy.find(mapInfo, player);
+        List<Order> godFarmOrders = godFarmBox.find(mapInfo, player);
         if (!godFarmOrders.isEmpty()) {
             return godFarmOrders;
         }
 
-        List<Order> findAndFireOrders = findAndFireStrategy.find(mapInfo, player, teammate, enemyPlayer, enemyChild);
+        List<Order> findAndFireOrders = findAndFire.find(mapInfo, player, teammate, enemyPlayer, enemyChild);
         if (!findAndFireOrders.isEmpty()) {
             return findAndFireOrders;
         }
 
-        List<Order> randomRunOrders = randomRunStrategy.find(mapInfo, player);
+        List<Order> randomRunOrders = randomRun.find(mapInfo, player);
         if (!randomRunOrders.isEmpty()) {
             return randomRunOrders;
         }

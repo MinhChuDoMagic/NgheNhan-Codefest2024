@@ -1,6 +1,6 @@
 package org.codefest2024.nghenhan.service.finder;
 
-import org.codefest2024.nghenhan.service.caculator.data.AStarNode;
+import org.codefest2024.nghenhan.service.finder.data.AStarNode;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 

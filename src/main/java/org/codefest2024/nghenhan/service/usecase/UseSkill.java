@@ -12,20 +12,20 @@ import java.util.List;
 public class UseSkill {
     BFSFinder bfsFinder = BFSFinder.getInstance();
 
-    public List<Order> find(MapInfo mapInfo, Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild) {
-        if (myPlayer.timeToUseSpecialWeapons == 0
-                || (enemyPlayer != null && !enemyPlayer.hasTransform)) {
+    public List<Order> find(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
+        if ((player.timeToUseSpecialWeapons == 0 && teammate.timeToUseSpecialWeapons == 0)
+                || (enemy != null && !enemy.hasTransform)) {
             return List.of();
         }
 
-        List<Player> enemies = Utils.filterNonNull(enemyPlayer, enemyChild);
-        if (enemies.isEmpty() || isCooldown(myPlayer.isChild)) {
+        List<Player> enemies = Utils.filterNonNull(enemy, enemyChild);
+        if (enemies.isEmpty() || CalculateUtils.isCooldown(player.isChild)) {
             return List.of();
         }
 
         return switch (InGameInfo.playerType) {
-            case Player.MOUNTAIN -> useMountainSkill(myPlayer, teammate, enemies, mapInfo.map, mapInfo.size);
-            case Player.SEA -> useSeaSkill(mapInfo.map, myPlayer, enemies);
+            case Player.MOUNTAIN -> useMountainSkill(player, teammate, enemies, mapInfo.map, mapInfo.size);
+            case Player.SEA -> useSeaSkill(mapInfo.map, player, enemies);
             default -> throw new IllegalStateException("Invalid transformType: " + InGameInfo.playerType);
         };
     }
@@ -49,23 +49,23 @@ public class UseSkill {
         return List.of();
     }
 
-    public List<Order> useMountainSkillDirect(Player myPlayer, Player teammate, Player enemyPlayer, Player enemyChild) {
-        if (myPlayer.timeToUseSpecialWeapons == 0
+    public List<Order> useMountainSkillDirect(Player player, Player teammate, Player enemyPlayer, Player enemyChild) {
+        if ((player.timeToUseSpecialWeapons == 0 && teammate.timeToUseSpecialWeapons == 0)
                 || (enemyPlayer != null && !enemyPlayer.hasTransform)) {
             return List.of();
         }
 
         List<Player> enemies = Utils.filterNonNull(enemyPlayer, enemyChild);
-        if (enemies.isEmpty() || isCooldown(myPlayer.isChild)) {
+        if (enemies.isEmpty() || CalculateUtils.isCooldown(player.isChild)) {
             return List.of();
         }
 
         for (Player enemy : enemies) {
-            if (Math.abs(myPlayer.currentPosition.col - enemy.currentPosition.col) <= Hammer.RANGE
-                    && Math.abs(myPlayer.currentPosition.row - enemy.currentPosition.row) <= Hammer.RANGE
-                    && CalculateUtils.inHammerRange(myPlayer.currentPosition, enemy.currentPosition)
-                    && isSafeHammer(Utils.filterNonNull(myPlayer, teammate), new Hammer(enemy.currentPosition))) {
-                return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), myPlayer.isChild));
+            if (Math.abs(player.currentPosition.col - enemy.currentPosition.col) <= Hammer.RANGE
+                    && Math.abs(player.currentPosition.row - enemy.currentPosition.row) <= Hammer.RANGE
+                    && CalculateUtils.inHammerRange(player.currentPosition, enemy.currentPosition)
+                    && isSafeHammer(Utils.filterNonNull(player, teammate), new Hammer(enemy.currentPosition))) {
+                return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), player.isChild));
             }
         }
         return List.of();
@@ -146,16 +146,5 @@ public class UseSkill {
         } else {
             InGameInfo.myPlayerLastSkillTime = Instant.now().toEpochMilli();
         }
-    }
-
-    private boolean isCooldown(boolean isChild) {
-        long cooldown = switch (InGameInfo.playerType) {
-            case Player.MOUNTAIN -> Hammer.COOL_DOWN;
-            case Player.SEA -> Wind.COOL_DOWN;
-            default -> 0L;
-        } * 1000;
-
-        return (isChild && Instant.now().toEpochMilli() - InGameInfo.myChildLastSkillTime <= cooldown)
-                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.myPlayerLastSkillTime <= cooldown);
     }
 }

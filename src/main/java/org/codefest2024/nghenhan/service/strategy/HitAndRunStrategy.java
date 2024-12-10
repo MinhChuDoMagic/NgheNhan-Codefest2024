@@ -41,13 +41,13 @@ public class HitAndRunStrategy implements Strategy {
     }
 
     private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
+        if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemy != null) {
+            return List.of(new Action(Action.MARRY_WIFE));
+        }
+
         List<Order> useSkillOrders = useSkill.useMountainSkillDirect(player, teammate, enemy, enemyChild);
         if (!useSkillOrders.isEmpty()) {
             return useSkillOrders;
-        }
-
-        if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemy != null) {
-            return List.of(new Action(Action.MARRY_WIFE));
         }
 
         List<Order> runOrders = keepDistance.run(mapInfo, player, enemy);

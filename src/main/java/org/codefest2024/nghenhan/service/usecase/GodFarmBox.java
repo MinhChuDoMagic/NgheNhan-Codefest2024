@@ -10,16 +10,16 @@ import java.util.List;
 public class GodFarmBox {
     private final BFSFinder bfsFinder = BFSFinder.getInstance();
 
-    public List<Order> find(MapInfo mapInfo, Player myPlayer) {
+    public List<Order> find(MapInfo mapInfo, Player player) {
         List<Order> orders = new ArrayList<>();
 
         if (mapInfo.playerBomb == null) {
-            Node boxNode = bfsFinder.find(mapInfo.map, myPlayer.currentPosition, MapInfo.BOX, mapInfo.size);
+            Node boxNode = bfsFinder.find(mapInfo.map, player.currentPosition, MapInfo.BOX, mapInfo.size);
             if (boxNode.parent != null) {
-                if (myPlayer.currentWeapon != 2) {
-                    orders.add(new Action(Action.SWITCH_WEAPON, myPlayer.isChild));
+                if (player.currentWeapon != 2) {
+                    orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
                 }
-                orders.add(new Dir(boxNode.parent.reconstructPath() + Dir.ACTION, myPlayer.isChild));
+                orders.add(new Dir(boxNode.parent.reconstructPath() + Dir.ACTION, player.isChild));
             }
         }
 

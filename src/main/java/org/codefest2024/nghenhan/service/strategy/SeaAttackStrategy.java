@@ -7,6 +7,7 @@ import org.codefest2024.nghenhan.service.usecase.Dodge;
 import org.codefest2024.nghenhan.service.usecase.FarmBrick;
 import org.codefest2024.nghenhan.service.usecase.FindBadge;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
+import org.codefest2024.nghenhan.utils.SkillUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class SeaAttackStrategy implements Strategy {
             InGameInfo.isEnemyStun = true;
         }
 
-        if (!enemy.isStun && !CalculateUtils.isCooldown(player.isChild) && InGameInfo.isEnemyStun) {
+        if (!enemy.isStun && !SkillUtils.isCooldown(player.isChild) && InGameInfo.isEnemyStun) {
             InGameInfo.isEnemyStun = false;
             return List.of(new Action(Action.USE_WEAPON, player.isChild));
         }

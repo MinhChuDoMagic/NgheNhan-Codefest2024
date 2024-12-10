@@ -3,7 +3,6 @@ package org.codefest2024.nghenhan.service.usecase;
 import org.codefest2024.nghenhan.service.finder.BFSFinder;
 import org.codefest2024.nghenhan.service.finder.data.Node;
 import org.codefest2024.nghenhan.service.socket.data.*;
-import org.codefest2024.nghenhan.utils.constant.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +13,7 @@ public class GodFarmBox {
     public List<Order> find(MapInfo mapInfo, Player myPlayer) {
         List<Order> orders = new ArrayList<>();
 
-        Bomb myBomb = null;
-        for (Bomb bomb : mapInfo.bombs) {
-            if (bomb.playerId.startsWith(Constants.KEY_TEAM)
-                    && (!myPlayer.isChild || bomb.playerId.endsWith(Constants.KEY_CHILD))) {
-                myBomb = bomb;
-            }
-        }
-
-        if (myBomb == null) {
+        if (mapInfo.playerBomb == null) {
             Node boxNode = bfsFinder.find(mapInfo.map, myPlayer.currentPosition, MapInfo.BOX, mapInfo.size);
             if (boxNode.parent != null) {
                 if (myPlayer.currentWeapon != 2) {

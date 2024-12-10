@@ -3,6 +3,7 @@ package org.codefest2024.nghenhan.service.finder;
 import org.codefest2024.nghenhan.service.finder.data.AStarNode;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
+import org.codefest2024.nghenhan.utils.SkillUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -406,14 +407,14 @@ public class KeepDistanceFinder {
     }
 
     private boolean isSafeFromBombs(Position curr, List<Bomb> bombs) {
-        return bombs.stream().noneMatch(bomb -> CalculateUtils.isHitBomb(curr, bomb));
+        return bombs.stream().noneMatch(bomb -> SkillUtils.isHitBomb(curr, bomb));
     }
 
     private boolean isSafeFromHammers(Position curr, List<Hammer> hammers) {
-        return hammers.stream().noneMatch(hammer -> CalculateUtils.isHitHammer(curr, hammer));
+        return hammers.stream().noneMatch(hammer -> SkillUtils.isHitHammer(curr, hammer));
     }
 
     public static boolean isSafeFromWinds(int[][] map, Position curr, List<Wind> winds) {
-        return winds.stream().noneMatch(wind -> CalculateUtils.isHitWind(map, curr, wind));
+        return winds.stream().noneMatch(wind -> SkillUtils.isHitWind(map, curr, wind));
     }
 }

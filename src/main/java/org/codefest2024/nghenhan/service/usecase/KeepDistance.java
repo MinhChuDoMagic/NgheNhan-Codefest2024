@@ -11,17 +11,11 @@ import java.util.List;
 
 public class KeepDistance {
     private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
+    private final GodFarmBox godFarmBox = new GodFarmBox();
 
     public List<Order> farm(MapInfo mapInfo, Player player, Player enemy) {
-        Bomb myBomb = null;
-        for (Bomb bomb : mapInfo.bombs) {
-            if (bomb.playerId.startsWith(Constants.KEY_TEAM)
-                    && (!player.isChild || bomb.playerId.endsWith(Constants.KEY_CHILD))) {
-                myBomb = bomb;
-            }
-        }
 
-        if (myBomb == null) {
+        if (mapInfo.playerBomb == null) {
             if (CalculateUtils.isNearBox(mapInfo.map, player.currentPosition)) {
                 List<Order> orders = new ArrayList<>();
                 if (player.currentWeapon != 2) {
@@ -29,7 +23,7 @@ public class KeepDistance {
                 }
                 orders.add(new Dir(Dir.ACTION, player.isChild));
                 return orders;
-            } else {
+            } else if (enemy != null) {
                 AStarNode boxNodeWithoutBrick = keepDistanceFinder.findWithoutBrick(mapInfo.map, player.currentPosition, enemy.currentPosition, MapInfo.BOX, mapInfo.size);
                 if (boxNodeWithoutBrick.parent != null) {
                     String dir = boxNodeWithoutBrick.parent.reconstructPath();
@@ -55,6 +49,8 @@ public class KeepDistance {
                         return orders;
                     }
                 }
+            } else {
+                godFarmBox.find(mapInfo, player);
             }
         }
 

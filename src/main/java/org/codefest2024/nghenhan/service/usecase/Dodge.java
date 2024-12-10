@@ -95,42 +95,13 @@ public class Dodge {
                 .toList();
 
         if (!dangerousBombs.isEmpty() || !dangerousHammers.isEmpty() || !dangerousWinds.isEmpty()) {
-            String dir = keepDistanceFinder
-                    .findSafe(mapInfo.map, myPlayer.currentPosition, enemy.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds)
-                    .reconstructPath();
+            String dir = enemy != null
+                    ? keepDistanceFinder.findSafe(mapInfo.map, myPlayer.currentPosition, enemy.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath()
+                    : bfsFinder.findSafe(mapInfo.map, myPlayer.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath();
             if (dir.isEmpty()) {
                 String oneSafeStep = bfsFinder.oneSafeStep(mapInfo.map, myPlayer.currentPosition, dangerousBombs, dangerousHammers, dangerousWinds);
                 return List.of(new Dir(oneSafeStep, myPlayer.isChild));
             } else {
-                return List.of(new Dir(dir, myPlayer.isChild));
-            }
-        }
-
-        return List.of();
-    }
-
-    public List<Order> findAndStand(MapInfo mapInfo, Player myPlayer, Player enemy) {
-        List<Bomb> dangerousBombs = mapInfo
-                .bombs
-                .stream()
-                .filter(bomb -> isDangerousBomb(bomb, myPlayer.currentPosition))
-                .toList();
-        List<Hammer> dangerousHammers = mapInfo
-                .weaponHammers
-                .stream()
-                .filter(hammer -> isDangerousHammer(hammer, myPlayer.currentPosition))
-                .toList();
-        List<Wind> dangerousWinds = mapInfo
-                .weaponWinds
-                .stream()
-                .filter(wind -> isDangerousWind(mapInfo.map, wind, myPlayer.currentPosition))
-                .toList();
-
-        if (!dangerousBombs.isEmpty() || !dangerousHammers.isEmpty() || !dangerousWinds.isEmpty()) {
-            String dir = forwardFinder
-                    .findSafe(mapInfo.map, myPlayer.currentPosition, enemy.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds)
-                    .reconstructPath();
-            if (!dir.isEmpty()) {
                 return List.of(new Dir(dir, myPlayer.isChild));
             }
         }

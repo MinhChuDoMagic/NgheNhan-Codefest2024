@@ -1,7 +1,6 @@
 package org.codefest2024.nghenhan.service.usecase;
 
 import org.codefest2024.nghenhan.service.finder.BFSFinder;
-import org.codefest2024.nghenhan.service.finder.ForwardFinder;
 import org.codefest2024.nghenhan.service.finder.KeepDistanceFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
@@ -12,7 +11,6 @@ import java.util.List;
 public class Dodge {
     private final BFSFinder bfsFinder = BFSFinder.getInstance();
     private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
-    private final ForwardFinder forwardFinder = ForwardFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer) {
         List<Order> orders = new ArrayList<>();

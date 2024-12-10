@@ -10,12 +10,12 @@ import java.util.List;
 
 public class FarmStrategy implements Strategy {
     private final FindBadge findBadge = new FindBadge();
-    private final GodFarmBox godFarmBox = new GodFarmBox();
     private final Dodge dodge = new Dodge();
     private final CollectSpoils collectSpoils = new CollectSpoils();
     private final UseSkill useSkill = new UseSkill();
     private final FindAndFire findAndFire = new FindAndFire();
     private final RandomRun randomRun = new RandomRun();
+    private final OptimalFarmBox optimalFarmBox = new OptimalFarmBox();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -76,7 +76,7 @@ public class FarmStrategy implements Strategy {
             return collectSpoilOrders;
         }
 
-        List<Order> godFarmOrders = godFarmBox.find(mapInfo, player);
+        List<Order> godFarmOrders = optimalFarmBox.find(mapInfo, player);
         if (!godFarmOrders.isEmpty()) {
             return godFarmOrders;
         }

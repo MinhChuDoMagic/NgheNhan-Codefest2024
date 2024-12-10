@@ -13,4 +13,8 @@ public class AStarNode extends Node {
     public double getF() {
         return g + h;
     }
+
+    public double getG() {
+        return g;
+    }
 }

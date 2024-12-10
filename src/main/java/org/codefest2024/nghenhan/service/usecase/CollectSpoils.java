@@ -11,13 +11,10 @@ public class CollectSpoils {
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer, List<Player> otherPlayers) {
         for (Spoil spoil : mapInfo.spoils) {
-            if (CalculateUtils.isNearest(
-                    myPlayer.currentPosition,
-                    spoil,
-                    otherPlayers.stream().map(player -> player.currentPosition).toList()
-            )) {
+            if (CalculateUtils.isNearest(myPlayer.currentPosition, spoil, otherPlayers.stream().map(player -> player.currentPosition).toList())
+                    && CalculateUtils.manhattanDistance(myPlayer.currentPosition, spoil) < 12) {
                 String dir = aStarFinder.find(mapInfo.map, myPlayer.currentPosition, spoil, mapInfo.size);
-                if (!dir.contains("b")) {
+                if (!dir.contains(Dir.ACTION)) {
                     return List.of(new Dir(dir, myPlayer.isChild));
                 }
             }

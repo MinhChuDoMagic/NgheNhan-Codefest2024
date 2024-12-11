@@ -14,7 +14,7 @@ import java.util.PriorityQueue;
 public class BombPlaceFinder {
     private static BombPlaceFinder instance;
     private final int BRICK_POINT = 10;
-    private final double BOMB_RATIO = 2.5;
+    private final double BOMB_RATIO = 3.5;
 
     private BombPlaceFinder() {
     }

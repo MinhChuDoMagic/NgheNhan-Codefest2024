@@ -57,6 +57,7 @@ public class AStarFinder {
                     } else if (map[newRow][newCol] == MapInfo.BRICK || map[newRow][newCol] == MapInfo.ENEMY) {
                         String currentCommand = currNode.commands.toString();
                         if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
+                            newCost += 2;
                             newCommands.append(move);
                         }
                         newCommands.append(Dir.ACTION);

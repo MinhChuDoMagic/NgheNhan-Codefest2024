@@ -2,12 +2,10 @@ package org.codefest2024.nghenhan.utils;
 
 import org.codefest2024.nghenhan.service.socket.data.Dir;
 import org.codefest2024.nghenhan.service.socket.data.MapInfo;
+import org.codefest2024.nghenhan.service.socket.data.MapSize;
 import org.codefest2024.nghenhan.service.socket.data.Position;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CalculateUtils {
     private CalculateUtils() {
@@ -72,5 +70,13 @@ public class CalculateUtils {
     public static boolean isNearBrick(int[][] map, Position curr) {
         return directions.stream()
                 .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BRICK);
+    }
+
+    public static boolean isValidWay(int row, int col, int[][] map, boolean[][] visited, Set<Integer> invalidSet, MapSize size) {
+        return row >= 0
+                && row < size.rows
+                && col >= 0 && col < size.cols
+                && !visited[row][col]
+                && invalidSet.stream().noneMatch(it -> map[row][col] == it);
     }
 }

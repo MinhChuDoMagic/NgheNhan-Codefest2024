@@ -10,11 +10,12 @@ import org.codefest2024.nghenhan.utils.CalculateUtils;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 public class BombPlaceFinder {
     private static BombPlaceFinder instance;
     private final int BRICK_POINT = 10;
-    private final double BOMB_RATIO = 3.5;
+    private final double BOMB_RATIO = 3.6;
 
     private BombPlaceFinder() {
     }
@@ -63,6 +64,7 @@ public class BombPlaceFinder {
                     } else if (map[newRow][newCol] == MapInfo.BRICK) {
                         String currentCommand = currNode.commands.toString();
                         if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
+                            newCost += 2;
                             newCommands.append(move);
                         }
                         newCommands.append(Dir.ACTION);
@@ -106,21 +108,12 @@ public class BombPlaceFinder {
     }
 
     private boolean isValid(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
-        return row >= 0
-                && row < size.rows
-                && col >= 0 && col < size.cols
-                && !visited[row][col]
-                && map[row][col] != MapInfo.WALL
-                && map[row][col] != MapInfo.BOX
-                && map[row][col] != MapInfo.PRISON
-                && map[row][col] != MapInfo.PLAYER
-                && map[row][col] != MapInfo.CHILD
-                && map[row][col] != MapInfo.ENEMY
-                && map[row][col] != MapInfo.ENEMY_CHILD
-                && map[row][col] != MapInfo.BOMB
-                && map[row][col] != MapInfo.BOMB_EXPLODE
-                && map[row][col] != MapInfo.HAMMER_EXPLODE
-                && map[row][col] != MapInfo.WIND
-                && map[row][col] != MapInfo.CAPTURED_BADGE;
+        Set<Integer> invalidSet = Set.of(
+                MapInfo.WALL, MapInfo.PRISON, MapInfo.PLAYER,
+                MapInfo.CHILD, MapInfo.ENEMY, MapInfo.ENEMY_CHILD,
+                MapInfo.BOMB, MapInfo.BOMB_EXPLODE, MapInfo.HAMMER_EXPLODE,
+                MapInfo.WIND, MapInfo.CAPTURED_BADGE
+        );
+        return CalculateUtils.isValidWay(row, col, map, visited, invalidSet, size);
     }
 }

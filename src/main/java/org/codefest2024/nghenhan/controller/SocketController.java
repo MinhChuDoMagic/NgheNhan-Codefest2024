@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.time.Instant;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -69,6 +70,8 @@ public class SocketController implements Initializable {
     private static GameInfo gameInfo;
 
     private final TickTackHandler tickTackHandler = new TickTackHandler();
+    private long waitTimePlayer = Instant.now().toEpochMilli();
+    private long waitTimeChild = Instant.now().toEpochMilli();
 
     private final Emitter.Listener mOnTickTackListener = objects -> {
         if (objects != null && objects.length != 0) {
@@ -123,6 +126,11 @@ public class SocketController implements Initializable {
     }
 
     private void movePlayer(Dir dir) {
+        if ((dir.characterType == null && Instant.now().toEpochMilli() < waitTimePlayer)
+                || (dir.characterType != null && Instant.now().toEpochMilli() < waitTimeChild)) {
+            return;
+        }
+
         if (mSocket != null && !dir.direction.isEmpty()) {
             log.info("Dir = {}", dir);
             try {
@@ -145,10 +153,11 @@ public class SocketController implements Initializable {
     }
 
     private void handleWait(Wait wait) {
-        try {
-            Thread.sleep(wait.duration);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        long currentTime = Instant.now().toEpochMilli();
+        if (wait.characterType == null && currentTime >= waitTimePlayer) {
+            waitTimePlayer = currentTime + wait.duration;
+        } else if (wait.characterType != null && currentTime >= waitTimeChild ) {
+            waitTimeChild = currentTime + wait.duration;
         }
     }
 

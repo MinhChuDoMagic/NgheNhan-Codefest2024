@@ -2,7 +2,6 @@ package org.codefest2024.nghenhan.service.usecase;
 
 import org.codefest2024.nghenhan.service.finder.AStarFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
-import org.codefest2024.nghenhan.utils.CalculateUtils;
 
 import java.util.List;
 
@@ -19,7 +18,16 @@ public class FindBadge {
         Position destination = getNearestBadgePosition(mapInfo.map, myPlayer.currentPosition, mapInfo.size);
         String dir = aStarFinder.find(mapInfo.map, myPlayer.currentPosition, destination, mapInfo.size);
 //        return List.of(new Dir(dir));
-        return List.of(new Dir(CalculateUtils.processDirWithBrick(dir)));
+        return processDirWithBrick(dir, myPlayer.isChild);
+    }
+
+    private List<Order> processDirWithBrick(String dir, boolean isChild){
+        int indexOfB = dir.indexOf(Dir.ACTION);
+        if (indexOfB == 2) {
+            return List.of(new Dir(dir.substring(0,2), isChild), new Wait(Wait.REDIRECT, isChild));
+        } else {
+            return List.of(new Dir(dir.length() > 3 ? dir.substring(0, 3) : dir, isChild));
+        }
     }
 
     private Position getNearestBadgePosition(int[][] map, Position currentPosition, MapSize size) {

@@ -6,7 +6,6 @@ public final class Action extends Order {
     public static final String SWITCH_WEAPON = "switch weapon";
     public static final String USE_WEAPON = "use weapon";
     public static final String MARRY_WIFE = "marry wife";
-    public static final String USE_CHILD = "child";
 
     public String action;
     public Payload payload;

@@ -21,7 +21,7 @@ public class FindAndFire {
         }
 
         List<Player> enemies = Utils.filterNonNull(enemy, enemyChild);
-        if (enemies.isEmpty() || SkillUtils.isCooldown(player.isChild)) {
+        if (enemies.isEmpty() || SkillUtils.isSkillCooldown(player.isChild)) {
             return List.of();
         }
 

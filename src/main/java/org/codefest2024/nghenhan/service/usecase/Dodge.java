@@ -2,8 +2,10 @@ package org.codefest2024.nghenhan.service.usecase;
 
 import org.codefest2024.nghenhan.service.finder.BFSFinder;
 import org.codefest2024.nghenhan.service.finder.KeepDistanceFinder;
+import org.codefest2024.nghenhan.service.finder.PowerFarmFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
+import org.codefest2024.nghenhan.utils.FinderUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
 public class Dodge {
     private final BFSFinder bfsFinder = BFSFinder.getInstance();
     private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
+    private final PowerFarmFinder powerFarmFinder = PowerFarmFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer) {
         List<Order> orders = new ArrayList<>();
@@ -44,6 +47,35 @@ public class Dodge {
         }
 
         return orders;
+    }
+
+    public List<Order> findForPowerFarm(MapInfo mapInfo, Player myPlayer) {
+        List<Bomb> dangerousBombs = mapInfo
+                .bombs
+                .stream()
+                .filter(bomb -> isDangerousBomb(bomb, myPlayer.currentPosition))
+                .toList();
+        List<Hammer> dangerousHammers = mapInfo
+                .weaponHammers
+                .stream()
+                .filter(hammer -> isDangerousHammer(hammer, myPlayer.currentPosition))
+                .toList();
+        List<Wind> dangerousWinds = mapInfo
+                .weaponWinds
+                .stream()
+                .filter(wind -> isDangerousWind(mapInfo.map, wind, myPlayer.currentPosition))
+                .toList();
+
+        if (!dangerousBombs.isEmpty() || !dangerousHammers.isEmpty() || !dangerousWinds.isEmpty()) {
+            String dir = powerFarmFinder
+                    .findSafe(mapInfo.map, myPlayer.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds)
+                    .reconstructPath();
+            if (!dir.isEmpty()) {
+                return FinderUtils.processDirWithBrick(dir, myPlayer.isChild, myPlayer.currentWeapon);
+            }
+        }
+
+        return List.of();
     }
 
     public List<Order> findWithoutWind(MapInfo mapInfo, Player myPlayer) {

@@ -4,6 +4,7 @@ public enum StrategyEnum {
     FARM_STRATEGY("Farm Strategy"),
     SEA_DIRECT_ATTACK("Sea Direct Attack"),
     HIT_AND_RUN("Mountain Hit And Run"),
+    POWER_FARM("Power Farm"),
     TEST("Test"),
     DO_NOTHING("Do Nothing");
 

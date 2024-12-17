@@ -8,12 +8,14 @@ import org.codefest2024.nghenhan.utils.constant.Constants;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class TickTackHandler {
     private final Strategy farmStrategy = new FarmStrategy();
     private final Strategy seaAttackStrategy = new SeaAttackStrategy();
     private final Strategy doNothingStrategy = new DoNothingStrategy();
     private final Strategy hitAndRunStrategy = new HitAndRunStrategy();
+    private final Strategy powerFarmStrategy = new PowerFarmStrategy();
     private final Strategy testStrategy = new TestStrategy();
 
     public List<Order> handle(GameInfo gameInfo, StrategyEnum strategyEnum) {
@@ -26,6 +28,7 @@ public class TickTackHandler {
             case FARM_STRATEGY -> farmStrategy;
             case SEA_DIRECT_ATTACK -> seaAttackStrategy;
             case HIT_AND_RUN -> hitAndRunStrategy;
+            case POWER_FARM -> powerFarmStrategy;
             case TEST -> testStrategy;
             case DO_NOTHING -> doNothingStrategy;
         };
@@ -60,18 +63,32 @@ public class TickTackHandler {
     }
 
     private void updateBombs(MapInfo mapInfo) {
+        mapInfo.bombs = Stream
+                .concat(
+                        mapInfo.bombs.stream(),
+                        InGameInfo.lastBombs.stream().filter(bomb -> Instant.now().toEpochMilli() - bomb.createdAt < Bomb.BOMB_TIME*1000)
+                )
+                .distinct()
+                .toList();
+
+        InGameInfo.lastBombs = mapInfo.bombs;
+
         for (Bomb bomb : mapInfo.bombs) {
             if (bomb.playerId.startsWith(Constants.KEY_TEAM)) {
                 if (bomb.playerId.endsWith(Constants.KEY_CHILD)) {
                     mapInfo.childBombs.add(bomb);
+                    InGameInfo.childLastBombTime = Math.max(InGameInfo.childLastBombTime, bomb.createdAt);
                 } else {
                     mapInfo.playerBombs.add(bomb);
+                    InGameInfo.playerLastBombTime = Math.max(InGameInfo.playerLastBombTime, bomb.createdAt);
                 }
             } else {
                 if (bomb.playerId.endsWith(Constants.KEY_CHILD)) {
                     mapInfo.enemyChildBombs.add(bomb);
+                    InGameInfo.enemyChildLastBombTime = Math.max(InGameInfo.enemyChildLastBombTime, bomb.createdAt);
                 } else {
                     mapInfo.enemyBombs.add(bomb);
+                    InGameInfo.enemyLastBombTime = Math.max(InGameInfo.enemyLastBombTime, bomb.createdAt);
                 }
             }
         }
@@ -95,9 +112,9 @@ public class TickTackHandler {
         for (Hammer hammer : hammers) {
             if (hammer.playerId.startsWith(Constants.KEY_TEAM)) {
                 if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
-                    InGameInfo.myChildLastSkillTime = hammer.createdAt;
+                    InGameInfo.childLastSkillTime = hammer.createdAt;
                 } else {
-                    InGameInfo.myPlayerLastSkillTime = hammer.createdAt;
+                    InGameInfo.playerLastSkillTime = hammer.createdAt;
                 }
             } else {
                 if (hammer.playerId.endsWith(Constants.KEY_CHILD)) {
@@ -112,10 +129,10 @@ public class TickTackHandler {
             long currentTime = Instant.now().toEpochMilli();
             if (wind.playerId.startsWith(Constants.KEY_TEAM)) {
                 if (wind.playerId.endsWith(Constants.KEY_CHILD)
-                        && currentTime - InGameInfo.myChildLastSkillTime > Wind.COOL_DOWN * 1000) {
-                    InGameInfo.myChildLastSkillTime = currentTime;
-                } else if (currentTime - InGameInfo.myPlayerLastSkillTime > Wind.COOL_DOWN * 1000) {
-                    InGameInfo.myPlayerLastSkillTime = currentTime;
+                        && currentTime - InGameInfo.childLastSkillTime > Wind.COOL_DOWN * 1000) {
+                    InGameInfo.childLastSkillTime = currentTime;
+                } else if (currentTime - InGameInfo.playerLastSkillTime > Wind.COOL_DOWN * 1000) {
+                    InGameInfo.playerLastSkillTime = currentTime;
                 }
             } else {
                 if (wind.playerId.endsWith(Constants.KEY_CHILD)

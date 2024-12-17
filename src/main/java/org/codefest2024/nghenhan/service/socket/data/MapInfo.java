@@ -2,6 +2,7 @@ package org.codefest2024.nghenhan.service.socket.data;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapInfo {
@@ -30,16 +31,20 @@ public class MapInfo {
     public List<Spoil> spoils;
     public List<Hammer> weaponHammers;
     public List<Wind> weaponWinds;
+    public List<WeaponPlace> weaponPlaces;
 
     public Player player;
     public Player enemy;
     public Player child;
     public Player enemyChild;
 
-    public Bomb playerBomb;
-    public Bomb enemyBomb;
-    public Bomb childBomb;
-    public Bomb enemyChildBomb;
+    public List<Bomb> playerBombs = new ArrayList<>();
+    public List<Bomb> enemyBombs = new ArrayList<>();
+    public List<Bomb> childBombs = new ArrayList<>();
+    public List<Bomb> enemyChildBombs = new ArrayList<>();
+
+    public boolean playerIsMarried;
+    public boolean enemyIsMarried;
 
     @Override
     public String toString() {

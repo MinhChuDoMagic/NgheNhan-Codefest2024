@@ -44,12 +44,14 @@ public class TickTackHandler {
             if (player.id.startsWith(Constants.KEY_TEAM)) {
                 if (player.id.endsWith(Constants.KEY_CHILD)) {
                     mapInfo.child = player;
+                    mapInfo.playerIsMarried = true;
                 } else {
                     mapInfo.player = player;
                 }
             } else {
                 if (player.id.endsWith(Constants.KEY_CHILD)) {
                     mapInfo.enemyChild = player;
+                    mapInfo.enemyIsMarried = true;
                 } else {
                     mapInfo.enemy = player;
                 }
@@ -61,15 +63,15 @@ public class TickTackHandler {
         for (Bomb bomb : mapInfo.bombs) {
             if (bomb.playerId.startsWith(Constants.KEY_TEAM)) {
                 if (bomb.playerId.endsWith(Constants.KEY_CHILD)) {
-                    mapInfo.childBomb = bomb;
+                    mapInfo.childBombs.add(bomb);
                 } else {
-                    mapInfo.playerBomb = bomb;
+                    mapInfo.playerBombs.add(bomb);
                 }
             } else {
                 if (bomb.playerId.endsWith(Constants.KEY_CHILD)) {
-                    mapInfo.enemyChildBomb = bomb;
+                    mapInfo.enemyChildBombs.add(bomb);
                 } else {
-                    mapInfo.enemyBomb = bomb;
+                    mapInfo.enemyBombs.add(bomb);
                 }
             }
         }

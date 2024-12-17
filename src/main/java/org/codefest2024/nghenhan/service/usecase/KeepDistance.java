@@ -15,7 +15,7 @@ public class KeepDistance {
 
     public List<Order> farm(MapInfo mapInfo, Player player, Player enemy) {
 
-        if (mapInfo.playerBomb == null) {
+        if (mapInfo.playerBombs.isEmpty()) {
             if (CalculateUtils.isNearBox(mapInfo.map, player.currentPosition)) {
                 List<Order> orders = new ArrayList<>();
                 if (player.currentWeapon != 2) {

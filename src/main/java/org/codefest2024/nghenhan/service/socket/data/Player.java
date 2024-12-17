@@ -28,4 +28,5 @@ public class Player {
     public boolean isStun;
     public boolean isChild;
     public int timeToUseSpecialWeapons;
+    public boolean haveSpecialWeapon;
 }

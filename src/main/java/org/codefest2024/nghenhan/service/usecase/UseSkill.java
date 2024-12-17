@@ -13,7 +13,9 @@ public class UseSkill {
     BFSFinder bfsFinder = BFSFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
-        if ((player.timeToUseSpecialWeapons == 0 && (teammate == null || teammate.timeToUseSpecialWeapons == 0))
+        if (!mapInfo.playerIsMarried
+                || !player.haveSpecialWeapon
+                || (player.timeToUseSpecialWeapons == 0 && (teammate == null || teammate.timeToUseSpecialWeapons == 0))
                 || (enemy != null && !enemy.hasTransform)) {
             return List.of();
         }
@@ -50,7 +52,8 @@ public class UseSkill {
     }
 
     public List<Order> useMountainSkillDirect(Player player, Player teammate, Player enemyPlayer, Player enemyChild) {
-        if ((player.timeToUseSpecialWeapons == 0 && (teammate == null || teammate.timeToUseSpecialWeapons == 0))
+        if (!player.haveSpecialWeapon
+                || (player.timeToUseSpecialWeapons == 0 && (teammate == null || teammate.timeToUseSpecialWeapons == 0))
                 || (enemyPlayer != null && !enemyPlayer.hasTransform)) {
             return List.of();
         }

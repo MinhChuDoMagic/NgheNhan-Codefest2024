@@ -13,7 +13,7 @@ public class GodFarmBox {
     public List<Order> find(MapInfo mapInfo, Player player) {
         List<Order> orders = new ArrayList<>();
 
-        if (mapInfo.playerBomb == null) {
+        if (mapInfo.playerBombs.isEmpty()) {
             Node boxNode = bfsFinder.find(mapInfo.map, player.currentPosition, MapInfo.BOX, mapInfo.size);
             if (boxNode.parent != null) {
                 if (player.currentWeapon != 2) {

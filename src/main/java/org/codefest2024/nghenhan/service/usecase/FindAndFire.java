@@ -13,7 +13,9 @@ public class FindAndFire {
     AStarFinder aStarFinder = AStarFinder.getInstance();
 
     public List<Order> find(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
-        if ((player.timeToUseSpecialWeapons == 0 && (teammate == null || teammate.timeToUseSpecialWeapons == 0))
+        if (!mapInfo.playerIsMarried
+                || !player.haveSpecialWeapon
+                || (player.timeToUseSpecialWeapons == 0 && (teammate == null || teammate.timeToUseSpecialWeapons == 0))
                 || (enemy != null && !enemy.hasTransform)) {
             return List.of();
         }

@@ -17,7 +17,7 @@ public class OptimalFarmBox {
             String dir = bombPlaceNode.reconstructPath();
 
             if(dir.isEmpty()){
-                if (mapInfo.playerBomb == null) {
+                if (mapInfo.playerBombs.isEmpty()) {
                     List<Order> orders = new ArrayList<>();
                     if (player.currentWeapon != 2) {
                         orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));

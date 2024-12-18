@@ -54,7 +54,7 @@ public class SeaAttackStrategy implements Strategy {
             InGameInfo.isEnemyStun = true;
         }
 
-        if (!enemy.isStun && !SkillUtils.isCooldown(player.isChild) && InGameInfo.isEnemyStun) {
+        if (!enemy.isStun && !SkillUtils.isSkillCooldown(player.isChild) && InGameInfo.isEnemyStun) {
             InGameInfo.isEnemyStun = false;
             return List.of(new Action(Action.USE_WEAPON, player.isChild));
         }

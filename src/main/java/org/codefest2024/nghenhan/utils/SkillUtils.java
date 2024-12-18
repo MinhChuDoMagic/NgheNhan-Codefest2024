@@ -11,15 +11,20 @@ public class SkillUtils {
     private SkillUtils() {
     }
 
-    public static boolean isCooldown(boolean isChild) {
+    public static boolean isBombCooldown(int cooldown, boolean isChild){
+        return (isChild && Instant.now().toEpochMilli() - InGameInfo.childLastBombTime <= cooldown)
+                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.playerLastBombTime <= cooldown);
+    }
+
+    public static boolean isSkillCooldown(boolean isChild) {
         long cooldown = switch (InGameInfo.playerType) {
             case Player.MOUNTAIN -> Hammer.COOL_DOWN;
             case Player.SEA -> Wind.COOL_DOWN;
             default -> 0L;
         } * 1000;
 
-        return (isChild && Instant.now().toEpochMilli() - InGameInfo.myChildLastSkillTime <= cooldown)
-                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.myPlayerLastSkillTime <= cooldown);
+        return (isChild && Instant.now().toEpochMilli() - InGameInfo.childLastSkillTime <= cooldown)
+                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.playerLastSkillTime <= cooldown);
     }
 
     public static boolean isHitBomb(Position curr, Bomb bomb) {

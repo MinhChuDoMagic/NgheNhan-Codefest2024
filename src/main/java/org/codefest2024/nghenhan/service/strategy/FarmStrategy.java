@@ -2,7 +2,6 @@ package org.codefest2024.nghenhan.service.strategy;
 
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.service.usecase.*;
-import org.codefest2024.nghenhan.utils.Utils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class FarmStrategy implements Strategy {
             return useSkillOrders;
         }
 
-        List<Order> collectSpoilOrders = collectSpoils.find(mapInfo, player, Utils.filterNonNull(teammate, enemyPlayer, enemyChild));
+        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
         if (!collectSpoilOrders.isEmpty()) {
             return collectSpoilOrders;
         }

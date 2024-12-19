@@ -70,7 +70,10 @@ public class Dodge {
             String dir = powerFarmFinder
                     .findSafe(mapInfo.map, myPlayer.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds)
                     .reconstructPath();
-            if (!dir.isEmpty()) {
+            if (dir.isEmpty()) {
+                String oneSafeStep = bfsFinder.oneSafeStep(mapInfo.map, myPlayer.currentPosition, dangerousBombs, dangerousHammers, dangerousWinds);
+                return  List.of(new Dir(oneSafeStep, myPlayer.isChild));
+            } else {
                 return FinderUtils.processDirWithBrick(dir, myPlayer.isChild, myPlayer.currentWeapon);
             }
         }

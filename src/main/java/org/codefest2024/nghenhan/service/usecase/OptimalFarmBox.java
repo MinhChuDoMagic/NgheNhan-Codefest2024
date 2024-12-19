@@ -40,7 +40,7 @@ public class OptimalFarmBox {
         return List.of();
     }
 
-    public List<Order> findVer2(MapInfo mapInfo, Player player, List<Player> otherPlayers) {
+    public List<Order> findVer2(MapInfo mapInfo, Player player) {
         AStarNode bombPlaceNode = bombPlaceFinder.find(mapInfo.map, player.currentPosition, player.power, mapInfo.size);
 
         if (bombPlaceNode != null
@@ -55,12 +55,12 @@ public class OptimalFarmBox {
             return orders;
         }
 
-        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
-        if (!collectSpoilOrders.isEmpty()) {
-            return collectSpoilOrders;
-        }
+//        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
+//        if (!collectSpoilOrders.isEmpty()) {
+//            return collectSpoilOrders;
+//        }
 
-        if (bombPlaceNode != null) {
+        if (bombPlaceNode != null && !bombPlaceNode.reconstructPath().isEmpty()) {
             return FinderUtils.processDirWithBrick(bombPlaceNode.reconstructPath(), player.isChild, player.currentWeapon);
         }
 

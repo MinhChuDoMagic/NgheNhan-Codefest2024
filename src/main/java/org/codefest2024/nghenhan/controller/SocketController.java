@@ -81,7 +81,7 @@ public class SocketController implements Initializable {
             if (!Utils.isEmpty(data)) {
                 gameInfo = new Gson().fromJson(data, GameInfo.class);
 
-                if (gameInfo != null && !gameInfo.tag.equals(GameInfo.BOMB_EXPLODED)) {
+                if (gameInfo != null) {
                     List<Order> orders = tickTackHandler.handle(gameInfo, comboBoxStrategy.getValue());
                     log.info("Calculate time: {}", System.currentTimeMillis() - startTime);
                     handleOrders(orders);

@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import java.util.Objects;
 
 public class Bomb extends Position {
-    public static final double BOMB_TIME = 3.5;
+    public static final double BOMB_TIME = 2.1;
 
     public String playerId;
     public int remainTime;

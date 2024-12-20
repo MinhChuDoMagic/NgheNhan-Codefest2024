@@ -12,6 +12,8 @@ public class PowerFarmStrategy implements Strategy {
     private final OptimalFarmBox optimalFarmBox = new OptimalFarmBox();
     private final CollectSpoils collectSpoils = new CollectSpoils();
     private final KeepDistance keepDistance = new KeepDistance();
+    private final UseSkill useSkill = new UseSkill();
+    private final CollectWeapon collectWeapon = new CollectWeapon();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -52,6 +54,16 @@ public class PowerFarmStrategy implements Strategy {
 //        if (!keepEnemiesDistanceOrders.isEmpty()) {
 //            return keepEnemiesDistanceOrders;
 //        }
+
+        List<Order> useSkillOrders = useSkill.find(mapInfo, player, teammate, enemy, enemyChild);
+        if (!useSkillOrders.isEmpty()) {
+            return useSkillOrders;
+        }
+
+        List<Order> collectWeaponOrders = collectWeapon.find(mapInfo, player);
+        if (!collectWeaponOrders.isEmpty()) {
+            return collectWeaponOrders;
+        }
 
         List<Order> keepTeammateDistanceOrders = keepDistance.keepTeammateDistance(mapInfo, player, teammate);
         if (!keepTeammateDistanceOrders.isEmpty()) {

@@ -73,6 +73,55 @@ public class AStarFinder {
         return Dir.INVALID;
     }
 
+    public String findVer2(int[][] map, Position curr, Position des, MapSize size) {
+        PriorityQueue<AStarNode> pq = new PriorityQueue<>(Comparator.comparingDouble(AStarNode::getF));
+        pq.add(new AStarNode(curr.row, curr.col, 0, 0, null, null));
+        boolean[][] visited = new boolean[size.rows][size.cols];
+        List<int[]> directions = CalculateUtils.getDirections();
+
+        while (!pq.isEmpty()) {
+            AStarNode currNode = pq.poll();
+            int row = currNode.row;
+            int col = currNode.col;
+
+            // If target is found
+            if (des.row == row && des.col == col) {
+                return reconstructPath(currNode);
+            }
+
+            if (visited[row][col]) continue;
+            visited[row][col] = true;
+
+            for (int[] dir : directions) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+                String move = Integer.toString(dir[2]);
+
+                if (isValidVer2(newRow, newCol, map, visited, size)) {
+                    double newCost = currNode.g;
+                    StringBuilder newCommands = new StringBuilder(currNode.commands);
+
+                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
+                        newCost += 1; // Empty cell
+                    } else if (map[newRow][newCol] == MapInfo.BRICK) {
+                        String currentCommand = currNode.commands.toString();
+                        if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
+                            newCommands.append(move);
+                        }
+                        newCommands.append(Dir.ACTION);
+                        newCost += 6; // 1s to destroy + 0.2s to move
+                    }
+
+                    // Add move command
+                    newCommands.append(move);
+                    double heuristic = CalculateUtils.manhattanDistance(new Position(newRow, newCol), des);
+                    pq.add(new AStarNode(newRow, newCol, newCost, heuristic, currNode, newCommands));
+                }
+            }
+        }
+        return Dir.INVALID;
+    }
+
     private String reconstructPath(AStarNode node) {
         return node != null ? node.commands.toString() : Dir.INVALID;
     }
@@ -85,6 +134,25 @@ public class AStarFinder {
                 && map[row][col] != MapInfo.WALL
                 && map[row][col] != MapInfo.BOX
                 && map[row][col] != MapInfo.PRISON
+                && map[row][col] != MapInfo.CAPTURED_BADGE;
+    }
+
+    private boolean isValidVer2(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
+        return row >= 0
+                && row < size.rows
+                && col >= 0 && col < size.cols
+                && !visited[row][col]
+                && map[row][col] != MapInfo.WALL
+                && map[row][col] != MapInfo.BOX
+                && map[row][col] != MapInfo.PRISON
+                && map[row][col] != MapInfo.PLAYER
+                && map[row][col] != MapInfo.CHILD
+                && map[row][col] != MapInfo.ENEMY
+                && map[row][col] != MapInfo.ENEMY_CHILD
+                && map[row][col] != MapInfo.BOMB
+                && map[row][col] != MapInfo.BOMB_EXPLODE
+                && map[row][col] != MapInfo.HAMMER_EXPLODE
+                && map[row][col] != MapInfo.WIND
                 && map[row][col] != MapInfo.CAPTURED_BADGE;
     }
 }

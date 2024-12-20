@@ -40,6 +40,7 @@ public class TickTackHandler {
         updateMap(mapInfo);
         updateEnemyType(mapInfo.enemy);
         updateSkillData(mapInfo.weaponHammers, mapInfo.weaponWinds);
+        updateWeaponPlacess(mapInfo);
     }
 
     private void updatePlayers(MapInfo mapInfo) {
@@ -57,6 +58,24 @@ public class TickTackHandler {
                     mapInfo.enemyIsMarried = true;
                 } else {
                     mapInfo.enemy = player;
+                }
+            }
+        }
+    }
+
+    private void updateWeaponPlacess(MapInfo mapInfo) {
+        for (WeaponPlace weaponPlace : mapInfo.weaponPlaces) {
+            if (weaponPlace.playerId.startsWith(Constants.KEY_TEAM)) {
+                if (weaponPlace.playerId.endsWith(Constants.KEY_CHILD)) {
+                    mapInfo.childWeaponPlace = weaponPlace;
+                } else {
+                    mapInfo.playerWeaponPlace = weaponPlace;
+                }
+            } else {
+                if (weaponPlace.playerId.endsWith(Constants.KEY_CHILD)) {
+                    mapInfo.enemyChildWeaponPlace = weaponPlace;
+                } else {
+                    mapInfo.enemyWeaponPlace = weaponPlace;
                 }
             }
         }

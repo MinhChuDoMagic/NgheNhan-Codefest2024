@@ -43,6 +43,11 @@ public class MapInfo {
     public List<Bomb> childBombs = new ArrayList<>();
     public List<Bomb> enemyChildBombs = new ArrayList<>();
 
+    public WeaponPlace playerWeaponPlace;
+    public WeaponPlace enemyWeaponPlace;
+    public WeaponPlace childWeaponPlace;
+    public WeaponPlace enemyChildWeaponPlace;
+
     public boolean playerIsMarried;
     public boolean enemyIsMarried;
 

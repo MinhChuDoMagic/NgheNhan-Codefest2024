@@ -14,6 +14,7 @@ public class PowerFarmStrategy implements Strategy {
     private final KeepDistance keepDistance = new KeepDistance();
     private final UseSkill useSkill = new UseSkill();
     private final CollectWeapon collectWeapon = new CollectWeapon();
+    private final RandomRun randomRun = new RandomRun();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -80,6 +81,11 @@ public class PowerFarmStrategy implements Strategy {
         if (!godFarmOrders.isEmpty()) {
             System.out.println("farm" + player.isChild);
             return godFarmOrders;
+        }
+
+        List<Order> randomRunOrders = randomRun.find(mapInfo, player);
+        if (!randomRunOrders.isEmpty()) {
+            return randomRunOrders;
         }
 
         return List.of();

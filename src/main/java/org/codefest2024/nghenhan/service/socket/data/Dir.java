@@ -14,6 +14,7 @@ public final class Dir extends Order {
     public static final String ACTION = "b";
     public static final String INVALID = "";
     public static final String STOP = "x";
+    public static final String REDIRECT = "r";
     public static final String SWITCH_WEAPON = "j";
     public static final String USE_WEAPON = "k";
     public static final String MARRY_WIFE = "l";

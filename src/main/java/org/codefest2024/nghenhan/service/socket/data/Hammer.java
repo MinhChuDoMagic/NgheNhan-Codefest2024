@@ -2,7 +2,7 @@ package org.codefest2024.nghenhan.service.socket.data;
 
 public class Hammer extends Weapon {
     public static final int RANGE = 7;
-    public static final int COOL_DOWN = 10;
+    public static final int COOL_DOWN = 7;
     public static final int POWER = 2;
     public int power;
     public Position destination;

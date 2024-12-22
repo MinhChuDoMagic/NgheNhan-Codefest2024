@@ -1,7 +1,7 @@
 package org.codefest2024.nghenhan.service.socket.data;
 
 public final class Wait extends Order{
-    public static final int REDIRECT = 400;
+    public static final int REDIRECT = 600;
     public int duration;
 
     public Wait(int duration, boolean useChild) {

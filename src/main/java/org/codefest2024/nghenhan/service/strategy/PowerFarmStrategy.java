@@ -15,6 +15,7 @@ public class PowerFarmStrategy implements Strategy {
     private final UseSkill useSkill = new UseSkill();
     private final CollectWeapon collectWeapon = new CollectWeapon();
     private final RandomRun randomRun = new RandomRun();
+    private final FarmBrick farmBrick = new FarmBrick();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -61,7 +62,7 @@ public class PowerFarmStrategy implements Strategy {
             return useSkillOrders;
         }
 
-        List<Order> collectWeaponOrders = collectWeapon.find(mapInfo, player);
+        List<Order> collectWeaponOrders = collectWeapon.find(mapInfo, player, enemy, enemyChild);
         if (!collectWeaponOrders.isEmpty()) {
             return collectWeaponOrders;
         }
@@ -81,6 +82,11 @@ public class PowerFarmStrategy implements Strategy {
         if (!godFarmOrders.isEmpty()) {
             System.out.println("farm" + player.isChild);
             return godFarmOrders;
+        }
+
+        List<Order> farmBrickOrders = farmBrick.farmBrick(mapInfo, player);
+        if (!farmBrickOrders.isEmpty()) {
+            return farmBrickOrders;
         }
 
         List<Order> randomRunOrders = randomRun.find(mapInfo, player);

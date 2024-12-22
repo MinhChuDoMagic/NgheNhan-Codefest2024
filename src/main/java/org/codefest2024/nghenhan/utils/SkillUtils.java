@@ -27,6 +27,17 @@ public class SkillUtils {
                 || (!isChild && Instant.now().toEpochMilli() - InGameInfo.playerLastSkillTime <= cooldown);
     }
 
+    public static boolean isEnemySkillCooldown(boolean isChild) {
+        long cooldown = switch (InGameInfo.playerType) {
+            case Player.MOUNTAIN -> Hammer.COOL_DOWN;
+            case Player.SEA -> Wind.COOL_DOWN;
+            default -> 0L;
+        } * 1000;
+
+        return (isChild && Instant.now().toEpochMilli() - InGameInfo.enemyChildLastSkillTime <= cooldown)
+                || (!isChild && Instant.now().toEpochMilli() - InGameInfo.enemyLastSkillTime <= cooldown);
+    }
+
     public static boolean isHitBomb(Position curr, Bomb bomb) {
         return (curr.row == bomb.row && Math.abs(curr.col - bomb.col) <= bomb.power)
                 || (curr.col == bomb.col && Math.abs(curr.row - bomb.row) <= bomb.power);

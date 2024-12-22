@@ -30,7 +30,7 @@ public class SeaAttackStrategy implements Strategy {
             if (!player.hasTransform) {
                 return findBadge.find(gameInfo, player);
             } else if (enemy != null && !enemy.hasTransform) {
-                return farmBrick.farmBrick(mapInfo, player, enemy);
+                return farmBrick.farmBrick(mapInfo, player);
             } else {
                 List<Order> orders = playerStrategy(mapInfo, player, enemy);
                 if (child != null) {

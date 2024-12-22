@@ -126,6 +126,56 @@ public class PowerFarmFinder {
         return null;
     }
 
+    public AStarNode findBrick(int[][] map, Position curr, MapSize size) {
+        PriorityQueue<AStarNode> pq = new PriorityQueue<>(Comparator.comparingDouble(AStarNode::getF));
+        pq.add(new AStarNode(curr.row, curr.col, 0, 0, null, null));
+        boolean[][] visited = new boolean[size.rows][size.cols];
+        List<int[]> directions = CalculateUtils.getDirections();
+
+        while (!pq.isEmpty()) {
+            AStarNode currNode = pq.poll();
+            int row = currNode.row;
+            int col = currNode.col;
+
+            // If target is found
+            if (map[row][col] == MapInfo.BRICK) {
+                return currNode;
+            }
+
+            if (visited[row][col]) continue;
+            visited[row][col] = true;
+
+            for (int[] dir : directions) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+                String move = Integer.toString(dir[2]);
+
+                if (isValidPath(newRow, newCol, map, visited, size)) {
+                    double newCost = currNode.g;
+                    StringBuilder newCommands = new StringBuilder(currNode.commands);
+
+                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
+                        newCost += 1; // Empty cell
+                    } else if (map[newRow][newCol] == MapInfo.BRICK || map[newRow][newCol] == MapInfo.ENEMY) {
+                        String currentCommand = currNode.commands.toString();
+                        if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
+                            newCommands.append(move).append(Dir.REDIRECT);
+                        }
+                        newCommands.append(Dir.ACTION);
+                        newCost += BRICK_POINT; // 1s to destroy + 0.2s to move
+                    }
+
+                    // Add move command
+                    newCommands.append(move);
+                    double heuristic = 0;
+                    pq.add(new AStarNode(newRow, newCol, newCost, heuristic, currNode, newCommands));
+                }
+            }
+        }
+
+        return null;
+    }
+
     private boolean isValidSafePath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
         return row >= 0
                 && row < size.rows

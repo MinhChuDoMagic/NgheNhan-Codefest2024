@@ -26,7 +26,7 @@ public class HitAndRunStrategy implements Strategy {
             if (!player.hasTransform) {
                 return findBadge.find(gameInfo, player);
             } else if (enemy != null && !enemy.hasTransform) {
-                return farmBrick.farmBrick(mapInfo, player, enemy);
+                return farmBrick.farmBrick(mapInfo, player);
             } else {
                 List<Order> orders = playerStrategy(mapInfo, player, child, enemy, enemyChild);
                 if (child != null) {

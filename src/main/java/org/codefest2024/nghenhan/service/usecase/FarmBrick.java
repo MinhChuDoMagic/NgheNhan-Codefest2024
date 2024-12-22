@@ -1,26 +1,23 @@
 package org.codefest2024.nghenhan.service.usecase;
 
-import org.codefest2024.nghenhan.service.finder.KeepDistanceFinder;
+import org.codefest2024.nghenhan.service.finder.PowerFarmFinder;
 import org.codefest2024.nghenhan.service.finder.data.AStarNode;
-import org.codefest2024.nghenhan.service.socket.data.*;
+import org.codefest2024.nghenhan.service.socket.data.MapInfo;
+import org.codefest2024.nghenhan.service.socket.data.Order;
+import org.codefest2024.nghenhan.service.socket.data.Player;
+import org.codefest2024.nghenhan.utils.FinderUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FarmBrick {
-    private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
+    private final PowerFarmFinder powerFarmFinder = PowerFarmFinder.getInstance();
 
-    public List<Order> farmBrick(MapInfo mapInfo, Player player, Player enemy) {
-        AStarNode boxNode = keepDistanceFinder.findBrick(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size);
-        if (boxNode != null) {
-            String dir = boxNode.reconstructPath();
+    public List<Order> farmBrick(MapInfo mapInfo, Player player) {
+        AStarNode brickNode = powerFarmFinder.findBrick(mapInfo.map, player.currentPosition, mapInfo.size);
+        if (brickNode != null) {
+            String dir = brickNode.reconstructPath();
             if (!dir.isEmpty()) {
-                List<Order> orders = new ArrayList<>();
-                if (dir.contains(Dir.ACTION) && player.currentWeapon != 1) {
-                    orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
-                }
-                orders.add(new Dir(dir, player.isChild));
-                return orders;
+                return FinderUtils.processDirWithBrick(dir, player.isChild, player.currentWeapon);
             }
         }
 

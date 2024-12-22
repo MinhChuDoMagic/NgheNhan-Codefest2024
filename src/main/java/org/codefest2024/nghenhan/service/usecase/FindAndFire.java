@@ -3,10 +3,10 @@ package org.codefest2024.nghenhan.service.usecase;
 import org.codefest2024.nghenhan.service.finder.AStarFinder;
 import org.codefest2024.nghenhan.service.handler.info.InGameInfo;
 import org.codefest2024.nghenhan.service.socket.data.*;
+import org.codefest2024.nghenhan.utils.FinderUtils;
 import org.codefest2024.nghenhan.utils.SkillUtils;
 import org.codefest2024.nghenhan.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FindAndFire {
@@ -43,12 +43,7 @@ public class FindAndFire {
 
             String dir = aStarFinder.find(map, player.currentPosition, enemy.currentPosition, mapSize);
             if (!dir.isEmpty()) {
-                List<Order> orders = new ArrayList<>();
-                if (player.currentWeapon != 1) {
-                    orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
-                }
-                orders.add(new Dir(dir, player.isChild));
-                return orders;
+                return FinderUtils.processDirWithBrick(dir, player.isChild, player.currentWeapon);
             }
         }
         return List.of();

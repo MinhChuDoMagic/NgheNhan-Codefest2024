@@ -29,12 +29,7 @@ public class OptimalFarmBox {
                     return orders;
                 }
             } else {
-                List<Order> orders = new ArrayList<>();
-                if (player.currentWeapon != 1) {
-                    orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
-                }
-                orders.add(new Dir(dir, player.isChild));
-                return orders;
+                return FinderUtils.processDirWithBrick(bombPlaceNode.reconstructPath(), player.isChild, player.currentWeapon);
             }
         }
         return List.of();

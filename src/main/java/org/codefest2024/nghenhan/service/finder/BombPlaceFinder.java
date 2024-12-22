@@ -63,7 +63,7 @@ public class BombPlaceFinder {
                     } else if (map[newRow][newCol] == MapInfo.BRICK) {
                         String currentCommand = currNode.commands.toString();
                         if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
-                            newCommands.append(move);
+                            newCommands.append(move).append(Dir.REDIRECT);
                         }
                         newCommands.append(Dir.ACTION);
                         newCost += BRICK_POINT; // 1s to destroy + 0.2s to move

@@ -46,16 +46,15 @@ public class PowerFarmStrategy implements Strategy {
             return List.of(new Action(Action.MARRY_WIFE));
         }
 
-        List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
-        if (!dodgeBombsOrders.isEmpty()) {
-            System.out.println("dodge " + player.isChild);
-            return dodgeBombsOrders;
-        }
-
 //        List<Order> keepEnemiesDistanceOrders = keepDistance.keepEnemiesDistance(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
 //        if (!keepEnemiesDistanceOrders.isEmpty()) {
 //            return keepEnemiesDistanceOrders;
 //        }
+
+        List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
+        if (!dodgeBombsOrders.isEmpty()) {
+            return dodgeBombsOrders;
+        }
 
         List<Order> useSkillOrders = useSkill.find(mapInfo, player, teammate, enemy, enemyChild);
         if (!useSkillOrders.isEmpty()) {
@@ -74,13 +73,11 @@ public class PowerFarmStrategy implements Strategy {
 
         List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
         if (!collectSpoilOrders.isEmpty()) {
-            System.out.println("collect" + player.isChild);
             return collectSpoilOrders;
         }
 
         List<Order> godFarmOrders = optimalFarmBox.findVer2(mapInfo, player);
         if (!godFarmOrders.isEmpty()) {
-            System.out.println("farm" + player.isChild);
             return godFarmOrders;
         }
 

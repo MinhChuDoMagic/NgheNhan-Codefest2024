@@ -51,24 +51,25 @@ public class UseSkill {
         return List.of();
     }
 
-    public List<Order> useMountainSkillDirect(Player player, Player teammate, Player enemyPlayer, Player enemyChild) {
-        if (!player.haveSpecialWeapon
+    public List<Order> useMountainSkillDirect(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
+        if (!mapInfo.playerIsMarried
+                || !player.haveSpecialWeapon
                 || (player.timeToUseSpecialWeapons == 0 && (teammate == null || teammate.timeToUseSpecialWeapons == 0))
-                || (enemyPlayer != null && !enemyPlayer.hasTransform)) {
+                || (enemy != null && !enemy.hasTransform)) {
             return List.of();
         }
 
-        List<Player> enemies = Utils.filterNonNull(enemyPlayer, enemyChild);
+        List<Player> enemies = Utils.filterNonNull(enemy, enemyChild);
         if (enemies.isEmpty() || SkillUtils.isSkillCooldown(player.isChild)) {
             return List.of();
         }
 
-        for (Player enemy : enemies) {
-            if (Math.abs(player.currentPosition.col - enemy.currentPosition.col) <= Hammer.RANGE
-                    && Math.abs(player.currentPosition.row - enemy.currentPosition.row) <= Hammer.RANGE
-                    && SkillUtils.inHammerRange(player.currentPosition, enemy.currentPosition)
-                    && isSafeHammer(Utils.filterNonNull(player, teammate), new Hammer(enemy.currentPosition))) {
-                return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), player.isChild));
+        for (Player enemyPlayer : enemies) {
+            if (Math.abs(player.currentPosition.col - enemyPlayer.currentPosition.col) <= Hammer.RANGE
+                    && Math.abs(player.currentPosition.row - enemyPlayer.currentPosition.row) <= Hammer.RANGE
+                    && SkillUtils.inHammerRange(player.currentPosition, enemyPlayer.currentPosition)
+                    && isSafeHammer(Utils.filterNonNull(player, teammate), new Hammer(enemyPlayer.currentPosition))) {
+                return List.of(new Action(Action.USE_WEAPON, new Payload(enemyPlayer.currentPosition), player.isChild));
             }
         }
         return List.of();

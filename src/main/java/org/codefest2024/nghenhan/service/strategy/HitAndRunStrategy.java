@@ -2,6 +2,7 @@ package org.codefest2024.nghenhan.service.strategy;
 
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.service.usecase.*;
+import org.codefest2024.nghenhan.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,9 @@ public class HitAndRunStrategy implements Strategy {
     private final Dodge dodge = new Dodge();
     private final RandomRun randomRun = new RandomRun();
     private final FarmBrick farmBrick = new FarmBrick();
+    private final OptimalFarmBox optimalFarmBox = new OptimalFarmBox();
+    private final CollectSpoils collectSpoils = new CollectSpoils();
+    private final CollectWeapon collectWeapon = new CollectWeapon();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -25,9 +29,11 @@ public class HitAndRunStrategy implements Strategy {
         if (player != null) {
             if (!player.hasTransform) {
                 return findBadge.find(gameInfo, player);
-            } else if (enemy != null && !enemy.hasTransform) {
-                return farmBrick.farmBrick(mapInfo, player);
-            } else {
+            }
+//            else if (enemy != null && !enemy.hasTransform) {
+//                return farmBrick.farmBrick(mapInfo, player);
+//            }
+            else {
                 List<Order> orders = playerStrategy(mapInfo, player, child, enemy, enemyChild);
                 if (child != null) {
                     orders = new ArrayList<>(orders);
@@ -45,24 +51,49 @@ public class HitAndRunStrategy implements Strategy {
             return List.of(new Action(Action.MARRY_WIFE));
         }
 
-        List<Order> useSkillOrders = useSkill.useMountainSkillDirect(player, teammate, enemy, enemyChild);
+        List<Order> useSkillOrders = useSkill.useMountainSkillDirect(mapInfo, player, teammate, enemy, enemyChild);
         if (!useSkillOrders.isEmpty()) {
             return useSkillOrders;
         }
 
-        List<Order> runOrders = keepDistance.run(mapInfo, player, enemy);
-        if (!runOrders.isEmpty()) {
-            return runOrders;
+        List<Order> keepEnemiesDistanceOrders = keepDistance.keepEnemiesDistance(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
+        if (!keepEnemiesDistanceOrders.isEmpty()) {
+            return keepEnemiesDistanceOrders;
         }
 
-        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, enemy);
+//        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, enemy);
+//        if (!dodgeBombsOrders.isEmpty()) {
+//            return dodgeBombsOrders;
+//        }
+
+        List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
         if (!dodgeBombsOrders.isEmpty()) {
             return dodgeBombsOrders;
         }
 
-        List<Order> farmOrders = keepDistance.farm(mapInfo, player, enemy);
-        if (!farmOrders.isEmpty()) {
-            return farmOrders;
+        List<Order> collectWeaponOrders = collectWeapon.find(mapInfo, player, enemy, enemyChild);
+        if (!collectWeaponOrders.isEmpty()) {
+            return collectWeaponOrders;
+        }
+
+        List<Order> keepTeammateDistanceOrders = keepDistance.keepTeammateDistance(mapInfo, player, teammate);
+        if (!keepTeammateDistanceOrders.isEmpty()) {
+            return keepTeammateDistanceOrders;
+        }
+
+        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
+        if (!collectSpoilOrders.isEmpty()) {
+            return collectSpoilOrders;
+        }
+
+        List<Order> godFarmOrders = optimalFarmBox.findVer2(mapInfo, player);
+        if (!godFarmOrders.isEmpty()) {
+            return godFarmOrders;
+        }
+
+        List<Order> farmBrickOrders = farmBrick.farmBrick(mapInfo, player);
+        if (!farmBrickOrders.isEmpty()) {
+            return farmBrickOrders;
         }
 
         List<Order> randomRunOrders = randomRun.find(mapInfo, player);

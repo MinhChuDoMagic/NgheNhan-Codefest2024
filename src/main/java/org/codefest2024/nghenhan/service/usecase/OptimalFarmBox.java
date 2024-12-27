@@ -4,7 +4,6 @@ import org.codefest2024.nghenhan.service.finder.BombPlaceFinder;
 import org.codefest2024.nghenhan.service.finder.data.AStarNode;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.FinderUtils;
-import org.codefest2024.nghenhan.utils.SkillUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class OptimalFarmBox {
 
         if (bombPlaceNode != null
                 && bombPlaceNode.reconstructPath().isEmpty()
-                && !SkillUtils.isBombCooldown(player.delay, player.isChild)) {
+                && player.isChild ? mapInfo.childBombs.isEmpty() : mapInfo.playerBombs.isEmpty()) {
 
             List<Order> orders = new ArrayList<>();
             if (player.currentWeapon != 2) {

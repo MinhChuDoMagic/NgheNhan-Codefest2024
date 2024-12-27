@@ -117,15 +117,15 @@ public class KeepDistance {
     public List<Order> keepEnemiesDistance(MapInfo mapInfo, Player player, List<Player> enemies){
         for(Player enemy : enemies){
             if (enemy != null && CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition) < ENEMY_DANGEROUS_DISTANCE) {
-//                if(!SkillUtils.isBombCooldown(player.delay, player.isChild)
-//                        && !CalculateUtils.isNearBrick(mapInfo.map, player.currentPosition)){
-//                    List<Order> orders = new ArrayList<>();
-//                    if (player.currentWeapon != 2) {
-//                        orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
-//                    }
-//                    orders.add(new Dir(Dir.ACTION, player.isChild));
-//                    return orders;
-//                }
+                if(player.isChild ? mapInfo.childBombs.isEmpty() : mapInfo.playerBombs.isEmpty()
+                        && !CalculateUtils.isNearBrick(mapInfo.map, player.currentPosition)){
+                    List<Order> orders = new ArrayList<>();
+                    if (player.currentWeapon != 2) {
+                        orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
+                    }
+                    orders.add(new Dir(Dir.ACTION, player.isChild));
+                    return orders;
+                }
 
                 String dir = keepDistanceFinder.keepDistance(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size, ENEMY_SAFE_DISTANCE).reconstructPath();
                 if (!dir.isEmpty()) {

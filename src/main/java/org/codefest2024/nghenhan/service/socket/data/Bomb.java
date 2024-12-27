@@ -6,6 +6,9 @@ import java.util.Objects;
 
 public class Bomb extends Position {
     public static final double BOMB_TIME = 2.1;
+    public static final double STUN_TIME = 3;
+    public static final double STUN_COOLDOWN = 5;
+    public static final double BOMB_EXPLORE_TIME = 2;
 
     public String playerId;
     public int remainTime;

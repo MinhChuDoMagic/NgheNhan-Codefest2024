@@ -61,15 +61,15 @@ public class HitAndRunStrategy implements Strategy {
             return keepEnemiesDistanceOrders;
         }
 
-//        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, enemy);
-//        if (!dodgeBombsOrders.isEmpty()) {
-//            return dodgeBombsOrders;
-//        }
-
-        List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
+        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, enemy);
         if (!dodgeBombsOrders.isEmpty()) {
             return dodgeBombsOrders;
         }
+
+//        List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
+//        if (!dodgeBombsOrders.isEmpty()) {
+//            return dodgeBombsOrders;
+//        }
 
         List<Order> collectWeaponOrders = collectWeapon.find(mapInfo, player, enemy, enemyChild);
         if (!collectWeaponOrders.isEmpty()) {

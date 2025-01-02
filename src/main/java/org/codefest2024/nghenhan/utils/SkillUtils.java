@@ -93,8 +93,8 @@ public class SkillUtils {
     }
 
     public static boolean inHammerRange(Position curr, Position enemy) {
-        return Math.abs(curr.col - enemy.col) < 3 && Math.abs(curr.row - enemy.row) < 5 ||
-                Math.abs(curr.row - enemy.row) < 3 && Math.abs(curr.col - enemy.col) < 5;
+        return Math.abs(curr.col - enemy.col) < 3 && Math.abs(curr.row - enemy.row) < 4 ||
+                Math.abs(curr.row - enemy.row) < 3 && Math.abs(curr.col - enemy.col) < 4;
     }
 
     public static String windDirection(int[][] map, Position player, Position enemy) {

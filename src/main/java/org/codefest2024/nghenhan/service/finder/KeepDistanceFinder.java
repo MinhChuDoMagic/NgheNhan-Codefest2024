@@ -59,7 +59,7 @@ public class KeepDistanceFinder {
                     } else if (map[newRow][newCol] == MapInfo.BRICK) {
                         String currentCommand = currNode.commands.toString();
                         if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
-                            newCommands.append(move);
+                            newCommands.append(move).append(Dir.REDIRECT);
                         }
                         newCommands.append(Dir.ACTION);
                         newCost += BRICK_POINT; // 1s to destroy + 0.2s to move
@@ -111,7 +111,7 @@ public class KeepDistanceFinder {
                     } else if (map[newRow][newCol] == MapInfo.BRICK) {
                         String currentCommand = currNode.commands.toString();
                         if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
-                            newCommands.append(move);
+                            newCommands.append(move).append(Dir.REDIRECT);
                         }
                         newCommands.append(Dir.ACTION);
                         newCost += BRICK_POINT; // 1s to destroy + 0.2s to move
@@ -208,57 +208,7 @@ public class KeepDistanceFinder {
                     } else if (map[newRow][newCol] == MapInfo.BRICK) {
                         String currentCommand = currNode.commands.toString();
                         if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
-                            newCommands.append(move);
-                        }
-                        newCommands.append(Dir.ACTION);
-                        newCost += BRICK_POINT; // 1s to destroy + 0.2s to move
-                    }
-
-                    // Add move command
-                    newCommands.append(move);
-                    double heuristic = 16 - 1.0 * ENEMY_RATIO * CalculateUtils.manhattanDistance(new Position(newRow, newCol), enemy);
-                    pq.add(new AStarNode(newRow, newCol, newCost, heuristic, currNode, newCommands));
-                }
-            }
-        }
-
-        return new AStarNode(curr.row, curr.col, 0, 0, null, null);
-    }
-
-    public AStarNode keepTeammateDistance(int[][] map, Position curr, Position enemy, MapSize size, int distance) {
-        PriorityQueue<AStarNode> pq = new PriorityQueue<>(Comparator.comparingDouble(AStarNode::getF));
-        pq.add(new AStarNode(curr.row, curr.col, 0, 0, null, null));
-        boolean[][] visited = new boolean[size.rows][size.cols];
-        List<int[]> directions = CalculateUtils.getDirections();
-
-        while (!pq.isEmpty()) {
-            AStarNode currNode = pq.poll();
-            int row = currNode.row;
-            int col = currNode.col;
-
-            // If target is found
-            if (CalculateUtils.manhattanDistance(currNode, enemy) >= distance) {
-                return currNode;
-            }
-
-            if (visited[row][col]) continue;
-            visited[row][col] = true;
-
-            for (int[] dir : directions) {
-                int newRow = row + dir[0];
-                int newCol = col + dir[1];
-                String move = Integer.toString(dir[2]);
-
-                if (isRunPath(newRow, newCol, map, visited, size)) {
-                    double newCost = currNode.g;
-                    StringBuilder newCommands = new StringBuilder(currNode.commands);
-
-                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
-                        newCost += 1; // Empty cell
-                    } else if (map[newRow][newCol] == MapInfo.BRICK) {
-                        String currentCommand = currNode.commands.toString();
-                        if (!currentCommand.isEmpty() && !currentCommand.substring(currentCommand.length() - 1).equals(move)) {
-                            newCommands.append(move);
+                            newCommands.append(move).append(Dir.REDIRECT);
                         }
                         newCommands.append(Dir.ACTION);
                         newCost += BRICK_POINT; // 1s to destroy + 0.2s to move
@@ -324,7 +274,7 @@ public class KeepDistanceFinder {
         PriorityQueue<AStarNode> pq = new PriorityQueue<>(Comparator.comparingDouble(AStarNode::getF));
         pq.add(new AStarNode(curr.row, curr.col, 0, 0, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
-        List<int[]> directions = CalculateUtils.getDirections();
+        List<int[]> directions = CalculateUtils.getDirections(curr, enemy);
 
         while (!pq.isEmpty()) {
             AStarNode currNode = pq.poll();
@@ -350,14 +300,12 @@ public class KeepDistanceFinder {
 
                     if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
                         newCost += 1; // Empty cell
-                    } else if (map[newRow][newCol] == MapInfo.SPOIL) {
-                        newCost -= SPOIL_POINT;
                     }
 
                     // Add move command
                     newCommands.append(move);
                     double heuristic = 16 - 1.0 * ENEMY_RATIO * CalculateUtils.manhattanDistance(new Position(newRow, newCol), enemy);
-                    pq.add(new AStarNode(newRow, newCol, newCost, heuristic, currNode, newCommands));
+                    pq.add(new AStarNode(newRow, newCol, newCost, 0, currNode, newCommands));
                 }
             }
         }

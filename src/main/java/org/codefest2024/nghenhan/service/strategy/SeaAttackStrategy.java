@@ -6,9 +6,10 @@ import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.service.usecase.Dodge;
 import org.codefest2024.nghenhan.service.usecase.FarmBrick;
 import org.codefest2024.nghenhan.service.usecase.FindBadge;
-import org.codefest2024.nghenhan.utils.CalculateUtils;
+import org.codefest2024.nghenhan.utils.FinderUtils;
 import org.codefest2024.nghenhan.utils.SkillUtils;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,15 +51,19 @@ public class SeaAttackStrategy implements Strategy {
             return dodgeBombsOrders;
         }
 
-        if (enemy.isStun) {
-            InGameInfo.isEnemyStun = true;
+
+        if(enemy.isStun
+                && Instant.now().toEpochMilli() - InGameInfo.enemyLastStunedTime > (Bomb.STUN_TIME - Bomb.BOMB_EXPLORE_TIME) * 1000
+                && !SkillUtils.isBombCooldown(player.delay, player.isChild)) {
+            List<Order> orders = new ArrayList<>();
+            if (player.currentWeapon != 2) {
+                orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));
+            }
+            orders.add(new Dir(Dir.ACTION, player.isChild));
+            return orders;
         }
 
-        if (!enemy.isStun && !SkillUtils.isSkillCooldown(player.isChild) && InGameInfo.isEnemyStun) {
-            InGameInfo.isEnemyStun = false;
-            return List.of(new Action(Action.USE_WEAPON, player.isChild));
-        }
         String dir = aStarFinder.find(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size);
-        return List.of(new Dir(CalculateUtils.processDirWithBrick(dir)));
+        return FinderUtils.processDirWithBrick(dir, player.isChild, player.currentWeapon);
     }
 }

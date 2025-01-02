@@ -20,5 +20,6 @@ public class InGameInfo {
     public static int playerType = 0;
     public static int enemyType = 0;
 
-    public static boolean isEnemyStun = false;
+    public static long enemyLastStunedTime = 0;
+    public static long enemyChildLastStunedTime = 0;
 }

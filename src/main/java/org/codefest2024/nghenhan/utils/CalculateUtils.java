@@ -20,6 +20,41 @@ public class CalculateUtils {
             new int[]{1, 0, Integer.parseInt(Dir.DOWN)}
     );
 
+    public static List<int[]> getDirections(Position curr, Position enemy){
+        List<int[]> sortedDirections = new ArrayList<>(directions);
+
+        // Sort directions based on Manhattan distance and higher axis priority
+        Collections.sort(sortedDirections, (dir1, dir2) -> {
+            // Calculate new positions
+            int newRow1 = curr.row + dir1[0];
+            int newCol1 = curr.col + dir1[1];
+            int newRow2 = curr.row + dir2[0];
+            int newCol2 = curr.col + dir2[1];
+
+            // Calculate Manhattan distances
+            int manhattan1 = Math.abs(enemy.row - newRow1) + Math.abs(enemy.col - newCol1);
+            int manhattan2 = Math.abs(enemy.row - newRow2) + Math.abs(enemy.col - newCol2);
+
+            // Compare Manhattan distances
+            if (manhattan1 != manhattan2) {
+                return Integer.compare(manhattan2, manhattan1); // Prioritize higher Manhattan distance
+            }
+
+            // If Manhattan distances are equal, compare higher axis priority
+            int verticalDist1 = Math.abs(enemy.row - newRow1);
+            int horizontalDist1 = Math.abs(enemy.col - newCol1);
+            int verticalDist2 = Math.abs(enemy.row - newRow2);
+            int horizontalDist2 = Math.abs(enemy.col - newCol2);
+
+            // Prioritize higher vertical or horizontal distance
+            int higherAxis1 = Math.max(verticalDist1, horizontalDist1);
+            int higherAxis2 = Math.max(verticalDist2, horizontalDist2);
+            return Integer.compare(higherAxis2, higherAxis1); // Reverse comparison for higher priority
+        });
+
+        return sortedDirections;
+    }
+
     public static List<int[]> getDirections() {
         List<int[]> randomDirections = new ArrayList<>(directions);
         Collections.shuffle(randomDirections);

@@ -40,7 +40,8 @@ public class TickTackHandler {
         updateMap(mapInfo);
         updateEnemyType(mapInfo.enemy);
         updateSkillData(mapInfo.weaponHammers, mapInfo.weaponWinds);
-        updateWeaponPlacess(mapInfo);
+        updateWeaponPlaces(mapInfo);
+        updateStunTime(mapInfo.enemy, mapInfo.enemyChild);
     }
 
     private void updatePlayers(MapInfo mapInfo) {
@@ -63,7 +64,7 @@ public class TickTackHandler {
         }
     }
 
-    private void updateWeaponPlacess(MapInfo mapInfo) {
+    private void updateWeaponPlaces(MapInfo mapInfo) {
         for (WeaponPlace weaponPlace : mapInfo.weaponPlaces) {
             if (weaponPlace.playerId.startsWith(Constants.KEY_TEAM)) {
                 if (weaponPlace.playerId.endsWith(Constants.KEY_CHILD)) {
@@ -78,6 +79,17 @@ public class TickTackHandler {
                     mapInfo.enemyWeaponPlace = weaponPlace;
                 }
             }
+        }
+    }
+
+    private void updateStunTime(Player enemy, Player enemyChild) {
+        long currentTime = Instant.now().toEpochMilli();
+        if(enemy != null && enemy.isStun && currentTime - InGameInfo.enemyLastStunedTime > Bomb.STUN_COOLDOWN * 1000){
+            InGameInfo.enemyLastStunedTime = currentTime;
+        }
+
+        if(enemyChild != null && enemyChild.isStun && currentTime - InGameInfo.enemyChildLastStunedTime > Bomb.STUN_COOLDOWN * 1000){
+            InGameInfo.enemyChildLastStunedTime = currentTime;
         }
     }
 

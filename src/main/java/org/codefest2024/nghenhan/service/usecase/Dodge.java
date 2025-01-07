@@ -39,8 +39,8 @@ public class Dodge {
                     .findSafe(mapInfo.map, myPlayer.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds)
                     .reconstructPath();
             if (dir.isEmpty()) {
-                String oneSafeStep = bfsFinder.oneSafeStep(mapInfo.map, myPlayer.currentPosition, dangerousBombs, dangerousHammers, dangerousWinds);
-                orders.add(new Dir(oneSafeStep, myPlayer.isChild));
+//                String oneSafeStep = bfsFinder.oneSafeStep(mapInfo.map, myPlayer.currentPosition, dangerousBombs, dangerousHammers, dangerousWinds);
+//                orders.add(new Dir(oneSafeStep, myPlayer.isChild));
             } else {
                 orders.add(new Dir(dir, myPlayer.isChild));
             }

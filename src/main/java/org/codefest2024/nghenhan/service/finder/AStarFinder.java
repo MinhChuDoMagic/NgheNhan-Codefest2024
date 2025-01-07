@@ -14,6 +14,8 @@ import java.util.PriorityQueue;
 public class AStarFinder {
     private static AStarFinder instance;
 
+    private final double BRICK_POINT = 8.09;
+
     private AStarFinder() {
     }
 
@@ -60,7 +62,7 @@ public class AStarFinder {
                             newCommands.append(move).append(Dir.REDIRECT);
                         }
                         newCommands.append(Dir.ACTION);
-                        newCost += 6; // 1s to destroy + 0.2s to move
+                        newCost += BRICK_POINT; // 1s to destroy + 0.2s to move
                     }
 
                     // Add move command
@@ -109,7 +111,7 @@ public class AStarFinder {
                             newCommands.append(move).append(Dir.REDIRECT);
                         }
                         newCommands.append(Dir.ACTION);
-                        newCost += 6; // 1s to destroy + 0.2s to move
+                        newCost += BRICK_POINT; // 1s to destroy + 0.2s to move
                     }
 
                     // Add move command

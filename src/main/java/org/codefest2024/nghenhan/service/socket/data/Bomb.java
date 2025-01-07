@@ -15,6 +15,15 @@ public class Bomb extends Position {
     public int power;
     public long createdAt;
 
+    public Bomb() {
+    }
+
+    public Bomb(Position position, int power, long createdAt) {
+        super(position.row, position.col);
+        this.power = power;
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return new Gson().toJson(this);

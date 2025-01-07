@@ -53,28 +53,36 @@ public class PowerFarmStrategy implements Strategy {
 
         List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
         if (!dodgeBombsOrders.isEmpty()) {
+            System.out.println("--Dodge--");
+            dodgeBombsOrders.forEach(System.out::println);
             return dodgeBombsOrders;
         }
 
         List<Order> useSkillOrders = useSkill.find(mapInfo, player, teammate, enemy, enemyChild);
         if (!useSkillOrders.isEmpty()) {
+            System.out.println("--Use skill--");
+            useSkillOrders.forEach(System.out::println);
             return useSkillOrders;
         }
 
         List<Order> collectWeaponOrders = collectWeapon.find(mapInfo, player, enemy, enemyChild);
         if (!collectWeaponOrders.isEmpty()) {
+            System.out.println("--Collect weapon-");
+            useSkillOrders.forEach(System.out::println);
             return collectWeaponOrders;
         }
 
         List<Order> keepTeammateDistanceOrders = keepDistance.keepTeammateDistance(mapInfo, player, teammate);
         if (!keepTeammateDistanceOrders.isEmpty()) {
+            System.out.println("--Keep distance--");
+            keepTeammateDistanceOrders.forEach(System.out::println);
             return keepTeammateDistanceOrders;
         }
 
-        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
-        if (!collectSpoilOrders.isEmpty()) {
-            return collectSpoilOrders;
-        }
+//        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
+//        if (!collectSpoilOrders.isEmpty()) {
+//            return collectSpoilOrders;
+//        }
 
         List<Order> godFarmOrders = optimalFarmBox.findVer2(mapInfo, player);
         if (!godFarmOrders.isEmpty()) {
@@ -83,11 +91,15 @@ public class PowerFarmStrategy implements Strategy {
 
         List<Order> farmBrickOrders = farmBrick.farmBrick(mapInfo, player);
         if (!farmBrickOrders.isEmpty()) {
+            System.out.println("--Farm brick--");
+            farmBrickOrders.forEach(System.out::println);
             return farmBrickOrders;
         }
 
         List<Order> randomRunOrders = randomRun.find(mapInfo, player);
         if (!randomRunOrders.isEmpty()) {
+            System.out.println("--Run ramdom--");
+            randomRunOrders.forEach(System.out::println);
             return randomRunOrders;
         }
 

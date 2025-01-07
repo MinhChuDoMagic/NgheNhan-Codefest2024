@@ -11,7 +11,6 @@ import java.util.PriorityQueue;
 
 public class PowerFarmFinder {
     private static PowerFarmFinder instance;
-    private final double SPOIL_POINT = 5.11;
     private final double BRICK_POINT = 8.09;
 
     private PowerFarmFinder() {
@@ -104,7 +103,9 @@ public class PowerFarmFinder {
                     double newCost = currNode.g;
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
 
-                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
+                    if (map[newRow][newCol] == MapInfo.BLANK
+                            || map[newRow][newCol] == MapInfo.DESTROYED
+                            || map[newRow][newCol] == MapInfo.SPOIL) {
                         newCost += 1; // Empty cell
                     } else if (map[newRow][newCol] == MapInfo.BRICK || map[newRow][newCol] == MapInfo.ENEMY) {
                         String currentCommand = currNode.commands.toString();
@@ -154,7 +155,9 @@ public class PowerFarmFinder {
                     double newCost = currNode.g;
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
 
-                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
+                    if (map[newRow][newCol] == MapInfo.BLANK
+                            || map[newRow][newCol] == MapInfo.DESTROYED
+                            || map[newRow][newCol] == MapInfo.SPOIL) {
                         newCost += 1; // Empty cell
                     } else if (map[newRow][newCol] == MapInfo.BRICK || map[newRow][newCol] == MapInfo.ENEMY) {
                         String currentCommand = currNode.commands.toString();

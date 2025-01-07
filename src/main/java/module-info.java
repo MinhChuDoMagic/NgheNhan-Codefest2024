@@ -8,6 +8,8 @@ module org.codefest.nghenhan {
     requires json;
     requires static lombok;
     requires java.desktop;
+    requires org.apache.logging.log4j;
+    requires org.apache.logging.log4j.core;
 
     opens org.codefest2024.nghenhan to javafx.fxml;
     exports org.codefest2024.nghenhan;

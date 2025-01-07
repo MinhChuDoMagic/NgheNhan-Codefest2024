@@ -1,15 +1,12 @@
 package org.codefest2024.nghenhan.service.finder;
 
 import org.codefest2024.nghenhan.service.finder.data.AStarNode;
-import org.codefest2024.nghenhan.service.socket.data.Dir;
-import org.codefest2024.nghenhan.service.socket.data.MapInfo;
-import org.codefest2024.nghenhan.service.socket.data.MapSize;
-import org.codefest2024.nghenhan.service.socket.data.Position;
+import org.codefest2024.nghenhan.service.finder.data.Node;
+import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
+import org.codefest2024.nghenhan.utils.SkillUtils;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class BombPlaceFinder {
     private static BombPlaceFinder instance;
@@ -58,7 +55,9 @@ public class BombPlaceFinder {
                     double newCost = currNode.g;
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
 
-                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
+                    if (map[newRow][newCol] == MapInfo.BLANK
+                            || map[newRow][newCol] == MapInfo.DESTROYED
+                            || map[newRow][newCol] == MapInfo.SPOIL) {
                         newCost += 1; // Empty cell
                     } else if (map[newRow][newCol] == MapInfo.BRICK) {
                         String currentCommand = currNode.commands.toString();
@@ -78,6 +77,41 @@ public class BombPlaceFinder {
         }
 
         return optimalNode;
+    }
+
+    // BFS
+    public Node findSafe(int[][] map, Position curr, Bomb bomb, MapSize size) {
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(new Node(curr.row, curr.col, null, null));
+        boolean[][] visited = new boolean[size.rows][size.cols];
+        List<int[]> directions = CalculateUtils.getDirections();
+
+        while (!queue.isEmpty()) {
+            Node currNode = queue.poll();
+
+            int row = currNode.row;
+            int col = currNode.col;
+
+            if (!SkillUtils.isHitBomb(currNode, bomb)) {
+                return currNode;
+            }
+
+            if (visited[row][col]) continue;
+            visited[row][col] = true;
+
+            for (int[] dir : directions) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+
+                if (isPath(newRow, newCol, map, visited, size)) {
+                    StringBuilder newCommands = new StringBuilder(currNode.commands);
+                    newCommands.append(dir[2]);
+
+                    queue.add(new Node(newRow, newCol, currNode, newCommands));
+                }
+            }
+        }
+        return null;
     }
 
     private long calculateBoxesDestroyed(int[][] map, Position bomb, int power, MapSize size) {
@@ -122,5 +156,10 @@ public class BombPlaceFinder {
                 && map[row][col] != MapInfo.HAMMER_EXPLODE
                 && map[row][col] != MapInfo.WIND
                 && map[row][col] != MapInfo.CAPTURED_BADGE;
+    }
+
+    private boolean isPath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
+        return isValid(row, col, map, visited, size)
+                && map[row][col] != MapInfo.BRICK;
     }
 }

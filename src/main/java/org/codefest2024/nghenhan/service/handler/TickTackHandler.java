@@ -42,6 +42,27 @@ public class TickTackHandler {
         updateSkillData(mapInfo.weaponHammers, mapInfo.weaponWinds);
         updateWeaponPlaces(mapInfo);
         updateStunTime(mapInfo.enemy, mapInfo.enemyChild);
+        checkIsHit(mapInfo.player);
+        updatePosition(mapInfo.player, mapInfo.child);
+    }
+
+    private void updatePosition(Player player, Player child) {
+        if (player != null){
+            InGameInfo.playerLastPosition = InGameInfo.playerCurrentPosition;
+            InGameInfo.playerCurrentPosition = player.currentPosition;
+        }
+
+        if (child != null){
+            InGameInfo.childLastPosition = InGameInfo.childCurrentPosition;
+            InGameInfo.childCurrentPosition = child.currentPosition;
+        }
+    }
+
+    private void checkIsHit(Player player) {
+        if (player != null && player.lives != InGameInfo.playerLives) {
+            InGameInfo.playerLives = player.lives;
+            System.err.println("PLAYER IS HIT");
+        }
     }
 
     private void updatePlayers(MapInfo mapInfo) {
@@ -84,11 +105,11 @@ public class TickTackHandler {
 
     private void updateStunTime(Player enemy, Player enemyChild) {
         long currentTime = Instant.now().toEpochMilli();
-        if(enemy != null && enemy.isStun && currentTime - InGameInfo.enemyLastStunedTime > Bomb.STUN_COOLDOWN * 1000){
+        if (enemy != null && enemy.isStun && currentTime - InGameInfo.enemyLastStunedTime > Bomb.STUN_COOLDOWN * 1000) {
             InGameInfo.enemyLastStunedTime = currentTime;
         }
 
-        if(enemyChild != null && enemyChild.isStun && currentTime - InGameInfo.enemyChildLastStunedTime > Bomb.STUN_COOLDOWN * 1000){
+        if (enemyChild != null && enemyChild.isStun && currentTime - InGameInfo.enemyChildLastStunedTime > Bomb.STUN_COOLDOWN * 1000) {
             InGameInfo.enemyChildLastStunedTime = currentTime;
         }
     }
@@ -97,7 +118,7 @@ public class TickTackHandler {
         mapInfo.bombs = Stream
                 .concat(
                         mapInfo.bombs.stream(),
-                        InGameInfo.lastBombs.stream().filter(bomb -> Instant.now().toEpochMilli() - bomb.createdAt < Bomb.BOMB_TIME*1000)
+                        InGameInfo.lastBombs.stream().filter(bomb -> Instant.now().toEpochMilli() - bomb.createdAt < Bomb.BOMB_TIME * 1000)
                 )
                 .distinct()
                 .toList();
@@ -233,7 +254,9 @@ public class TickTackHandler {
                 break;
             }
 
-            if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
+            if (map[newRow][newCol] == MapInfo.BLANK
+                    || map[newRow][newCol] == MapInfo.DESTROYED
+                    || map[newRow][newCol] == MapInfo.SPOIL) {
                 map[newRow][newCol] = MapInfo.BOMB_EXPLODE;
             }
         }
@@ -251,7 +274,9 @@ public class TickTackHandler {
                     continue;
                 }
 
-                if (map[row][col] == MapInfo.BLANK || map[row][col] == MapInfo.DESTROYED) {
+                if (map[row][col] == MapInfo.BLANK
+                        || map[row][col] == MapInfo.DESTROYED
+                        || map[row][col] == MapInfo.SPOIL) {
                     map[row][col] = MapInfo.HAMMER_EXPLODE;
                 }
             }

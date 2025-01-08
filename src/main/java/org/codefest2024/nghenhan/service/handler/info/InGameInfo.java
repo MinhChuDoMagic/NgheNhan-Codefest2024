@@ -21,12 +21,12 @@ public class InGameInfo {
     public static int playerType = 0;
     public static int enemyType = 0;
 
-    public static long enemyLastStunedTime = 0;
-    public static long enemyChildLastStunedTime = 0;
+    public static long enemyLastStunTime = 0;
+    public static long enemyChildLastStunTime = 0;
 
     public static int playerLives = 0;
-    public static Position playerCurrentPosition;
-    public static Position playerLastPosition;
-    public static Position childCurrentPosition;
-    public static Position childLastPosition;
+    public static Position playerCurrentPosition = new Position(1,1);
+    public static Position playerLastPosition = new Position(1,1);
+    public static Position childCurrentPosition = new Position(1,1);
+    public static Position childLastPosition = new Position(1,1);
 }

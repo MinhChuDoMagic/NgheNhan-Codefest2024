@@ -30,9 +30,11 @@ public class SeaAttackStrategy implements Strategy {
         if (player != null) {
             if (!player.hasTransform) {
                 return findBadge.find(gameInfo, player);
-            } else if (enemy != null && !enemy.hasTransform) {
-                return farmBrick.farmBrick(mapInfo, player);
-            } else {
+            }
+//            else if (enemy != null && !enemy.hasTransform) {
+//                return farmBrick.farmBrick(mapInfo, player);
+//            }
+            else {
                 List<Order> orders = playerStrategy(mapInfo, player, enemy);
                 if (child != null) {
                     orders = new ArrayList<>(orders);
@@ -53,7 +55,7 @@ public class SeaAttackStrategy implements Strategy {
 
 
         if(enemy.isStun
-                && Instant.now().toEpochMilli() - InGameInfo.enemyLastStunedTime > (Bomb.STUN_TIME - Bomb.BOMB_EXPLORE_TIME) * 1000
+                && Instant.now().toEpochMilli() - InGameInfo.enemyLastStunTime > (Bomb.STUN_TIME - Bomb.BOMB_EXPLORE_TIME) * 1000
                 && !SkillUtils.isBombCooldown(player.delay, player.isChild)) {
             List<Order> orders = new ArrayList<>();
             if (player.currentWeapon != 2) {

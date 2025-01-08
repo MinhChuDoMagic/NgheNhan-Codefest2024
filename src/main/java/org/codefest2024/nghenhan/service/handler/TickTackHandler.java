@@ -47,12 +47,12 @@ public class TickTackHandler {
     }
 
     private void updatePosition(Player player, Player child) {
-        if (player != null){
+        if (player != null && !InGameInfo.playerCurrentPosition.equals(player.currentPosition)) {
             InGameInfo.playerLastPosition = InGameInfo.playerCurrentPosition;
             InGameInfo.playerCurrentPosition = player.currentPosition;
         }
 
-        if (child != null){
+        if (child != null && !InGameInfo.childCurrentPosition.equals(child.currentPosition)) {
             InGameInfo.childLastPosition = InGameInfo.childCurrentPosition;
             InGameInfo.childCurrentPosition = child.currentPosition;
         }
@@ -105,12 +105,12 @@ public class TickTackHandler {
 
     private void updateStunTime(Player enemy, Player enemyChild) {
         long currentTime = Instant.now().toEpochMilli();
-        if (enemy != null && enemy.isStun && currentTime - InGameInfo.enemyLastStunedTime > Bomb.STUN_COOLDOWN * 1000) {
-            InGameInfo.enemyLastStunedTime = currentTime;
+        if (enemy != null && enemy.isStun && currentTime - InGameInfo.enemyLastStunTime > Bomb.STUN_COOLDOWN * 1000) {
+            InGameInfo.enemyLastStunTime = currentTime;
         }
 
-        if (enemyChild != null && enemyChild.isStun && currentTime - InGameInfo.enemyChildLastStunedTime > Bomb.STUN_COOLDOWN * 1000) {
-            InGameInfo.enemyChildLastStunedTime = currentTime;
+        if (enemyChild != null && enemyChild.isStun && currentTime - InGameInfo.enemyChildLastStunTime > Bomb.STUN_COOLDOWN * 1000) {
+            InGameInfo.enemyChildLastStunTime = currentTime;
         }
     }
 

@@ -8,7 +8,6 @@ import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.FinderUtils;
 import org.codefest2024.nghenhan.utils.SkillUtils;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +79,7 @@ public class OptimalFarmBox {
 
     public boolean isSafeBombPlace(MapInfo mapInfo, Player player) {
         Node safeNode = bombPlaceFinder
-                .findSafe(mapInfo.map, player.currentPosition, new Bomb(player.currentPosition, player.power, Instant.now().toEpochMilli()), mapInfo.size);
+                .findSafe(mapInfo.map, player.currentPosition, new Bomb(player.currentPosition, player.power), mapInfo.size);
 
         return !CalculateUtils.isNearBombExplored(mapInfo.map, player.currentPosition)
                 && safeNode != null

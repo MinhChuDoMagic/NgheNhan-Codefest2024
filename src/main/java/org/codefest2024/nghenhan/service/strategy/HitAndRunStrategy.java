@@ -18,6 +18,7 @@ public class HitAndRunStrategy implements Strategy {
     private final OptimalFarmBox optimalFarmBox = new OptimalFarmBox();
     private final CollectSpoils collectSpoils = new CollectSpoils();
     private final CollectWeapon collectWeapon = new CollectWeapon();
+    private final StunAndBomb stunAndBomb = new StunAndBomb();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -48,7 +49,7 @@ public class HitAndRunStrategy implements Strategy {
     }
 
     private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
-        Player nearestEnemy = nearestEnemy(player, enemy, enemyChild);
+        Player nearestEnemy = CalculateUtils.nearestEnemy(player, enemy, enemyChild);
 
         if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemy != null) {
             return List.of(new Action(Action.MARRY_WIFE));
@@ -68,11 +69,17 @@ public class HitAndRunStrategy implements Strategy {
             return keepEnemiesDistanceOrders;
         }
 
-        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, nearestEnemy);
+        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, enemy, enemyChild);
         if (!dodgeBombsOrders.isEmpty()) {
             System.out.println("--Dodge--");
             dodgeBombsOrders.forEach(System.out::println);
             return dodgeBombsOrders;
+        }
+        List<Order> stunAndBombOrders = stunAndBomb.findAndBomb(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
+        if (!stunAndBombOrders.isEmpty()) {
+            System.out.println("--Stun and Bomb--");
+            stunAndBombOrders.forEach(System.out::println);
+            return stunAndBombOrders;
         }
 
 //        List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
@@ -104,7 +111,7 @@ public class HitAndRunStrategy implements Strategy {
             return godFarmOrders;
         }
 
-        List<Order> farmBrickOrders = farmBrick.farmBrick(mapInfo, player);
+        List<Order> farmBrickOrders = farmBrick.farmBrick(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
         if (!farmBrickOrders.isEmpty()) {
             System.out.println("--Farm brick--");
             farmBrickOrders.forEach(System.out::println);
@@ -119,24 +126,5 @@ public class HitAndRunStrategy implements Strategy {
         }
 
         return List.of();
-    }
-
-    private Player nearestEnemy(Player player, Player enemy, Player enemyChild) {
-        if (enemy == null) {
-            return enemyChild;
-        }
-
-        if (enemyChild == null) {
-            return enemy;
-        }
-
-        int enemyDistance = CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition);
-        int enemyChildDistance = CalculateUtils.manhattanDistance(player.currentPosition, enemyChild.currentPosition);
-
-        if (enemyChildDistance < 12 && enemyDistance < 12) {
-            return enemy;
-        }
-
-        return enemyChildDistance < enemyDistance ? enemyChild : enemy;
     }
 }

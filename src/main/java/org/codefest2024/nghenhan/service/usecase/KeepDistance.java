@@ -5,6 +5,7 @@ import org.codefest2024.nghenhan.service.finder.data.AStarNode;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.FinderUtils;
+import org.codefest2024.nghenhan.utils.SkillUtils;
 import org.codefest2024.nghenhan.utils.constant.Constants;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class KeepDistance {
 
     private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
     private final GodFarmBox godFarmBox = new GodFarmBox();
+    private final OptimalFarmBox optimalFarmBox = new OptimalFarmBox();
 
     public List<Order> farm(MapInfo mapInfo, Player player, Player enemy) {
 
@@ -103,7 +105,7 @@ public class KeepDistance {
         return List.of();
     }
 
-    public List<Order> keepTeammateDistance(MapInfo mapInfo, Player player, Player teammate){
+    public List<Order> keepTeammateDistance(MapInfo mapInfo, Player player, Player teammate) {
         if (player.isChild && teammate != null && CalculateUtils.manhattanDistance(player.currentPosition, teammate.currentPosition) < TEAMMATE_DANGEROUS_DISTANCE) {
             String dir = keepDistanceFinder.keepDistance(mapInfo.map, player.currentPosition, teammate.currentPosition, mapInfo.size, TEAMMATE_SAFE_DISTANCE).reconstructPath();
             if (!dir.isEmpty()) {
@@ -114,11 +116,12 @@ public class KeepDistance {
         return List.of();
     }
 
-    public List<Order> keepEnemiesDistance(MapInfo mapInfo, Player player, List<Player> enemies){
-        for(Player enemy : enemies){
+    public List<Order> keepEnemiesDistance(MapInfo mapInfo, Player player, List<Player> enemies) {
+        for (Player enemy : enemies) {
             if (enemy != null && CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition) < ENEMY_DANGEROUS_DISTANCE) {
-                if(player.isChild ? mapInfo.childBombs.isEmpty() : mapInfo.playerBombs.isEmpty()
-                        && !CalculateUtils.isNearBrick(mapInfo.map, player.currentPosition)){
+                if (!SkillUtils.isBombCooldown(player.delay, player.isChild)
+                        && optimalFarmBox.isSafeBombPlace(mapInfo, player)
+                        && !CalculateUtils.isNearBrick(mapInfo.map, player.currentPosition)) {
                     List<Order> orders = new ArrayList<>();
                     if (player.currentWeapon != 2) {
                         orders.add(new Action(Action.SWITCH_WEAPON, player.isChild));

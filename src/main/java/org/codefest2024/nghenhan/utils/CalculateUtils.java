@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CalculateUtils {
     private CalculateUtils() {
@@ -20,7 +21,18 @@ public class CalculateUtils {
             new int[]{1, 0, Integer.parseInt(Dir.DOWN)}
     );
 
-    public static List<int[]> getDirections(Position curr, Position enemy){
+    static {
+        Collections.shuffle(directions);
+    }
+
+    private static final List<int[]> crossDirections = Arrays.asList(
+            new int[]{-1, -1},
+            new int[]{-1, 1},
+            new int[]{1, -1},
+            new int[]{1, 1}
+    );
+
+    public static List<int[]> getDirections(Position curr, Position enemy) {
         List<int[]> sortedDirections = new ArrayList<>(directions);
 
         // Sort directions based on Manhattan distance and higher axis priority
@@ -56,9 +68,9 @@ public class CalculateUtils {
     }
 
     public static List<int[]> getDirections() {
-        List<int[]> randomDirections = new ArrayList<>(directions);
-        Collections.shuffle(randomDirections);
-        return randomDirections;
+//        List<int[]> randomDirections = new ArrayList<>(directions);
+//        Collections.shuffle(randomDirections);
+        return directions;
     }
 
     public static int manhattanDistance(Position curr, Position des) {
@@ -105,7 +117,12 @@ public class CalculateUtils {
     }
 
     public static boolean isNearBrick(int[][] map, Position curr) {
-        return directions.stream()
+        return Stream.concat(directions.stream(), crossDirections.stream())
+                .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BRICK);
+    }
+
+    public static boolean isNearBombExplored(int[][] map, Position curr) {
+        return Stream.concat(directions.stream(), crossDirections.stream())
                 .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BRICK);
     }
 }

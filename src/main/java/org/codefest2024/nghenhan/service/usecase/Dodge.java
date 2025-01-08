@@ -128,9 +128,9 @@ public class Dodge {
                 .toList();
 
         if (!dangerousBombs.isEmpty() || !dangerousHammers.isEmpty() || !dangerousWinds.isEmpty()) {
-            String dir = enemy != null
-                    ? keepDistanceFinder.findSafe(mapInfo.map, myPlayer.currentPosition, enemy.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath()
-                    : bfsFinder.findSafe(mapInfo.map, myPlayer.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath();
+            String dir = enemy == null || CalculateUtils.manhattanDistance(myPlayer.currentPosition, enemy.currentPosition) > 12
+                    ? bfsFinder.findSafe(mapInfo.map, myPlayer.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath()
+                    : keepDistanceFinder.findSafe(mapInfo.map, myPlayer.currentPosition, enemy.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath();
             if (dir.isEmpty()) {
 //                String oneSafeStep = bfsFinder.oneSafeStep(mapInfo.map, myPlayer.currentPosition, dangerousBombs, dangerousHammers, dangerousWinds);
 //                return List.of(new Dir(oneSafeStep, myPlayer.isChild));

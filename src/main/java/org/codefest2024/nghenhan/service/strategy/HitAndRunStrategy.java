@@ -2,6 +2,7 @@ package org.codefest2024.nghenhan.service.strategy;
 
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.service.usecase.*;
+import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.Utils;
 
 import java.util.ArrayList;
@@ -47,22 +48,30 @@ public class HitAndRunStrategy implements Strategy {
     }
 
     private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
+        Player nearestEnemy = nearestEnemy(player, enemy, enemyChild);
+
         if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemy != null) {
             return List.of(new Action(Action.MARRY_WIFE));
         }
 
         List<Order> useSkillOrders = useSkill.useMountainSkillDirect(mapInfo, player, teammate, enemy, enemyChild);
         if (!useSkillOrders.isEmpty()) {
+            System.out.println("--Use skill--");
+            useSkillOrders.forEach(System.out::println);
             return useSkillOrders;
         }
 
         List<Order> keepEnemiesDistanceOrders = keepDistance.keepEnemiesDistance(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
         if (!keepEnemiesDistanceOrders.isEmpty()) {
+            System.out.println("--Keep enemy distance--");
+            keepEnemiesDistanceOrders.forEach(System.out::println);
             return keepEnemiesDistanceOrders;
         }
 
-        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, enemy);
+        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, nearestEnemy);
         if (!dodgeBombsOrders.isEmpty()) {
+            System.out.println("--Dodge--");
+            dodgeBombsOrders.forEach(System.out::println);
             return dodgeBombsOrders;
         }
 
@@ -73,18 +82,22 @@ public class HitAndRunStrategy implements Strategy {
 
         List<Order> collectWeaponOrders = collectWeapon.find(mapInfo, player, enemy, enemyChild);
         if (!collectWeaponOrders.isEmpty()) {
+            System.out.println("--Collect weapon-");
+            useSkillOrders.forEach(System.out::println);
             return collectWeaponOrders;
         }
 
         List<Order> keepTeammateDistanceOrders = keepDistance.keepTeammateDistance(mapInfo, player, teammate);
         if (!keepTeammateDistanceOrders.isEmpty()) {
+            System.out.println("--Keep teammate distance--");
+            keepTeammateDistanceOrders.forEach(System.out::println);
             return keepTeammateDistanceOrders;
         }
 
-        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
-        if (!collectSpoilOrders.isEmpty()) {
-            return collectSpoilOrders;
-        }
+//        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
+//        if (!collectSpoilOrders.isEmpty()) {
+//            return collectSpoilOrders;
+//        }
 
         List<Order> godFarmOrders = optimalFarmBox.findVer2(mapInfo, player);
         if (!godFarmOrders.isEmpty()) {
@@ -93,14 +106,37 @@ public class HitAndRunStrategy implements Strategy {
 
         List<Order> farmBrickOrders = farmBrick.farmBrick(mapInfo, player);
         if (!farmBrickOrders.isEmpty()) {
+            System.out.println("--Farm brick--");
+            farmBrickOrders.forEach(System.out::println);
             return farmBrickOrders;
         }
 
         List<Order> randomRunOrders = randomRun.find(mapInfo, player);
         if (!randomRunOrders.isEmpty()) {
+            System.out.println("--Run ramdom--");
+            randomRunOrders.forEach(System.out::println);
             return randomRunOrders;
         }
 
         return List.of();
+    }
+
+    private Player nearestEnemy(Player player, Player enemy, Player enemyChild) {
+        if (enemy == null) {
+            return enemyChild;
+        }
+
+        if (enemyChild == null) {
+            return enemy;
+        }
+
+        int enemyDistance = CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition);
+        int enemyChildDistance = CalculateUtils.manhattanDistance(player.currentPosition, enemyChild.currentPosition);
+
+        if (enemyChildDistance < 12 && enemyDistance < 12) {
+            return enemy;
+        }
+
+        return enemyChildDistance < enemyDistance ? enemyChild : enemy;
     }
 }

@@ -82,17 +82,8 @@ public class OptimalFarmBox {
         Node safeNode = bombPlaceFinder
                 .findSafe(mapInfo.map, player.currentPosition, new Bomb(player.currentPosition, player.power, Instant.now().toEpochMilli()), mapInfo.size);
 
-        return !isNearBombExplored(mapInfo.map, player)
+        return !CalculateUtils.isNearBombExplored(mapInfo.map, player.currentPosition)
                 && safeNode != null
                 && safeNode.reconstructPath().length() <= 2;
-    }
-
-    public boolean isNearBombExplored(int[][] map, Player player) {
-        int row = player.currentPosition.row;
-        int col = player.currentPosition.col;
-        return CalculateUtils.getDirections().stream().anyMatch(dir ->
-                map[row + dir[0]][col + dir[1]] == MapInfo.BOMB_EXPLODE
-                        || map[row + dir[0]][col + dir[1]] == MapInfo.HAMMER_EXPLODE
-                        || map[row + dir[0]][col + dir[1]] == MapInfo.WIND);
     }
 }

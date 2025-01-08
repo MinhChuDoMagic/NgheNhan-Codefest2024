@@ -1,13 +1,12 @@
 package org.codefest2024.nghenhan.service.finder;
 
 import org.codefest2024.nghenhan.service.finder.data.AStarNode;
+import org.codefest2024.nghenhan.service.finder.data.Node;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.SkillUtils;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class KeepDistanceFinder {
     private static KeepDistanceFinder instance;
@@ -203,7 +202,9 @@ public class KeepDistanceFinder {
                     double newCost = currNode.g;
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
 
-                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
+                    if (map[newRow][newCol] == MapInfo.BLANK
+                            || map[newRow][newCol] == MapInfo.DESTROYED
+                            || map[newRow][newCol] == MapInfo.SPOIL) {
                         newCost += 1; // Empty cell
                     } else if (map[newRow][newCol] == MapInfo.BRICK) {
                         String currentCommand = currNode.commands.toString();
@@ -270,14 +271,14 @@ public class KeepDistanceFinder {
         return new AStarNode(curr.row, curr.col, 0, 0, null, null);
     }
 
-    public AStarNode findSafe(int[][] map, Position curr, Position enemy, MapSize size, List<Bomb> bombs, List<Hammer> hammers, List<Wind> winds) {
-        PriorityQueue<AStarNode> pq = new PriorityQueue<>(Comparator.comparingDouble(AStarNode::getF));
-        pq.add(new AStarNode(curr.row, curr.col, 0, 0, null, null));
+    public Node findSafe(int[][] map, Position curr, Position enemy, MapSize size, List<Bomb> bombs, List<Hammer> hammers, List<Wind> winds) {
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(new Node(curr.row, curr.col, null, null));
         boolean[][] visited = new boolean[size.rows][size.cols];
         List<int[]> directions = CalculateUtils.getDirections(curr, enemy);
 
-        while (!pq.isEmpty()) {
-            AStarNode currNode = pq.poll();
+        while (!queue.isEmpty()) {
+            Node currNode = queue.poll();
             int row = currNode.row;
             int col = currNode.col;
 
@@ -292,25 +293,17 @@ public class KeepDistanceFinder {
             for (int[] dir : directions) {
                 int newRow = row + dir[0];
                 int newCol = col + dir[1];
-                String move = Integer.toString(dir[2]);
 
                 if (isPath(newRow, newCol, map, visited, size)) {
-                    double newCost = currNode.g;
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
+                    newCommands.append(dir[2]);
 
-                    if (map[newRow][newCol] == MapInfo.BLANK || map[newRow][newCol] == MapInfo.DESTROYED) {
-                        newCost += 1; // Empty cell
-                    }
-
-                    // Add move command
-                    newCommands.append(move);
-                    double heuristic = 16 - 1.0 * ENEMY_RATIO * CalculateUtils.manhattanDistance(new Position(newRow, newCol), enemy);
-                    pq.add(new AStarNode(newRow, newCol, newCost, 0, currNode, newCommands));
+                    queue.add(new Node(newRow, newCol, currNode, newCommands));
                 }
             }
         }
 
-        return new AStarNode(curr.row, curr.col, 0, 0, null, null);
+        return new Node(curr.row, curr.col, null, null);
     }
 
     private boolean isValidBoxPath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {

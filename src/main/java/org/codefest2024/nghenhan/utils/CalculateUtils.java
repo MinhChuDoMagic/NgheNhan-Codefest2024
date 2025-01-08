@@ -2,6 +2,7 @@ package org.codefest2024.nghenhan.utils;
 
 import org.codefest2024.nghenhan.service.socket.data.Dir;
 import org.codefest2024.nghenhan.service.socket.data.MapInfo;
+import org.codefest2024.nghenhan.service.socket.data.Player;
 import org.codefest2024.nghenhan.service.socket.data.Position;
 
 import java.util.ArrayList;
@@ -124,5 +125,24 @@ public class CalculateUtils {
     public static boolean isNearBombExplored(int[][] map, Position curr) {
         return Stream.concat(directions.stream(), crossDirections.stream())
                 .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BRICK);
+    }
+
+    public static Player nearestEnemy(Player player, Player enemy, Player enemyChild) {
+        if (enemy == null) {
+            return enemyChild;
+        }
+
+        if (enemyChild == null) {
+            return enemy;
+        }
+
+        int enemyDistance = manhattanDistance(player.currentPosition, enemy.currentPosition);
+        int enemyChildDistance = manhattanDistance(player.currentPosition, enemyChild.currentPosition);
+
+        if (enemyChildDistance < 12 && enemyDistance < 12) {
+            return enemy;
+        }
+
+        return enemyChildDistance < enemyDistance ? enemyChild : enemy;
     }
 }

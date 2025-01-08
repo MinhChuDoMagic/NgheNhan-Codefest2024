@@ -6,6 +6,7 @@ import org.codefest2024.nghenhan.service.finder.PowerFarmFinder;
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.FinderUtils;
+import org.codefest2024.nghenhan.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class Dodge {
     private final BFSFinder bfsFinder = BFSFinder.getInstance();
     private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
     private final PowerFarmFinder powerFarmFinder = PowerFarmFinder.getInstance();
+    private final StunAndBomb stunAndBomb = new StunAndBomb();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer) {
         List<Order> orders = new ArrayList<>();
@@ -72,7 +74,7 @@ public class Dodge {
                     .reconstructPath();
             if (dir.isEmpty()) {
                 String oneSafeStep = bfsFinder.oneSafeStep(mapInfo.map, myPlayer.currentPosition, dangerousBombs, dangerousHammers, dangerousWinds);
-                return  List.of(new Dir(oneSafeStep, myPlayer.isChild));
+                return List.of(new Dir(oneSafeStep, myPlayer.isChild));
             } else {
                 return FinderUtils.processDirWithBrick(dir, myPlayer.isChild, myPlayer.currentWeapon);
             }
@@ -110,7 +112,8 @@ public class Dodge {
         return orders;
     }
 
-    public List<Order> findAndKeepDistance(MapInfo mapInfo, Player myPlayer, Player enemy) {
+    public List<Order> findAndKeepDistance(MapInfo mapInfo, Player myPlayer, Player enemy, Player enemyChild) {
+        Player nearestEnemy = CalculateUtils.nearestEnemy(myPlayer, enemy, enemyChild);
         List<Bomb> dangerousBombs = mapInfo
                 .bombs
                 .stream()
@@ -128,12 +131,13 @@ public class Dodge {
                 .toList();
 
         if (!dangerousBombs.isEmpty() || !dangerousHammers.isEmpty() || !dangerousWinds.isEmpty()) {
-            String dir = enemy == null || CalculateUtils.manhattanDistance(myPlayer.currentPosition, enemy.currentPosition) > 12
+            String dir = nearestEnemy == null || CalculateUtils.manhattanDistance(myPlayer.currentPosition, nearestEnemy.currentPosition) > 12
                     ? bfsFinder.findSafe(mapInfo.map, myPlayer.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath()
-                    : keepDistanceFinder.findSafe(mapInfo.map, myPlayer.currentPosition, enemy.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath();
+                    : keepDistanceFinder.findSafe(mapInfo.map, myPlayer.currentPosition, nearestEnemy.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath();
             if (dir.isEmpty()) {
 //                String oneSafeStep = bfsFinder.oneSafeStep(mapInfo.map, myPlayer.currentPosition, dangerousBombs, dangerousHammers, dangerousWinds);
 //                return List.of(new Dir(oneSafeStep, myPlayer.isChild));
+                return stunAndBomb.findAndStun(mapInfo, myPlayer, Utils.filterNonNull(enemy, enemyChild));
             } else {
                 return List.of(new Dir(dir, myPlayer.isChild));
             }

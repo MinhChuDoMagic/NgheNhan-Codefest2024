@@ -2,6 +2,7 @@ package org.codefest2024.nghenhan.service.strategy;
 
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.service.usecase.*;
+import org.codefest2024.nghenhan.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class PowerFarmStrategy implements Strategy {
     private final CollectWeapon collectWeapon = new CollectWeapon();
     private final RandomRun randomRun = new RandomRun();
     private final FarmBrick farmBrick = new FarmBrick();
+    private final StunAndBomb stunAndBomb = new StunAndBomb();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -51,11 +53,18 @@ public class PowerFarmStrategy implements Strategy {
 //            return keepEnemiesDistanceOrders;
 //        }
 
-        List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
+        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, enemy, enemyChild);
         if (!dodgeBombsOrders.isEmpty()) {
             System.out.println("--Dodge--");
             dodgeBombsOrders.forEach(System.out::println);
             return dodgeBombsOrders;
+        }
+
+        List<Order> stunAndBombOrders = stunAndBomb.findAndBomb(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
+        if (!stunAndBombOrders.isEmpty()) {
+            System.out.println("--Stun and Bomb--");
+            stunAndBombOrders.forEach(System.out::println);
+            return stunAndBombOrders;
         }
 
         List<Order> useSkillOrders = useSkill.find(mapInfo, player, teammate, enemy, enemyChild);
@@ -89,7 +98,7 @@ public class PowerFarmStrategy implements Strategy {
             return godFarmOrders;
         }
 
-        List<Order> farmBrickOrders = farmBrick.farmBrick(mapInfo, player);
+        List<Order> farmBrickOrders = farmBrick.farmBrick(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
         if (!farmBrickOrders.isEmpty()) {
             System.out.println("--Farm brick--");
             farmBrickOrders.forEach(System.out::println);

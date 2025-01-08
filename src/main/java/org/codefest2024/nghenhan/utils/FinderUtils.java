@@ -22,7 +22,13 @@ public class FinderUtils {
             String targetDirection = dir.substring(1, 2);
             if (!currentDirection.isEmpty()
                     && !currentDirection.equals(targetDirection)) {
-                return List.of(new Dir(targetDirection, isChild), new Wait(Wait.REDIRECT, isChild));
+                if (isChild) {
+                    InGameInfo.childLastPosition = InGameInfo.childCurrentPosition;
+                } else {
+                    InGameInfo.playerLastPosition = InGameInfo.playerCurrentPosition;
+                }
+
+                return List.of(new Dir(targetDirection, isChild));
             }
         }
 

@@ -18,10 +18,9 @@ public class Bomb extends Position {
     public Bomb() {
     }
 
-    public Bomb(Position position, int power, long createdAt) {
+    public Bomb(Position position, int power) {
         super(position.row, position.col);
         this.power = power;
-        this.createdAt = createdAt;
     }
 
     @Override

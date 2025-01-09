@@ -51,6 +51,9 @@ public class MapInfo {
     public boolean playerIsMarried;
     public boolean enemyIsMarried;
 
+    public int playerTimeToUseSpecialWeapons;
+    public int enemyTimeToUseSpecialWeapons;
+
     @Override
     public String toString() {
         return new Gson().toJson(this);

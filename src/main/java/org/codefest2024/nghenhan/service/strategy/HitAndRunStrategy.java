@@ -69,7 +69,7 @@ public class HitAndRunStrategy implements Strategy {
             return keepEnemiesDistanceOrders;
         }
 
-        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, enemy, enemyChild);
+        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, teammate, enemy, enemyChild);
         if (!dodgeBombsOrders.isEmpty()) {
             System.out.println("--Dodge--");
             dodgeBombsOrders.forEach(System.out::println);

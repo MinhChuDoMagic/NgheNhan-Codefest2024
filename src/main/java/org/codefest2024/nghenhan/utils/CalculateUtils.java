@@ -123,8 +123,8 @@ public class CalculateUtils {
     }
 
     public static boolean isNearBombExplored(int[][] map, Position curr) {
-        return Stream.concat(directions.stream(), crossDirections.stream())
-                .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BRICK);
+        return directions.stream()
+                .anyMatch(dir -> map[curr.row + dir[0]][curr.col + dir[1]] == MapInfo.BOMB_EXPLODE);
     }
 
     public static Player nearestEnemy(Player player, Player enemy, Player enemyChild) {

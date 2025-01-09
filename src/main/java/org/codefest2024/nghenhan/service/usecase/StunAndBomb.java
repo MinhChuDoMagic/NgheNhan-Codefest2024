@@ -65,7 +65,8 @@ public class StunAndBomb {
     public List<Order> findAndStun(MapInfo mapInfo, Player player, Player enemy) {
         long enemyLastStunTime = enemy.isChild ? InGameInfo.enemyChildLastStunTime : InGameInfo.enemyLastStunTime;
         if (CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition) <= 3
-                && Instant.now().toEpochMilli() - enemyLastStunTime > Bomb.STUN_COOLDOWN) {
+                && Instant.now().toEpochMilli() - enemyLastStunTime > Bomb.STUN_COOLDOWN
+                && (InGameInfo.enemyType != 2 || !mapInfo.enemyIsMarried || !enemy.haveSpecialWeapon || mapInfo.enemyTimeToUseSpecialWeapons == 0)) {
             String dir = aStarFinder.findVer3(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size);
             if (!dir.isEmpty()) {
                 return FinderUtils.processDirWithBrick(dir, player.isChild, player.currentWeapon);

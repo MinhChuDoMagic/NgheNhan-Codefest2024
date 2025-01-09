@@ -16,6 +16,7 @@ public class Dodge {
     private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
     private final PowerFarmFinder powerFarmFinder = PowerFarmFinder.getInstance();
     private final StunAndBomb stunAndBomb = new StunAndBomb();
+    private final FarmBrick farmBrick = new FarmBrick();
 
     public List<Order> find(MapInfo mapInfo, Player myPlayer) {
         List<Order> orders = new ArrayList<>();
@@ -137,7 +138,15 @@ public class Dodge {
                     ? keepDistanceFinder.findSafe(mapInfo.map, player.currentPosition, teammate.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath()
                     : bfsFinder.findSafe(mapInfo.map, player.currentPosition, mapInfo.size, dangerousBombs, dangerousHammers, dangerousWinds).reconstructPath();
             if (dir.isEmpty()) {
-                return stunAndBomb.findAndStun(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
+                List<Order> stunOrders = stunAndBomb.findAndStun(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
+                if (!stunOrders.isEmpty()) {
+                    return stunOrders;
+                }
+
+//                List<Order> farmBrickOrders = farmBrick.farmBrickWhenDodge(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
+//                if (!farmBrickOrders.isEmpty()) {
+//                    return farmBrickOrders;
+//                }
             } else {
                 return List.of(new Dir(dir, player.isChild));
             }

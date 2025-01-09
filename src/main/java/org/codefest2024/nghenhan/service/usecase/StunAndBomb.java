@@ -68,7 +68,7 @@ public class StunAndBomb {
                 && Instant.now().toEpochMilli() - enemyLastStunTime > Bomb.STUN_COOLDOWN
                 && (InGameInfo.enemyType != 2 || !mapInfo.enemyIsMarried || !enemy.haveSpecialWeapon || mapInfo.enemyTimeToUseSpecialWeapons == 0)) {
             String dir = aStarFinder.findVer3(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size);
-            if (!dir.isEmpty()) {
+            if (!dir.isEmpty() && dir.length() <6) {
                 return FinderUtils.processDirWithBrick(dir, player.isChild, player.currentWeapon);
             }
         }

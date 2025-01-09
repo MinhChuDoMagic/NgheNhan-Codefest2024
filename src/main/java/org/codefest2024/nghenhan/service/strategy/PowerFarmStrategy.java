@@ -77,17 +77,19 @@ public class PowerFarmStrategy implements Strategy {
             return collectWeaponOrders;
         }
 
-        List<Order> keepTeammateDistanceOrders = keepDistance.keepTeammateDistance(mapInfo, player, teammate);
-        if (!keepTeammateDistanceOrders.isEmpty()) {
-            System.out.println("--Keep distance--");
-            keepTeammateDistanceOrders.forEach(System.out::println);
-            return keepTeammateDistanceOrders;
-        }
-
-//        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
-//        if (!collectSpoilOrders.isEmpty()) {
-//            return collectSpoilOrders;
+//        List<Order> keepTeammateDistanceOrders = keepDistance.keepTeammateDistance(mapInfo, player, teammate);
+//        if (!keepTeammateDistanceOrders.isEmpty()) {
+//            System.out.println("--Keep distance--");
+//            keepTeammateDistanceOrders.forEach(System.out::println);
+//            return keepTeammateDistanceOrders;
 //        }
+
+        if(!mapInfo.playerIsMarried){
+            List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
+            if (!collectSpoilOrders.isEmpty()) {
+                return collectSpoilOrders;
+            }
+        }
 
         List<Order> godFarmOrders = optimalFarmBox.findVer2(mapInfo, player);
         if (!godFarmOrders.isEmpty()) {

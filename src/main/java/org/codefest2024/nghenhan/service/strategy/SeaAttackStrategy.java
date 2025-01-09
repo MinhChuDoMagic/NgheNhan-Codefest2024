@@ -18,6 +18,7 @@ public class SeaAttackStrategy implements Strategy {
     private final AStarFinder aStarFinder = AStarFinder.getInstance();
     private final Dodge dodge = new Dodge();
     private final FarmBrick farmBrick = new FarmBrick();
+    private final PowerFarmStrategy powerFarmStrategy = new PowerFarmStrategy();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -26,6 +27,10 @@ public class SeaAttackStrategy implements Strategy {
         Player enemy = mapInfo.enemy;
         Player child = mapInfo.child;
         Player enemyChild = mapInfo.enemyChild;
+
+        if(!mapInfo.playerIsMarried){
+            return powerFarmStrategy.find(gameInfo);
+        }
 
         if (player != null) {
             if (!player.hasTransform) {

@@ -2,7 +2,6 @@ package org.codefest2024.nghenhan.service.strategy;
 
 import org.codefest2024.nghenhan.service.socket.data.*;
 import org.codefest2024.nghenhan.service.usecase.*;
-import org.codefest2024.nghenhan.utils.CalculateUtils;
 import org.codefest2024.nghenhan.utils.Utils;
 
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ public class HitAndRunStrategy implements Strategy {
     private final CollectSpoils collectSpoils = new CollectSpoils();
     private final CollectWeapon collectWeapon = new CollectWeapon();
     private final StunAndBomb stunAndBomb = new StunAndBomb();
+    private final PowerFarmStrategy powerFarmStrategy = new PowerFarmStrategy();
 
     @Override
     public List<Order> find(GameInfo gameInfo) {
@@ -27,6 +27,10 @@ public class HitAndRunStrategy implements Strategy {
         Player enemy = mapInfo.enemy;
         Player child = mapInfo.child;
         Player enemyChild = mapInfo.enemyChild;
+
+        if(!mapInfo.playerIsMarried){
+            return powerFarmStrategy.find(gameInfo);
+        }
 
         if (player != null) {
             if (!player.hasTransform) {
@@ -49,7 +53,6 @@ public class HitAndRunStrategy implements Strategy {
     }
 
     private List<Order> playerStrategy(MapInfo mapInfo, Player player, Player teammate, Player enemy, Player enemyChild) {
-        Player nearestEnemy = CalculateUtils.nearestEnemy(player, enemy, enemyChild);
 
         if (!player.isChild && player.eternalBadge > 0 && teammate == null && enemy != null) {
             return List.of(new Action(Action.MARRY_WIFE));
@@ -60,6 +63,13 @@ public class HitAndRunStrategy implements Strategy {
             System.out.println("--Use skill--");
             useSkillOrders.forEach(System.out::println);
             return useSkillOrders;
+        }
+
+        List<Order> stunAndBombOrders = stunAndBomb.findAndBomb(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
+        if (!stunAndBombOrders.isEmpty()) {
+            System.out.println("--Stun and Bomb--");
+            stunAndBombOrders.forEach(System.out::println);
+            return stunAndBombOrders;
         }
 
         List<Order> keepEnemiesDistanceOrders = keepDistance.keepEnemiesDistance(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
@@ -75,12 +85,7 @@ public class HitAndRunStrategy implements Strategy {
             dodgeBombsOrders.forEach(System.out::println);
             return dodgeBombsOrders;
         }
-        List<Order> stunAndBombOrders = stunAndBomb.findAndBomb(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
-        if (!stunAndBombOrders.isEmpty()) {
-            System.out.println("--Stun and Bomb--");
-            stunAndBombOrders.forEach(System.out::println);
-            return stunAndBombOrders;
-        }
+
 
 //        List<Order> dodgeBombsOrders = dodge.find(mapInfo, player);
 //        if (!dodgeBombsOrders.isEmpty()) {
@@ -94,17 +99,19 @@ public class HitAndRunStrategy implements Strategy {
             return collectWeaponOrders;
         }
 
-        List<Order> keepTeammateDistanceOrders = keepDistance.keepTeammateDistance(mapInfo, player, teammate);
-        if (!keepTeammateDistanceOrders.isEmpty()) {
-            System.out.println("--Keep teammate distance--");
-            keepTeammateDistanceOrders.forEach(System.out::println);
-            return keepTeammateDistanceOrders;
-        }
-
-//        List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
-//        if (!collectSpoilOrders.isEmpty()) {
-//            return collectSpoilOrders;
+//        List<Order> keepTeammateDistanceOrders = keepDistance.keepTeammateDistance(mapInfo, player, teammate);
+//        if (!keepTeammateDistanceOrders.isEmpty()) {
+//            System.out.println("--Keep teammate distance--");
+//            keepTeammateDistanceOrders.forEach(System.out::println);
+//            return keepTeammateDistanceOrders;
 //        }
+
+        if(!mapInfo.playerIsMarried){
+            List<Order> collectSpoilOrders = collectSpoils.findVer2(mapInfo, player);
+            if (!collectSpoilOrders.isEmpty()) {
+                return collectSpoilOrders;
+            }
+        }
 
         List<Order> godFarmOrders = optimalFarmBox.findVer2(mapInfo, player);
         if (!godFarmOrders.isEmpty()) {

@@ -32,7 +32,7 @@ public class CollectSpoils {
             if (spoilNode != null) {
                 String dir = spoilNode.reconstructPath();
 
-                if (!dir.isEmpty() && dir.length() < 12) {
+                if (!dir.isEmpty() && dir.length() < 8) {
                     return FinderUtils.processDirWithBrick(dir, player.isChild, player.currentWeapon);
                 }
             }

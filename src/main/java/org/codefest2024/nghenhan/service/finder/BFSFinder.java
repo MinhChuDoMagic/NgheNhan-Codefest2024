@@ -114,7 +114,7 @@ public class BFSFinder {
                 int newRow = row + dir[0];
                 int newCol = col + dir[1];
 
-                if (isPath(newRow, newCol, map, visited, size)) {
+                if (isSafePath(newRow, newCol, map, visited, size)) {
                     StringBuilder newCommands = new StringBuilder(currNode.commands);
                     newCommands.append(dir[2]);
 
@@ -175,6 +175,15 @@ public class BFSFinder {
     private boolean isPath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
         return isValidBoxPath(row, col, map, visited, size)
                 && map[row][col] != MapInfo.BOX;
+    }
+
+    private boolean isSafePath(int row, int col, int[][] map, boolean[][] visited, MapSize size) {
+        return isValidBoxPath(row, col, map, visited, size)
+                && map[row][col] != MapInfo.BOX
+                && map[row][col] != MapInfo.BOMB_EXPLODE
+                && map[row][col] != MapInfo.HAMMER_EXPLODE
+                && map[row][col] != MapInfo.WIND
+                && map[row][col] != MapInfo.CAPTURED_BADGE;
     }
 
     private boolean isSafe(int[][] map, Position curr, List<Bomb> bombs, List<Hammer> hammers, List<Wind> winds) {

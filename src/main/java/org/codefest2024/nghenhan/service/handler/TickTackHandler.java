@@ -73,6 +73,7 @@ public class TickTackHandler {
                     mapInfo.playerIsMarried = true;
                 } else {
                     mapInfo.player = player;
+                    mapInfo.playerTimeToUseSpecialWeapons = player.timeToUseSpecialWeapons;
                 }
             } else {
                 if (player.id.endsWith(Constants.KEY_CHILD)) {
@@ -80,6 +81,7 @@ public class TickTackHandler {
                     mapInfo.enemyIsMarried = true;
                 } else {
                     mapInfo.enemy = player;
+                    mapInfo.enemyTimeToUseSpecialWeapons = player.timeToUseSpecialWeapons;
                 }
             }
         }

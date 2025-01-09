@@ -28,12 +28,29 @@ public class FinderUtils {
                     InGameInfo.playerLastPosition = InGameInfo.playerCurrentPosition;
                 }
 
-                return List.of(new Dir(targetDirection, isChild));
+                List<Order> orders = new ArrayList<>(List.of(
+                        new Dir(targetDirection, isChild),
+                        new Wait(Wait.REDIRECT, isChild),
+                        new Dir(Dir.ACTION, isChild)
+                ));
+
+                if (currentWeapon != 1) {
+                    orders.add(new Action(Action.SWITCH_WEAPON, isChild));
+                }
+
+                return orders;
             }
         }
 
         if (indexOfRedirect == 2) {
-            return List.of(new Dir(processedDir.substring(0, 2), isChild), new Wait(Wait.REDIRECT, isChild));
+            List<Order> orders = new ArrayList<>(List.of(new Dir(processedDir.substring(0, 2), isChild), new Wait(Wait.REDIRECT, isChild)));
+            if (indexOfAction == 2) {
+                orders.add(new Dir(Dir.ACTION, isChild));
+            }
+            if (currentWeapon != 1) {
+                orders.add(new Action(Action.SWITCH_WEAPON, isChild));
+            }
+            return orders;
         } else {
             String shortenDir = processedDir.length() > 3 ? processedDir.substring(0, 3) : processedDir;
 

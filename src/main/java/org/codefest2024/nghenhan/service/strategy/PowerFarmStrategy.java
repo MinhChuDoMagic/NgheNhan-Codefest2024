@@ -48,12 +48,7 @@ public class PowerFarmStrategy implements Strategy {
             return List.of(new Action(Action.MARRY_WIFE));
         }
 
-//        List<Order> keepEnemiesDistanceOrders = keepDistance.keepEnemiesDistance(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
-//        if (!keepEnemiesDistanceOrders.isEmpty()) {
-//            return keepEnemiesDistanceOrders;
-//        }
-
-        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, enemy, enemyChild);
+        List<Order> dodgeBombsOrders = dodge.findAndKeepDistance(mapInfo, player, teammate, enemy, enemyChild);
         if (!dodgeBombsOrders.isEmpty()) {
             System.out.println("--Dodge--");
             dodgeBombsOrders.forEach(System.out::println);
@@ -67,7 +62,8 @@ public class PowerFarmStrategy implements Strategy {
             return stunAndBombOrders;
         }
 
-        List<Order> useSkillOrders = useSkill.find(mapInfo, player, teammate, enemy, enemyChild);
+//        List<Order> useSkillOrders = useSkill.find(mapInfo, player, teammate, enemy, enemyChild);
+        List<Order> useSkillOrders = useSkill.useMountainSkillDirect(mapInfo, player, teammate, enemy, enemyChild);
         if (!useSkillOrders.isEmpty()) {
             System.out.println("--Use skill--");
             useSkillOrders.forEach(System.out::println);
@@ -77,7 +73,7 @@ public class PowerFarmStrategy implements Strategy {
         List<Order> collectWeaponOrders = collectWeapon.find(mapInfo, player, enemy, enemyChild);
         if (!collectWeaponOrders.isEmpty()) {
             System.out.println("--Collect weapon-");
-            useSkillOrders.forEach(System.out::println);
+            collectWeaponOrders.forEach(System.out::println);
             return collectWeaponOrders;
         }
 
@@ -103,6 +99,13 @@ public class PowerFarmStrategy implements Strategy {
             System.out.println("--Farm brick--");
             farmBrickOrders.forEach(System.out::println);
             return farmBrickOrders;
+        }
+
+        List<Order> keepEnemiesDistanceOrders = keepDistance.keepEnemiesDistance(mapInfo, player, Utils.filterNonNull(enemy, enemyChild));
+        if (!keepEnemiesDistanceOrders.isEmpty()) {
+            System.out.println("--Keep enemy distance--");
+            keepEnemiesDistanceOrders.forEach(System.out::println);
+            return keepEnemiesDistanceOrders;
         }
 
         List<Order> randomRunOrders = randomRun.find(mapInfo, player);

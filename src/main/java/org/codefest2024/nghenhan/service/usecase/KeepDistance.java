@@ -13,9 +13,12 @@ import java.util.List;
 
 public class KeepDistance {
     public final int TEAMMATE_DANGEROUS_DISTANCE = 10;
-    public final int ENEMY_DANGEROUS_DISTANCE = 10;
     public final int TEAMMATE_SAFE_DISTANCE = 16;
-    public final int ENEMY_SAFE_DISTANCE = 16;
+//    public final int ENEMY_DANGEROUS_DISTANCE = 10;
+//    public final int ENEMY_SAFE_DISTANCE = 16;
+    public final int ENEMY_DANGEROUS_DISTANCE = 7;
+    public final int ENEMY_SAFE_DISTANCE = 12;
+
 
     private final KeepDistanceFinder keepDistanceFinder = KeepDistanceFinder.getInstance();
     private final GodFarmBox godFarmBox = new GodFarmBox();

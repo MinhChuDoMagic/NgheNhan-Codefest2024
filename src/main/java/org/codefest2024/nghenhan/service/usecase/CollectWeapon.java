@@ -17,7 +17,9 @@ public class CollectWeapon {
 
     public List<Order> find(MapInfo mapInfo, Player player, Player enemy, Player enemyChild) {
         WeaponPlace weaponPlace = player.isChild ? mapInfo.childWeaponPlace : mapInfo.playerWeaponPlace;
-        if (weaponPlace != null && isSafeEnemies(mapInfo, player, enemy, enemyChild)) {
+        if (weaponPlace != null
+                && isSafeEnemies(mapInfo, player, enemy, enemyChild)
+        && mapInfo.playerTimeToUseSpecialWeapons != 0) {
             String dir = aStarFinder.findVer2(mapInfo.map, player.currentPosition, weaponPlace, mapInfo.size);
             if (!dir.isEmpty()) {
                 return FinderUtils.processDirWithBrick(dir, player.isChild, player.currentWeapon);

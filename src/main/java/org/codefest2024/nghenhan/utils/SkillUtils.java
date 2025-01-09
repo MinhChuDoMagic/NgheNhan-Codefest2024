@@ -97,6 +97,12 @@ public class SkillUtils {
                 Math.abs(curr.row - enemy.row) < 3 && Math.abs(curr.col - enemy.col) < 4;
     }
 
+    public static boolean inHammerRange2(Position curr, Position enemy, List<Bomb> bombs) {
+        return (Math.abs(curr.col - enemy.col) < 3 && Math.abs(curr.row - enemy.row) < 4 ||
+                Math.abs(curr.row - enemy.row) < 3 && Math.abs(curr.col - enemy.col) < 4)
+                && bombs.stream().anyMatch(bomb -> CalculateUtils.manhattanDistance(enemy, bomb) <= 3);
+    }
+
     public static String windDirection(int[][] map, Position player, Position enemy) {
 
         // Check Left Direction

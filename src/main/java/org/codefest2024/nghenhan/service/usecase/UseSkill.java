@@ -26,23 +26,23 @@ public class UseSkill {
         }
 
         return switch (InGameInfo.playerType) {
-            case Player.MOUNTAIN -> useMountainSkill(player, teammate, enemies, mapInfo.map, mapInfo.size);
+            case Player.MOUNTAIN -> useMountainSkill(mapInfo, player, teammate, enemies);
             case Player.SEA -> useSeaSkill(mapInfo.map, player, enemies);
             default -> throw new IllegalStateException("Invalid transformType: " + InGameInfo.playerType);
         };
     }
 
-    private List<Order> useMountainSkill(Player player, Player teammate, List<Player> enemies, int[][] map, MapSize mapSize) {
+    private List<Order> useMountainSkill(MapInfo mapInfo, Player player, Player teammate, List<Player> enemies) {
         for (Player enemy : enemies) {
             if (Math.abs(player.currentPosition.col - enemy.currentPosition.col) <= Hammer.RANGE
                     && Math.abs(player.currentPosition.row - enemy.currentPosition.row) <= Hammer.RANGE
-                    && SkillUtils.inHammerRange(player.currentPosition, enemy.currentPosition)
+                    && SkillUtils.inHammerRange2(player.currentPosition, enemy.currentPosition, mapInfo.bombs)
                     && isSafeHammer(Utils.filterNonNull(player, teammate), new Hammer(enemy.currentPosition))) {
                 return List.of(new Action(Action.USE_WEAPON, new Payload(enemy.currentPosition), player.isChild));
             }
 
             if (CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition) <= 14) {
-                String dir = bfsFinder.findEnemy(map, player.currentPosition, enemy.currentPosition, mapSize).reconstructPath();
+                String dir = bfsFinder.findEnemy(mapInfo.map, player.currentPosition, enemy.currentPosition, mapInfo.size).reconstructPath();
                 if (!dir.isEmpty() && dir.length() < 10) {
                     return List.of(new Dir(dir, player.isChild));
                 }
@@ -67,7 +67,7 @@ public class UseSkill {
         for (Player enemyPlayer : enemies) {
             if (Math.abs(player.currentPosition.col - enemyPlayer.currentPosition.col) <= Hammer.RANGE
                     && Math.abs(player.currentPosition.row - enemyPlayer.currentPosition.row) <= Hammer.RANGE
-                    && SkillUtils.inHammerRange(player.currentPosition, enemyPlayer.currentPosition)
+                    && SkillUtils.inHammerRange2(player.currentPosition, enemyPlayer.currentPosition, mapInfo.bombs)
                     && isSafeHammer(Utils.filterNonNull(player, teammate), new Hammer(enemyPlayer.currentPosition))) {
                 return List.of(new Action(Action.USE_WEAPON, new Payload(enemyPlayer.currentPosition), player.isChild));
             }

@@ -28,4 +28,20 @@ public class FarmBrick {
 
         return List.of();
     }
+
+    public List<Order> farmBrickWhenDodge(MapInfo mapInfo, Player player, List<Player> enemies) {
+        if (enemies.stream().anyMatch(enemy -> CalculateUtils.manhattanDistance(player.currentPosition, enemy.currentPosition) < 5)) {
+            return List.of();
+        }
+
+        AStarNode brickNode = powerFarmFinder.findBrick(mapInfo.map, player.currentPosition, mapInfo.size);
+        if (brickNode != null) {
+            String dir = brickNode.reconstructPath();
+            if (!dir.isEmpty() && dir.length() < 5) {
+                return FinderUtils.processDirWithBrick(dir, player.isChild, player.currentWeapon);
+            }
+        }
+
+        return List.of();
+    }
 }
